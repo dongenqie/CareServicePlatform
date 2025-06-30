@@ -1,20 +1,22 @@
 <script>
 export default {
-  name: 'Diary',
-  data() {
-    return {
-      // 把导入的变量都放到 data 里，模板才能访问
-      profile1,
-      profile2,
-      profile3,
-      profile4,
-      profile5
-    }
-  },
+  name: 'EventList',
   methods: {
     goToLogout() {
     this.$router.push({ name: 'Logout' })  // 跳转到 Logout 页
-    }
+    },
+    goToCalendar() {
+    this.$router.push({ name: 'Calendar' })  // 跳转到 Logout 页
+    },
+    goToCreateAnEvent() {
+    this.$router.push({ name: 'CreateAnEvent' })  // 跳转到 CreateAnEvent 页
+    },
+    goToEventDetail() {
+    this.$router.push({ name: 'EventDetail' })  // 跳转到 EventDetail 页
+    },
+    goToEventList() {
+    this.$router.push({ name: 'EventList' })  // 跳转到 EventList 页
+    },
   },
   mounted() {
     // 1. RTL 模式
@@ -99,9 +101,9 @@ export default {
   }
 }
 </script>
-<temple>
+<template>
 
-</temple>
+</template>
 <style>
 
 </style>
