@@ -770,7 +770,7 @@ onMounted(() => {
                 </div>
                 <div class="dropdown font-sans-serif btn-reveal-trigger">
                   <button class="btn btn-link text-600 btn-sm dropdown-toggle dropdown-caret-none btn-reveal" type="button" id="dropdown-traffic-channel" data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs-11"></span></button>
-                  <div class="dropdown-menu dropdown-menu-end border py-2" aria-labelledby="dropdown-traffic-channel"><a class="dropdown-item" href="#!">查看视图</a><a class="dropdown-item" href="#!">Export</a>
+                  <div class="dropdown-menu dropdown-menu-end border py-2" aria-labelledby="dropdown-traffic-channel"><a class="dropdown-item" href="#!">View</a><a class="dropdown-item" href="#!">Export</a>
                     <div class="dropdown-divider"></div><a class="dropdown-item text-danger" href="#!">Remove</a>
                   </div>
                 </div>
@@ -780,8 +780,6 @@ onMounted(() => {
               </div>
               <div class="card-footer bg-body-tertiary py-2">
                 <div class="row flex-between-center g-0">
-                  <div class="col-auto">
-                  </div>
                   <div class="col-auto"><a class="btn btn-link btn-sm px-0 fw-medium" href="#!">Acquisition overview<span class="fas fa-chevron-right ms-1 fs-11"></span></a></div>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-ed-ticket<script setup>
+<script setup>
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineOptions } from 'vue'
@@ -755,40 +755,6 @@ onMounted(() => {
           </ul>
         </nav>
         <div class="row g-3 mb-3">
-          <div class=" col-xxl-6">
-            <div class="card">
-              <div class="card-header d-flex flex-between-center bg-body-tertiary py-2">
-                <h6 class="mb-0">全国医疗卫生机构床位占比图</h6>
-                <div class="dropdown font-sans-serif btn-reveal-trigger">
-                  <div class="col-auto" style="padding-left: 430px;">
-                    <select class="form-select form-select-sm audience-select-menu">
-                      <option value="week" selected="selected">Last 7 days</option>
-                      <option value="month">Last month</option>
-                      <option value="year">Last Year</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="dropdown font-sans-serif btn-reveal-trigger">
-                  <button class="btn btn-link text-600 btn-sm dropdown-toggle dropdown-caret-none btn-reveal" type="button" id="dropdown-traffic-channel" data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs-11"></span></button>
-                  <div class="dropdown-menu dropdown-menu-end border py-2" aria-labelledby="dropdown-traffic-channel"><a class="dropdown-item" href="#!">查看视图</a><a class="dropdown-item" href="#!">Export</a>
-                    <div class="dropdown-divider"></div><a class="dropdown-item text-danger" href="#!">Remove</a>
-                  </div>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="echart-traffic-channels h-100" data-echart-responsive="true"></div>
-              </div>
-              <div class="card-footer bg-body-tertiary py-2">
-                <div class="row flex-between-center g-0">
-                  <div class="col-auto">
-                  </div>
-                  <div class="col-auto"><a class="btn btn-link btn-sm px-0 fw-medium" href="#!">Acquisition overview<span class="fas fa-chevron-right ms-1 fs-11"></span></a></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row g-3 mb-3">
           <div class="col-xxl-8">
             <div class="card overflow-hidden mb-3">
               <div class="card-header audience-chart-header p-0 bg-body-tertiary scrollbar-overlay">
@@ -1406,7 +1372,7 @@ onMounted(() => {
           <div class="col-lg-7 col-xxl-6">
             <div class="card">
               <div class="card-header d-flex flex-between-center bg-body-tertiary py-2">
-                <h6 class="mb-0">全国医疗卫生机构床位占比图</h6>
+                <h6 class="mb-0">Traffic source</h6>
                 <div class="dropdown font-sans-serif btn-reveal-trigger"><button class="btn btn-link text-600 btn-sm dropdown-toggle dropdown-caret-none btn-reveal" type="button" id="dropdown-traffic-channel" data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs-11"></span></button>
                   <div class="dropdown-menu dropdown-menu-end border py-2" aria-labelledby="dropdown-traffic-channel"><a class="dropdown-item" href="#!">View</a><a class="dropdown-item" href="#!">Export</a>
                     <div class="dropdown-divider"></div><a class="dropdown-item text-danger" href="#!">Remove</a>

@@ -106,6 +106,11 @@ onMounted(() => {
     safeRemove(navTopCombo)
   }
 })
+
+const tabDom = document.getElementById('tab-dom-4e94b468-5183-4389-be8c-5612d43b02cd');
+tabDom.addEventListener('click', function() {
+  echartsLineShareDatasetChartInit01();  // 重新初始化图表
+});
 </script>
 <template>
       <!-- ===============================================--><!--    Main Content--><!-- ===============================================-->
@@ -760,7 +765,7 @@ onMounted(() => {
                 <div class="card-header">
                   <div class="row flex-between-end">
                     <div class="col-auto align-self-center">
-                      <h5 class="mb-0" data-anchor="data-anchor">各省不同年份按医院类型分类图</h5>
+                      <h5 class="mb-0" data-anchor="data-anchor">Share dataset</h5>
                     </div>
                     <div class="col-auto ms-auto">
                       <div class="nav nav-pills nav-pills-falcon flex-grow-1" role="tablist">
@@ -778,17 +783,6 @@ onMounted(() => {
                     <div class="tab-pane preview-tab-pane" role="tabpanel" aria-labelledby="tab-dom-4e94b468-5183-4389-be8c-5612d43b02cd" id="dom-4e94b468-5183-4389-be8c-5612d43b02cd">
                       <div class="echart-line-share-dataset-chart-example01" style="min-height: 500px;" data-echart-responsive="true"></div>
                     </div>
-                  </div>
-                </div>
-                <div class="card-footer bg-body-tertiary py-2">
-                  <div class="row flex-between-center g-0">
-                    <div class="col-auto"><select class="form-select form-select-sm audience-select-menu">
-                        <option value="week" selected="selected">Last 7 days</option>
-                        <option value="month">Last month</option>
-                      </select>
-                    </div>
-                    
-                    <div class="col-auto"><a class="btn btn-link btn-sm px-0 fw-medium" href="#!">Visitors overview<svg class="svg-inline--fa fa-chevron-right fa-w-10 ms-1 fs-11" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg=""><path fill="currentColor" d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"></path></svg><!-- <span class="fas fa-chevron-right ms-1 fs-11"></span> Font Awesome fontawesome.com --></a></div>
                   </div>
                 </div>
               </div>

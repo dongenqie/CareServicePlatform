@@ -12254,7 +12254,7 @@ var trafficChannelChartInit = function trafficChannelChartInit() {
     var chart = window.echarts.init($trafficChannels);
     var getDefaultOptions = function getDefaultOptions() {
       return {
-        color: [utils.getColors().primary, utils.rgbaColor(utils.getColors().primary, 0.8), utils.rgbaColor(utils.getColors().primary, 0.65), utils.rgbaColor(utils.getColors().primary, 0.5), utils.rgbaColor(utils.getColors().primary, 0.35), utils.rgbaColor(utils.getColors().primary, 0.2)],
+        color: [utils.getColors().primary, utils.rgbaColor(utils.getColors().primary, 0.8), utils.rgbaColor(utils.getColors().primary, 0.6), utils.rgbaColor(utils.getColors().primary, 0.4), utils.rgbaColor(utils.getColors().primary, 0.2), utils.rgbaColor(utils.getColors().primary, 0.1)],
         legend: {
           data: ['400~499', '300~399', '200~299', '100~199', '50~99', '0~49'],
           left: 5,

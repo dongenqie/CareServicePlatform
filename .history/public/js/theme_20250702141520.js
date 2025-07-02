@@ -12254,7 +12254,7 @@ var trafficChannelChartInit = function trafficChannelChartInit() {
     var chart = window.echarts.init($trafficChannels);
     var getDefaultOptions = function getDefaultOptions() {
       return {
-        color: [utils.getColors().primary, utils.rgbaColor(utils.getColors().primary, 0.8), utils.rgbaColor(utils.getColors().primary, 0.65), utils.rgbaColor(utils.getColors().primary, 0.5), utils.rgbaColor(utils.getColors().primary, 0.35), utils.rgbaColor(utils.getColors().primary, 0.2)],
+        color: [utils.getColors().primary, utils.rgbaColor(utils.getColors().primary, 0.8), utils.rgbaColor(utils.getColors().primary, 0.6), utils.rgbaColor(utils.getColors().primary, 0.4), utils.rgbaColor(utils.getColors().primary, 0.2), utils.rgbaColor(utils.getColors().primary, 0.1)],
         legend: {
           data: ['400~499', '300~399', '200~299', '100~199', '50~99', '0~49'],
           left: 5,
@@ -12271,7 +12271,9 @@ var trafficChannelChartInit = function trafficChannelChartInit() {
         },
         xAxis: {
           type: 'category',
-          data: ['公立', '民营', '综合', '中医', '中西医', '民族'], // 替换为医院类型的简称
+          data: utils.getPastDates(7).map(function (date) {
+            return window.dayjs(date).format('DD MMM, YYYY');
+          }),
           axisLine: {
             show: false
           },
@@ -12285,6 +12287,9 @@ var trafficChannelChartInit = function trafficChannelChartInit() {
           },
           axisLabel: {
             color: utils.getGrays()['600'],
+            formatter: function formatter(value) {
+              return window.dayjs(value).format('ddd');
+            }
           }
         },
         yAxis: {
@@ -12329,32 +12334,32 @@ var trafficChannelChartInit = function trafficChannelChartInit() {
           name: '400~499',
           type: 'bar',
           stack: 'total',
-          data: [320, 302, 301, 334, 390, 374]
+          data: [320, 302, 301, 334, 390]
         }, {
           name: '300~399',
           type: 'bar',
           stack: 'total',
-          data: [120, 132, 101, 134, 90, 116]
+          data: [120, 132, 101, 134, 90]
         }, {
           name: '200~299',
           type: 'bar',
           stack: 'total',
-          data: [220, 182, 191, 234, 290, 236]
+          data: [220, 182, 191, 234, 290]
         }, {
           name: '100~199',
           type: 'bar',
           stack: 'total',
-          data: [150, 212, 201, 154, 190, 148]
+          data: [150, 212, 201, 154, 190]
         }, {
           name: '50~99',
           type: 'bar',
           stack: 'total',
-          data: [159, 200, 231, 175, 180, 213]
+          data: [159, 200, 231, 175, 180]
         }, {
           name: '0~49',
           type: 'bar',
           stack: 'total',
-          data: [820, 832, 901, 934, 1130, 1004],
+          data: [820, 832, 901, 934, 1290],
           itemStyle: {
             barBorderRadius: [5, 5, 0, 0]
           }

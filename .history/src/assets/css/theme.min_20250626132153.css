@@ -1310,11 +1310,11 @@ progress {
     max-width: 1140px;
   }
 }
-/* @media (min-width: 1540px) {
+@media (min-width: 1540px) {
   .container-xxl, .container-xl, .container-lg, .container-md, .container-sm, .container {
     max-width: 1480px;
   }
-} */
+}
 :root {
   --falcon-breakpoint-xs: 0;
   --falcon-breakpoint-sm: 576px;

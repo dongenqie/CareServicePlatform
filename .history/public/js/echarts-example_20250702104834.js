@@ -4508,10 +4508,6 @@ var echartsLineShareDatasetChartInit01 = function echartsLineShareDatasetChartIn
       };
     };
     echartSetOption(chart, userOptions, getDefaultOptions);
-    // 在标签切换后，调用 resize 更新图表
-    setTimeout(function() {
-      chart.resize();
-    }, 300); // 给图表一些时间来正确渲染
     chart.on('updateAxisPointer', function (event) {
       var xAxisInfo = event.axesInfo[0];
       if (xAxisInfo) {

@@ -4323,11 +4323,11 @@ var echartsLineShareDatasetChartInit = function echartsLineShareDatasetChartInit
 };
 
 var echartsLineShareDatasetChartInit01 = function echartsLineShareDatasetChartInit01() {
-  var $lineShareChartEl = document.querySelector('.echart-line-share-dataset-chart-example01');
-  if ($lineShareChartEl) {
+  var $lineShareChartEl01 = document.querySelector('.echart-line-share-dataset-chart-example01');
+  if ($lineShareChartEl01) {
     // Get options from data attribute
-    var userOptions = utils.getData($lineShareChartEl, 'options');
-    var chart = window.echarts.init($lineShareChartEl);
+    var userOptions = utils.getData($lineShareChartEl01, 'options');
+    var chart = window.echarts.init($lineShareChartEl01);
     var getDefaultOptions = function getDefaultOptions() {
       return {
         color: [utils.getColor('danger'), utils.getColor('info'), utils.getColor('warning'), utils.getColor('secondary'), utils.getColor('success'), utils.getColor('primary')],
@@ -4508,10 +4508,6 @@ var echartsLineShareDatasetChartInit01 = function echartsLineShareDatasetChartIn
       };
     };
     echartSetOption(chart, userOptions, getDefaultOptions);
-    // 在标签切换后，调用 resize 更新图表
-    setTimeout(function() {
-      chart.resize();
-    }, 300); // 给图表一些时间来正确渲染
     chart.on('updateAxisPointer', function (event) {
       var xAxisInfo = event.axesInfo[0];
       if (xAxisInfo) {

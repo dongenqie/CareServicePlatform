@@ -12254,7 +12254,7 @@ var trafficChannelChartInit = function trafficChannelChartInit() {
     var chart = window.echarts.init($trafficChannels);
     var getDefaultOptions = function getDefaultOptions() {
       return {
-        color: [utils.getColors().primary, utils.rgbaColor(utils.getColors().primary, 0.8), utils.rgbaColor(utils.getColors().primary, 0.65), utils.rgbaColor(utils.getColors().primary, 0.5), utils.rgbaColor(utils.getColors().primary, 0.35), utils.rgbaColor(utils.getColors().primary, 0.2)],
+        color: [utils.getColors().primary, utils.rgbaColor(utils.getColors().primary, 0.8), utils.rgbaColor(utils.getColors().primary, 0.6), utils.rgbaColor(utils.getColors().primary, 0.4), utils.rgbaColor(utils.getColors().primary, 0.2), utils.rgbaColor(utils.getColors().primary, 0.1)],
         legend: {
           data: ['400~499', '300~399', '200~299', '100~199', '50~99', '0~49'],
           left: 5,
@@ -12271,7 +12271,7 @@ var trafficChannelChartInit = function trafficChannelChartInit() {
         },
         xAxis: {
           type: 'category',
-          data: ['公立', '民营', '综合', '中医', '中西医', '民族'], // 替换为医院类型的简称
+          data: ['公立医院', '民营医院', '综合医院', '中医医院', '中西医结合医院', '民族医院'], // 替换为医院类型的简称
           axisLine: {
             show: false
           },

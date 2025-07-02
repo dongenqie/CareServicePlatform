@@ -766,6 +766,7 @@ onMounted(() => {
                       <div class="nav nav-pills nav-pills-falcon flex-grow-1" role="tablist">
                         <button class="btn btn-sm active" data-bs-toggle="pill" data-bs-target="#dom-03f4fedc-6ba1-465a-883f-0c342a8e1fe6" type="button" role="tab" aria-controls="dom-03f4fedc-6ba1-465a-883f-0c342a8e1fe6" aria-selected="true" id="tab-dom-03f4fedc-6ba1-465a-883f-0c342a8e1fe6">2011-2015</button>
                         <button class="btn btn-sm" data-bs-toggle="pill" data-bs-target="#dom-4e94b468-5183-4389-be8c-5612d43b02cd" type="button" role="tab" aria-controls="dom-4e94b468-5183-4389-be8c-5612d43b02cd" aria-selected="true" id="tab-dom-4e94b468-5183-4389-be8c-5612d43b02cd">2016-2020</button>
+                        <button class="btn btn-link text-600 btn-sm dropdown-toggle dropdown-caret-none btn-reveal" type="button" id="dropdown-session-by-browser" data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true" aria-expanded="false"><svg class="svg-inline--fa fa-ellipsis-h fa-w-16 fs-11" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="ellipsis-h" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"></path></svg><!-- <span class="fas fa-ellipsis-h fs-11"></span> Font Awesome fontawesome.com --></button>
                       </div>
                     </div>
                   </div>
@@ -787,7 +788,6 @@ onMounted(() => {
                         <option value="month">Last month</option>
                       </select>
                     </div>
-                    
                     <div class="col-auto"><a class="btn btn-link btn-sm px-0 fw-medium" href="#!">Visitors overview<svg class="svg-inline--fa fa-chevron-right fa-w-10 ms-1 fs-11" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg=""><path fill="currentColor" d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"></path></svg><!-- <span class="fas fa-chevron-right ms-1 fs-11"></span> Font Awesome fontawesome.com --></a></div>
                   </div>
                 </div>
