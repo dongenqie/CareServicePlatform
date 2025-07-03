@@ -755,7 +755,6 @@ onMounted(() => {
             </li>
           </ul>
         </nav>
-        <!--欢迎栏-->
         <div class="row g-3 mb-3">
           <div class="col-xxl-6">
             <div class="row g-0 h-100">
@@ -1379,7 +1378,6 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <!--尾栏-->
         <footer class="footer">
           <div class="row g-0 justify-content-between fs-10 mt-4 mb-3">
             <div class="col-12 col-sm-auto text-center">

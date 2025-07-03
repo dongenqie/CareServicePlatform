@@ -1,10 +1,12 @@
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineOptions } from 'vue'
+import * as echarts from 'echarts';
+import getGuangXiMap from '@/api/getGuangXiMap';
 
 // 声明组件名
-defineOptions({ name: 'HospitalGrade' })
+defineOptions({ name: 'HospitalNumber' })
 
 // 路由跳转方法
 const router = useRouter()
@@ -31,7 +33,47 @@ function goToComparativeAnalysis()     { router.push({ name: 'ComparativeAnalysi
 function goToCorrelationAnalysis()     { router.push({ name: 'CorrelationAnalysis' }) }
 function goToTrendAnalysis()           { router.push({ name: 'TrendAnalysis' }) }
 
-onMounted(() => {
+// 1) 定义一个 ref 来拿到 <div ref="chartRef">…
+const chartRef = ref(null)
+
+onMounted(async() => {
+  //广西地图：
+  // 初始化图表
+  const myChart = echarts.init(chartRef.value)
+  myChart.showLoading()
+
+  try {
+    // 请求广西 geojson
+    const res = await getGuangXiMap()
+    const mapData = res.data
+
+    // 注册地图
+    echarts.registerMap('GX', mapData)
+
+    // 构建 option
+    const option = {
+      series: [
+        {
+          name: '广西地图',
+          type: 'map',
+          map: 'GX',
+          label: { show: true }
+        }
+      ]
+    }
+
+    myChart.hideLoading()
+    myChart.setOption(option)
+  } catch (e) {
+    console.error('加载广西地图失败', e)
+    myChart.hideLoading()
+  }
+
+  // （可选）监听容器尺寸变化自动 resize
+  window.addEventListener('resize', () => {
+    myChart.resize()
+  })
+
   // 1. RTL
   const isRTL = JSON.parse(localStorage.getItem('isRTL'))
   if (isRTL) {
@@ -135,7 +177,7 @@ onMounted(() => {
                   </a>
                   <ul class="nav collapse show" id="dashboard">
                     <li class="nav-item">
-                      <a class="nav-link" @click="goToDashboard" href="">
+                      <a class="nav-link active" @click="goToDashboard" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">默认首页</span></div>
                       </a><!-- more inner pages-->
                     </li>
@@ -156,8 +198,7 @@ onMounted(() => {
                       <li class="nav-item"><a class="nav-link" @click="goToHospitalType" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">医院类型</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
                       </a><!-- more inner pages--></li>
-                      <li class="nav-item">
-                        <a class="nav-link active" @click="goToHospitalGrade" href="">
+                      <li class="nav-item"><a class="nav-link" @click="goToHospitalGrade" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">医院等级</span></div>
                       </a><!-- more inner pages--></li>
                       <li class="nav-item"><a class="nav-link" @click="goToMedicalExpenses" href="">
@@ -759,620 +800,80 @@ onMounted(() => {
         <div class="row g-3 mb-3">
           <div class="col-xxl-6">
             <div class="row g-0 h-100">
-              <div class="col-12 mb-3">
+              <div class="col-12">
                 <div class="card bg-body-tertiary dark__bg-opacity-50 shadow-none">
-                  <div class="bg-holder bg-card d-none d-sm-block" style="background-image:url(../../assets/img/illustrations/ticket-bg.png);"></div><!--/.bg-holder-->
+                  <div class="bg-holder bg-card d-none d-sm-block" style="background-image:url(https://prium.github.io/falcon/v3.24.0/assets/img/illustrations/ticket-bg.png);"></div><!--/.bg-holder-->
                   <div class="d-flex align-items-center z-1 p-0">
                     <img src="../../assets/img/illustrations/crm-bar-chart.png" alt="" width="96" />
                     <div class="ms-n3">
                       <h6 class="mb-1 text-primary">欢迎来到</h6>
-                      <h4 class="mb-0 text-primary fw-bold">健康大数据中心<span class="text-info fw-medium">医院等级研究实验室</span></h4>
+                      <h4 class="mb-0 text-primary fw-bold">健康大数据中心<span class="text-info fw-medium">医疗卫生机构分布研究实验室</span></h4>
                     </div>
                     <img src="../../assets/img/illustrations/crm-line-chart.png" alt="" width="96" />
-                  </div>
-                </div>
-              </div>
-              <div class="col-12">
-                <div class="card h-100">
-                  <div class="card-body">
-                    <div class="row g-0">
-                      <div class="col-md-6 border-200 border-bottom border-end-md pb-x1 pe-md-x1">
-                        <div class="row g-0">
-                          <div class="col-6">                            
-                            <img class="mt-1" src="../../assets/img/tickets/hold-tickets.png" alt="" width="39" />
-                            <h2 class="mt-2 mb-1 text-700 fw-normal">25<span class="fas fa-caret-up ms-2 me-1 fs-10 text-primary"></span><span class="fs-10 fw-semi-bold text-primary">5.3%</span></h2>
-                            <h6 class="mb-0">1级医院</h6>
-                          </div>
-                          <div class="col-6 d-flex align-items-center px-0">
-                            <div class="h-50 w-100" data-echarts='{"tooltip":{"trigger":"axis","formatter":"{b0} : {c0}"},"xAxis":{"data":["Week 1","Week 2","Week 3","Week 4","Week 5","Week 6"]},"series":[{"type":"line","data":[10,40,30,35,20,40],"color":"#2c7be5","smooth":true,"lineStyle":{"width":2},"areaStyle":{"color":{"type":"linear","x":0,"y":0,"x2":0,"y2":1,"colorStops":[{"offset":0,"color":"rgba(44, 123, 229, .25)"},{"offset":1,"color":"rgba(44, 123, 229, 0)"}]}}}],"grid":{"bottom":"2%","top":"2%","right":"0","left":"0px"}}' data-echart-responsive="true"></div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6 ps-md-x1 pb-x1 pt-x1 pt-md-0 border-bottom border-200">
-                        <div class="row g-0">
-                          <div class="col-6"><img class="mt-1" src="../../assets/img/tickets/open-tickets.png" alt="" width="39" />
-                            <h2 class="mt-2 mb-1 text-700 fw-normal">05<span class="fas fa-caret-up ms-2 me-1 fs-10 text-success"></span><span class="fs-10 fw-semi-bold text-success">3.20%</span></h2>
-                            <h6 class="mb-0">2级医院</h6>
-                          </div>
-                          <div class="col-6 d-flex align-items-center px-0">
-                            <div class="h-50 w-100" data-echarts='{"tooltip":{"trigger":"axis","formatter":"{b0} : {c0}"},"xAxis":{"data":["Week 1","Week 2","Week 3","Week 4","Week 5","Week 6"]},"series":[{"type":"line","data":[10,12,16,14,20,25],"color":"#00d27a","smooth":true,"lineStyle":{"width":2},"areaStyle":{"color":{"type":"linear","x":0,"y":0,"x2":0,"y2":1,"colorStops":[{"offset":0,"color":"rgba(0, 210, 122, .25)"},{"offset":1,"color":"rgba(0, 210, 122, 0)"}]}}}],"grid":{"bottom":"2%","top":"2%","right":"0","left":"0px"}}' data-echart-responsive="true"></div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6 border-200 border-bottom border-bottom-md-0 border-end-md pt-x1 pe-md-x1 pb-x1 pb-md-0">
-                        <div class="row g-0">
-                          <div class="col-6"><img class="mt-1" src="../../assets/img/tickets/due-tickets.png" alt="" width="39" />
-                            <h2 class="mt-2 mb-1 text-700 fw-normal">02<span class="fas fa-caret-up ms-2 me-1 fs-10 text-info"></span><span class="fs-10 fw-semi-bold text-info">2.3%</span></h2>
-                            <h6 class="mb-0">3级医院</h6>
-                          </div>
-                          <div class="col-6 d-flex align-items-center px-0">
-                            <div class="h-50 w-100" data-echarts='{"tooltip":{"trigger":"axis","formatter":"{b0} : {c0}"},"xAxis":{"data":["Week 1","Week 2","Week 3","Week 4","Week 5","Week 6"]},"series":[{"type":"line","data":[15,10,15,10,12,10],"color":"#27bcfd","smooth":true,"lineStyle":{"width":2},"areaStyle":{"color":{"type":"linear","x":0,"y":0,"x2":0,"y2":1,"colorStops":[{"offset":0,"color":"rgba(39, 188, 253, .25)"},{"offset":1,"color":"rgba(39, 188, 253, 0)"}]}}}],"grid":{"bottom":"2%","top":"2%","right":"0","left":"0px"}}' data-echart-responsive="true"></div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6 ps-md-x1 pt-x1">
-                        <div class="row g-0">
-                          <div class="col-6"><img class="mt-1" src="../../assets/img/tickets/unassigned.png" alt="" width="39" />
-                            <h2 class="mt-2 mb-1 text-700 fw-normal">03<span class="fas fa-caret-up ms-2 me-1 fs-10 text-warning"></span><span class="fs-10 fw-semi-bold text-warning">3.12%</span></h2>
-                            <h6 class="mb-0">未评级医院</h6>
-                          </div>
-                          <div class="col-6 d-flex align-items-center px-0">
-                            <div class="h-50 w-100" data-echarts='{"tooltip":{"trigger":"axis","formatter":"{b0} : {c0}"},"xAxis":{"data":["Week 1","Week 2","Week 3","Week 4","Week 5","Week 6"]},"series":[{"type":"line","data":[10,15,12,11,14,12],"color":"#f5803e","smooth":true,"lineStyle":{"width":2},"areaStyle":{"color":{"type":"linear","x":0,"y":0,"x2":0,"y2":1,"colorStops":[{"offset":0,"color":"rgba(245, 128, 62, .25)"},{"offset":1,"color":"rgba(245, 128, 62, 0)"}]}}}],"grid":{"bottom":"2%","top":"2%","right":"0","left":"0px"}}' data-echart-responsive="true"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <!--不同年份医院等级图-->
+        <div class="card mb-3">
+          <div class="bg-holder d-none d-lg-block bg-card" style="background-image:url(https://prium.github.io/falcon/v3.24.0/assets/img/icons/spot-illustrations/corner-4.png);"></div><!--/.bg-holder-->
+          <div class="card-body position-relative">
+            <div class="row">
+              <div class="col-lg-8">
+                <h3>Getting Started</h3>
+                <p class="mb-0">ECharts can uses geoJSON format as map outline. You can use third-party <a href="https://geojson.org/" target="_blank">geoJSON</a> data (like maps) and register them into ECharts. You can get the JSON data from this <a href="https://github.com/pissang/starbucks/tree/gh-pages/json">Starbuck's Github repository</a>.</p><a class="btn btn-link btn-sm ps-0 mt-2" href="https://echarts.apache.org/en/option.html#series-map.type" target="_blank">Echart's map documentation<span class="fas fa-chevron-right ms-1 fs-11"></span></a>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="row g-3">
-          <div class="col-xxl-8">
-            <div class="card h-100">
-              <div class="card-header d-md-flex justify-content-between border-bottom border-200 py-3 py-md-2">
-                <h6 class="mb-2 mb-md-0 py-md-2">不同年份医院等级变化图</h6>
-                <div class="row g-md-0">
-                  <div class="col-auto d-md-flex">
-                    <div class="d-flex align-items-center me-md-3 form-check mb-0"><input class="form-check-input dot mt-0 shadow-none remove-checked-icon rounded-circle cursor-pointer" type="checkbox" data-number-of-tickets="1级医院" value="" id="onHoldTickets" checked="checked" /><label class="form-check-label lh-base mb-0 fs-11 text-500 fw-semi-bold font-base cursor-pointer" for="onHoldTickets">1级医院</label></div>
-                    <div class="d-flex align-items-center me-md-3 form-check mb-0 mt-n1 mt-md-0"><input class="form-check-input dot mt-0 shadow-none remove-checked-icon rounded-circle open-tickets cursor-pointer" type="checkbox" data-number-of-tickets="2级医院" value="" id="openTickets" checked="checked" /><label class="form-check-label lh-base mb-0 fs-11 text-500 fw-semi-bold font-base cursor-pointer" for="openTickets">2级医院</label></div>
+          <div class="col-lg-12">
+            <div class="card h-100 position-relative">
+              <div class="card-header">
+                <div class="row flex-between-end">
+                  <div class="col-auto align-self-center">
+                    <h5 class="mb-0" data-anchor="data-anchor">全国地图</h5>
                   </div>
-                  <div class="col-auto d-md-flex">
-                    <div class="d-flex align-items-center me-md-3 form-check mb-0"><input class="form-check-input dot mt-0 shadow-none remove-checked-icon rounded-circle due-tickets cursor-pointer" type="checkbox" data-number-of-tickets="3级医院" value="" id="dueTickets" checked="checked" /><label class="form-check-label lh-base mb-0 fs-11 text-500 fw-semi-bold font-base cursor-pointer" for="dueTickets">3级医院</label></div>
-                    <div class="d-flex align-items-center form-check mb-0 mt-n1 mt-md-0"><input class="form-check-input dot mt-0 shadow-none remove-checked-icon rounded-circle unassigned-tickets cursor-pointer" type="checkbox" data-number-of-tickets="未评级医院" value="" id="unassignedTickets" checked="checked" /><label class="form-check-label lh-base mb-0 fs-11 text-500 fw-semi-bold font-base cursor-pointer" for="unassignedTickets">未评级医院</label></div>
+                  <div class="col-auto ms-auto">
+                    <div class="nav nav-pills nav-pills-falcon flex-grow-1" role="tablist"><button class="btn btn-sm active" data-bs-toggle="pill" data-bs-target="#dom-5169bdcd-914d-47fb-884e-97bb99519ada" type="button" role="tab" aria-controls="dom-5169bdcd-914d-47fb-884e-97bb99519ada" aria-selected="true" id="tab-dom-5169bdcd-914d-47fb-884e-97bb99519ada">Preview</button><button class="btn btn-sm" data-bs-toggle="pill" data-bs-target="#dom-68714773-227c-454c-9a83-96ea61771ac1" type="button" role="tab" aria-controls="dom-68714773-227c-454c-9a83-96ea61771ac1" aria-selected="false" id="tab-dom-68714773-227c-454c-9a83-96ea61771ac1">Code</button></div>
                   </div>
                 </div>
               </div>
-              <div class="card-body scrollbar overflow-y-hidden">
-                <div class="d-flex">
-                  <div class="d-flex align-items-center">
-                    <div>
-                      <h6 class="fs-9 d-flex align-items-center text-700 mb-1">125<small class="badge text-success bg-transparent px-0"><span class="fas fa-caret-up fs-11 ms-2 me-1"></span><span>5.3%</span></small></h6>
-                      <h6 class="text-600 mb-0 fs-11 text-nowrap">1级医院</h6>
-                    </div>
-                    <div class="bg-200 mx-3" style="height: 24px; width: 1px"></div>
+              <div class="card-body bg-body-tertiary">
+                <div class="tab-content">
+                  <div class="tab-pane preview-tab-pane active" role="tabpanel" aria-labelledby="tab-dom-5169bdcd-914d-47fb-884e-97bb99519ada" id="dom-5169bdcd-914d-47fb-884e-97bb99519ada">
+                    <div class="position-absolute z-2" style="right:16px"><button class="btn btn-falcon-default btn-sm mb-1 session-by-country-map-reset"><span class="fas fa-sync-alt fs-10"></span></button></div>
+                    <div ref="chartsDOM" style="min-height: 400px;min-width: 600px;" data-echart-responsive="true" class="echart-geo-container"></div>
                   </div>
-                  <div class="d-flex align-items-center">
-                    <div>
-                      <h6 class="fs-9 d-flex align-items-center text-700 mb-1">100<small class="badge px-0 text-primary"><span class="fas fa-caret-up fs-11 ms-2 me-1"></span><span>3.20%</span></small></h6>
-                      <h6 class="fs-11 text-600 mb-0 text-nowrap">2级医院</h6>
-                    </div>
-                    <div class="bg-200 mx-3" style="height: 24px; width: 1px"></div>
-                  </div>
-                  <div class="d-flex align-items-center">
-                    <div>
-                      <h6 class="fs-9 d-flex align-items-center text-700 mb-1">53<small class="badge px-0 text-warning"><span class="fas fa-caret-down fs-11 ms-2 me-1"></span><span>2.3%</span></small></h6>
-                      <h6 class="fs-11 text-600 mb-0 text-nowrap">3级医院</h6>
-                    </div>
-                    <div class="bg-200 mx-3" style="height: 24px; width: 1px"></div>
-                  </div>
-                  <div>
-                    <h6 class="fs-9 d-flex align-items-center text-700 mb-1">136<small class="badge px-0 text-danger"><span class="fas fa-caret-up fs-11 ms-2 me-1"></span><span>3.12%</span></small></h6>
-                    <h6 class="fs-11 text-600 mb-0 text-nowrap">未评级医院</h6>
-                  </div>
-                </div>
-                <div class="echart-number-of-tickets" data-echart-responsive="true"></div>
-              </div>
-              <div class="card-footer bg-body-tertiary py-2">
-                <div class="row g-2 flex-between-center">
-                  <div class="col-auto">
-                    <select class="form-select form-select-sm">
-                      <option selected="selected">2011~2015</option>
-                      <option>2016~2020</option>
-                    </select></div>
-                  <div class="col-auto"><a class="btn btn-link btn-sm px-0" href="">导出数据<span class="fas fa-chevron-right ms-1 fs-11"></span></a></div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="col-xxl-9">
-            <div class="card" id="ticketsTable">
-              <div class="card-header border-bottom border-200 px-0">
-                <div class="d-lg-flex justify-content-between">
-                  <div class="row flex-between-center gy-2 px-x1">
-                    <div class="col-auto pe-0">
-                      <h6 class="mb-0">各省医院等级表</h6>
-                    </div>
-                    <div class="col-auto">
-                      <form>
-                        <div class="input-group input-search-width">
-                          <input class="form-control form-control-sm shadow-none" type="search" placeholder="搜索省份名称" aria-label="search" />
-                          <button class="btn btn-sm btn-outline-secondary border-300 hover-border-secondary">
-                            <span class="fa fa-search fs-10"></span>
-                          </button>
-                        </div>
-                      </form>
-                    </div>
+          <div class="col-lg-12">
+            <div class="card h-100 position-relative">
+              <div class="card-header">
+                <div class="row flex-between-end">
+                  <div class="col-auto align-self-center">
+                    <h5 class="mb-0" data-anchor="data-anchor">Usa map</h5>
                   </div>
-                  <div class="border-bottom border-200 my-3"></div>
-                  <div class="d-flex align-items-center justify-content-between justify-content-lg-end px-x1"><button class="btn btn-sm btn-falcon-default" type="button"><span class="fas fa-filter" data-fa-transform="shrink-4 down-1"></span><span class="ms-1 d-none d-sm-inline-block">Filter</span></button>
-                    <div class="bg-300 mx-3 d-none d-lg-block" style="width:1px; height:29px"></div>
-                    <div class="d-none" id="table-ticket-actions">
-                      <div class="d-flex">
-                        <select class="form-select form-select-sm" aria-label="Bulk actions">
-                          <option selected="">请选择操作</option>
-                          <option value="Refund">导出数据</option>
-                          <option value="Delete">删除数据</option>
-                        </select>
-                        <button class="btn btn-falcon-default btn-sm ms-2" type="button">Apply</button>
-                      </div>
-                    </div>
-                    <div class="d-flex align-items-center" id="table-ticket-replace-element">
-                      <button class="btn btn-falcon-default btn-sm mx-2" type="button"><span class="fas fa-plus" data-fa-transform="shrink-3"></span><span class="d-none d-sm-inline-block d-xl-none d-xxl-inline-block ms-1">New</span></button><button class="btn btn-falcon-default btn-sm" type="button"><span class="fas fa-external-link-alt" data-fa-transform="shrink-3"></span><span class="d-none d-sm-inline-block d-xl-none d-xxl-inline-block ms-1">Export</span></button>
-                      <div class="dropdown font-sans-serif ms-2"><button class="btn btn-falcon-default text-600 btn-sm dropdown-toggle dropdown-caret-none" type="button" id="preview-dropdown" data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs-11"></span></button>
-                        <div class="dropdown-menu dropdown-menu-end border py-2" aria-labelledby="preview-dropdown"><a class="dropdown-item" href="#!">View</a><a class="dropdown-item" href="#!">Export</a>
-                          <div class="dropdown-divider"></div><a class="dropdown-item text-danger" href="#!">Remove</a>
-                        </div>
-                      </div>
-                    </div>
+                  <div class="col-auto ms-auto">
+                    <div class="nav nav-pills nav-pills-falcon flex-grow-1" role="tablist"><button class="btn btn-sm active" data-bs-toggle="pill" data-bs-target="#dom-695acc32-bbe4-451c-951d-8acba6c6f439" type="button" role="tab" aria-controls="dom-695acc32-bbe4-451c-951d-8acba6c6f439" aria-selected="true" id="tab-dom-695acc32-bbe4-451c-951d-8acba6c6f439">Preview</button><button class="btn btn-sm" data-bs-toggle="pill" data-bs-target="#dom-ea953977-d4b6-48f9-bbe7-d1c79783f8e0" type="button" role="tab" aria-controls="dom-ea953977-d4b6-48f9-bbe7-d1c79783f8e0" aria-selected="false" id="tab-dom-ea953977-d4b6-48f9-bbe7-d1c79783f8e0">Code</button></div>
                   </div>
                 </div>
               </div>
-              <div class="tab-content" id="ticketViewContent">
-                <div class="fade tab-pane active show" id="table-view" role="tabpanel" aria-labelledby="tableView" data-list='{"valueNames":["client","subject","status","priority","agent"],"page":6,"pagination":true}'>
-                  <div class="card-body p-0">
-                    <div class="table-responsive scrollbar">
-                      <table class="table table-sm mb-0 fs-10 table-view-tickets">
-                        <thead class="bg-body-tertiary">
-                          <tr>
-                            <th class="py-2 fs-9 pe-2" style="width: 28px;">
-                              <div class="form-check d-flex align-items-center">
-                                <input class="form-check-input" id="checkbox-bulk-table-tickets-select" type="checkbox" data-bulk-select='{"body":"table-ticket-body","actions":"table-ticket-actions","replacedElement":"table-ticket-replace-element"}' />
-                              </div>
-                            </th>
-                            <th class="text-800 sort align-middle ps-2" data-sort="client" style="min-width:8.625rem">省份</th>
-                            <th class="text-800 sort align-middle" data-sort="subject" style="min-width:5.625rem">医院总数</th>
-                            <th class="text-800 sort align-middle" data-sort="status">1级医院</th>
-                            <th class="text-800 sort align-middle" data-sort="priority">2级医院</th>
-                            <th class="text-800 sort align-middle" data-sort="agent">3级医院</th>
-                            <th class="text-800 sort align-middle" data-sort="agent">未评级医院</th>
-                            <th class="text-800 sort align-middle" data-sort="status">状态</th>
-                          </tr>
-                        </thead>
-                        <tbody class="list" id="table-ticket-body">
-                          <tr>
-                            <td class="align-middle fs-9 py-3">
-                              <div class="form-check mb-0"><input class="form-check-input" type="checkbox" id="table-view-tickets-1" data-bulk-select-row="data-bulk-select-row" /></div>
-                            </td>
-                            <td class="align-middle client white-space-nowrap pe-3 pe-xxl-4 ps-2">
-                              <div class="d-flex align-items-center gap-2 position-relative">
-                                <h6 class="mb-0"><a class="stretched-link text-900" href="">安徽省</a></h6>
-                              </div>
-                            </td>
-                            <td class="align-middle subject py-2 pe-4">
-                              <a class="fw-semi-bold" href="">1234567</a></td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle priority pe-4">
-                              <div class="d-flex align-items-center gap-2">
-                                <div style="--falcon-circle-progress-bar:75"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                    <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                    <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#F68F57" stroke-width="12"></circle>
-                                  </svg></div>
-                                <h6 class="mb-0 text-700">High</h6>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td class="align-middle fs-9 py-3">
-                              <div class="form-check mb-0"><input class="form-check-input" type="checkbox" id="table-view-tickets-2" data-bulk-select-row="data-bulk-select-row" /></div>
-                            </td>
-                            <td class="align-middle client white-space-nowrap pe-3 pe-xxl-4 ps-2">
-                              <div class="d-flex align-items-center gap-2 position-relative">
-                                <h6 class="mb-0"><a class="stretched-link text-900" href="">广西壮族自治区</a></h6>
-                              </div>
-                            </td>
-                            <td class="align-middle subject py-2 pe-4">
-                              <a class="fw-semi-bold" href="">1323435</a>
-                            </td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle priority pe-4">
-                              <div class="d-flex align-items-center gap-2">
-                                <div style="--falcon-circle-progress-bar:50"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                    <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                    <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#2A7BE4" stroke-width="12"></circle>
-                                  </svg></div>
-                                <h6 class="mb-0 text-700">Medium</h6>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td class="align-middle fs-9 py-3">
-                              <div class="form-check mb-0"><input class="form-check-input" type="checkbox" id="table-view-tickets-2" data-bulk-select-row="data-bulk-select-row" /></div>
-                            </td>
-                            <td class="align-middle client white-space-nowrap pe-3 pe-xxl-4 ps-2">
-                              <div class="d-flex align-items-center gap-2 position-relative">
-                                <h6 class="mb-0"><a class="stretched-link text-900" href="">广西壮族自治区</a></h6>
-                              </div>
-                            </td>
-                            <td class="align-middle subject py-2 pe-4">
-                              <a class="fw-semi-bold" href="">1323435</a>
-                            </td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle priority pe-4">
-                              <div class="d-flex align-items-center gap-2">
-                                <div style="--falcon-circle-progress-bar:25"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                    <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                    <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#00D27B" stroke-width="12"></circle>
-                                  </svg></div>
-                                <h6 class="mb-0 text-700">Low</h6>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td class="align-middle fs-9 py-3">
-                              <div class="form-check mb-0"><input class="form-check-input" type="checkbox" id="table-view-tickets-2" data-bulk-select-row="data-bulk-select-row" /></div>
-                            </td>
-                            <td class="align-middle client white-space-nowrap pe-3 pe-xxl-4 ps-2">
-                              <div class="d-flex align-items-center gap-2 position-relative">
-                                <h6 class="mb-0"><a class="stretched-link text-900" href="">广西壮族自治区</a></h6>
-                              </div>
-                            </td>
-                            <td class="align-middle subject py-2 pe-4">
-                              <a class="fw-semi-bold" href="">1323435</a>
-                            </td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle priority pe-4">
-                              <div class="d-flex align-items-center gap-2">
-                                <div style="--falcon-circle-progress-bar:100"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                    <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                    <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#e63757" stroke-width="12"></circle>
-                                  </svg></div>
-                                <h6 class="mb-0 text-700">Urgent</h6>
-                              </div>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      <div class="text-center d-none" id="tickets-table-fallback">
-                        <p class="fw-bold fs-8 mt-3">No ticket found</p>
-                      </div>
-                    </div>
+              <div class="card-body bg-body-tertiary">
+                <div class="tab-content">
+                  <div class="tab-pane preview-tab-pane active" role="tabpanel" aria-labelledby="tab-dom-695acc32-bbe4-451c-951d-8acba6c6f439" id="dom-695acc32-bbe4-451c-951d-8acba6c6f439">
+                    <div class="position-absolute z-2" style="right:16px"><button class="btn btn-falcon-default btn-sm mb-1 usa-map-reset"><span class="fas fa-sync-alt fs-10"></span></button></div><!-- Find the JS file for the following chart at: src/js/charts/echarts/examples/map-usa.js--><!-- If you are not using gulp based workflow, you can find the transpiled code at: public/assets/js/echarts-example.js-->
+                    <div class="echart-map-usa-example" style="min-height: 400px;" data-echart-responsive="true"></div>
+                    <h5 class="mt-3">JavaScript </h5><pre class="scrollbar mt-2"><code class="language-html">&lt;script src=&quot;assets/data/usa.js&quot;&gt; &lt;/script&gt;</code></pre>
                   </div>
-                  <div class="card-footer">
-                    <div class="row align-items-center">
-                      <div class="pagination d-none"></div>
-                      <div class="col"><span class="d-none d-sm-inline-block me-2 fs-10" data-list-info="data-list-info"></span></div>
-                      <div class="col-auto d-flex"><button class="btn btn-sm btn-primary" type="button" data-list-pagination="prev"><span>Previous</span></button><button class="btn btn-sm btn-primary px-4 ms-2" type="button" data-list-pagination="next"><span>Next</span></button></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="fade tab-pane" id="card-view" role="tabpanel" aria-labelledby="cardView" data-list='{"valueNames":["client","subject","status","priority","agent"],"page":4,"pagination":true}'>
-                  <div class="card-body p-0">
-                    <div class="form-check d-none"><input class="form-check-input" id="checkbox-bulk-card-tickets-select" type="checkbox" data-bulk-select='{"body":"card-ticket-body","actions":"table-ticket-actions","replacedElement":"table-ticket-replace-element"}' /></div>
-                    <div class="list bg-body-tertiary p-x1 d-flex flex-column gap-3" id="card-ticket-body">
-                      <div class="bg-white dark__bg-1100 d-md-flex d-xl-inline-block d-xxl-flex align-items-center p-x1 rounded-3 shadow-sm card-view-height">
-                        <div class="d-flex align-items-start align-items-sm-center">
-                          <div class="form-check me-2 me-xxl-3 mb-0"><input class="form-check-input" type="checkbox" id="card-view-tickets-0" data-bulk-select-row="data-bulk-select-row" /></div><a class="d-none d-sm-block" href="../app/support-desk/contact-details.html">
-                            <div class="avatar avatar-xl avatar-3xl">
-                              <div class="avatar-name rounded-circle"><span>EW</span></div>
-                            </div>
-                          </a>
-                          <div class="ms-1 ms-sm-3">
-                            <p class="fw-semi-bold mb-3 mb-sm-2"><a href="../app/support-desk/tickets-preview.html">Synapse Design #1125</a></p>
-                            <div class="row align-items-center gx-0 gy-2">
-                              <div class="col-auto me-2">
-                                <h6 class="client mb-0"><a class="text-800 d-flex align-items-center gap-1" href="../app/support-desk/contact-details.html"><span class="fas fa-user" data-fa-transform="shrink-3 up-1"></span><span>Emma Watson</span></a></h6>
-                              </div>
-                              <div class="col-auto lh-1 me-3"><small class="badge rounded badge-subtle-success false">Recent</small></div>
-                              <div class="col-auto">
-                                <h6 class="mb-0 text-500">2d ago</h6>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="border-bottom mt-4 mb-x1"></div>
-                        <div class="d-flex justify-content-between ms-auto">
-                          <div class="d-flex align-items-center gap-2 ms-md-4 ms-xl-0" style="width:7.5rem;">
-                            <div style="--falcon-circle-progress-bar:100"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#e63757" stroke-width="12"></circle>
-                              </svg></div>
-                            <h6 class="mb-0 text-700">Urgent</h6>
-                          </div><select class="form-select form-select-sm" aria-label="agents actions" style="width:9.375rem;">
-                            <option>Select Agent</option>
-                            <option selected="selected">Anindya</option>
-                            <option>Nowrin</option>
-                            <option>Khalid</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="bg-white dark__bg-1100 d-md-flex d-xl-inline-block d-xxl-flex align-items-center p-x1 rounded-3 shadow-sm card-view-height">
-                        <div class="d-flex align-items-start align-items-sm-center">
-                          <div class="form-check me-2 me-xxl-3 mb-0"><input class="form-check-input" type="checkbox" id="card-view-tickets-1" data-bulk-select-row="data-bulk-select-row" /></div><a class="d-none d-sm-block" href="../app/support-desk/contact-details.html">
-                            <div class="avatar avatar-xl avatar-3xl">
-                              <div class="avatar-name rounded-circle"><span>L</span></div>
-                            </div>
-                          </a>
-                          <div class="ms-1 ms-sm-3">
-                            <p class="fw-semi-bold mb-3 mb-sm-2"><a href="../app/support-desk/tickets-preview.html">Change of refund my last buy | Order #125631</a></p>
-                            <div class="row align-items-center gx-0 gy-2">
-                              <div class="col-auto me-2">
-                                <h6 class="client mb-0"><a class="text-800 d-flex align-items-center gap-1" href="../app/support-desk/contact-details.html"><span class="fas fa-user" data-fa-transform="shrink-3 up-1"></span><span>Luke</span></a></h6>
-                              </div>
-                              <div class="col-auto lh-1 me-3"><small class="badge rounded badge-subtle-danger false">Overdue</small></div>
-                              <div class="col-auto">
-                                <h6 class="mb-0 text-500">2d ago</h6>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="border-bottom mt-4 mb-x1"></div>
-                        <div class="d-flex justify-content-between ms-auto">
-                          <div class="d-flex align-items-center gap-2 ms-md-4 ms-xl-0" style="width:7.5rem;">
-                            <div style="--falcon-circle-progress-bar:75"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#F68F57" stroke-width="12"></circle>
-                              </svg></div>
-                            <h6 class="mb-0 text-700">High</h6>
-                          </div><select class="form-select form-select-sm" aria-label="agents actions" style="width:9.375rem;">
-                            <option>Select Agent</option>
-                            <option selected="selected">Anindya</option>
-                            <option>Nowrin</option>
-                            <option>Khalid</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="bg-white dark__bg-1100 d-md-flex d-xl-inline-block d-xxl-flex align-items-center p-x1 rounded-3 shadow-sm card-view-height">
-                        <div class="d-flex align-items-start align-items-sm-center">
-                          <div class="form-check me-2 me-xxl-3 mb-0"><input class="form-check-input" type="checkbox" id="card-view-tickets-2" data-bulk-select-row="data-bulk-select-row" /></div><a class="d-none d-sm-block" href="../app/support-desk/contact-details.html">
-                            <div class="avatar avatar-xl avatar-3xl">
-                              <img class="rounded-circle" src="../assets/img/team/1-thumb.png" alt="" />
-                            </div>
-                          </a>
-                          <div class="ms-1 ms-sm-3">
-                            <p class="fw-semi-bold mb-3 mb-sm-2"><a href="../app/support-desk/tickets-preview.html">I need your help #2256</a></p>
-                            <div class="row align-items-center gx-0 gy-2">
-                              <div class="col-auto me-2">
-                                <h6 class="client mb-0"><a class="text-800 d-flex align-items-center gap-1" href="../app/support-desk/contact-details.html"><span class="fas fa-user" data-fa-transform="shrink-3 up-1"></span><span>Finley</span></a></h6>
-                              </div>
-                              <div class="col-auto lh-1 me-3"><small class="badge rounded badge-subtle-warning false">Remaining</small></div>
-                              <div class="col-auto">
-                                <h6 class="mb-0 text-500">2d ago</h6>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="border-bottom mt-4 mb-x1"></div>
-                        <div class="d-flex justify-content-between ms-auto">
-                          <div class="d-flex align-items-center gap-2 ms-md-4 ms-xl-0" style="width:7.5rem;">
-                            <div style="--falcon-circle-progress-bar:50"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#2A7BE4" stroke-width="12"></circle>
-                              </svg></div>
-                            <h6 class="mb-0 text-700">Medium</h6>
-                          </div><select class="form-select form-select-sm" aria-label="agents actions" style="width:9.375rem;">
-                            <option>Select Agent</option>
-                            <option>Anindya</option>
-                            <option selected="selected">Nowrin</option>
-                            <option>Khalid</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="bg-white dark__bg-1100 d-md-flex d-xl-inline-block d-xxl-flex align-items-center p-x1 rounded-3 shadow-sm card-view-height">
-                        <div class="d-flex align-items-start align-items-sm-center">
-                          <div class="form-check me-2 me-xxl-3 mb-0"><input class="form-check-input" type="checkbox" id="card-view-tickets-3" data-bulk-select-row="data-bulk-select-row" /></div><a class="d-none d-sm-block" href="../app/support-desk/contact-details.html">
-                            <div class="avatar avatar-xl avatar-3xl">
-                              <div class="avatar-name rounded-circle"><span>PG</span></div>
-                            </div>
-                          </a>
-                          <div class="ms-1 ms-sm-3">
-                            <p class="fw-semi-bold mb-3 mb-sm-2"><a href="../app/support-desk/tickets-preview.html">I need your help #2256</a></p>
-                            <div class="row align-items-center gx-0 gy-2">
-                              <div class="col-auto me-2">
-                                <h6 class="client mb-0"><a class="text-800 d-flex align-items-center gap-1" href="../app/support-desk/contact-details.html"><span class="fas fa-user" data-fa-transform="shrink-3 up-1"></span><span>Peter Gill</span></a></h6>
-                              </div>
-                              <div class="col-auto lh-1 me-3"><small class="badge rounded badge-subtle-info false">Responded</small></div>
-                              <div class="col-auto">
-                                <h6 class="mb-0 text-500">2d ago</h6>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="border-bottom mt-4 mb-x1"></div>
-                        <div class="d-flex justify-content-between ms-auto">
-                          <div class="d-flex align-items-center gap-2 ms-md-4 ms-xl-0" style="width:7.5rem;">
-                            <div style="--falcon-circle-progress-bar:25"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#00D27B" stroke-width="12"></circle>
-                              </svg></div>
-                            <h6 class="mb-0 text-700">Low</h6>
-                          </div><select class="form-select form-select-sm" aria-label="agents actions" style="width:9.375rem;">
-                            <option>Select Agent</option>
-                            <option>Anindya</option>
-                            <option selected="selected">Nowrin</option>
-                            <option>Khalid</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="bg-white dark__bg-1100 d-md-flex d-xl-inline-block d-xxl-flex align-items-center p-x1 rounded-3 shadow-sm card-view-height">
-                        <div class="d-flex align-items-start align-items-sm-center">
-                          <div class="form-check me-2 me-xxl-3 mb-0"><input class="form-check-input" type="checkbox" id="card-view-tickets-4" data-bulk-select-row="data-bulk-select-row" /></div><a class="d-none d-sm-block" href="../app/support-desk/contact-details.html">
-                            <div class="avatar avatar-xl avatar-3xl">
-                              <img class="rounded-circle" src="../assets/img/team/25-thumb.png" alt="" />
-                            </div>
-                          </a>
-                          <div class="ms-1 ms-sm-3">
-                            <p class="fw-semi-bold mb-3 mb-sm-2"><a href="../app/support-desk/tickets-preview.html">Contact Froms #3264</a></p>
-                            <div class="row align-items-center gx-0 gy-2">
-                              <div class="col-auto me-2">
-                                <h6 class="client mb-0"><a class="text-800 d-flex align-items-center gap-1" href="../app/support-desk/contact-details.html"><span class="fas fa-user" data-fa-transform="shrink-3 up-1"></span><span>Freya</span></a></h6>
-                              </div>
-                              <div class="col-auto lh-1 me-3"><small class="badge rounded badge-subtle-secondary dark__bg-1000">Closed</small></div>
-                              <div class="col-auto">
-                                <h6 class="mb-0 text-500">2d ago</h6>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="border-bottom mt-4 mb-x1"></div>
-                        <div class="d-flex justify-content-between ms-auto">
-                          <div class="d-flex align-items-center gap-2 ms-md-4 ms-xl-0" style="width:7.5rem;">
-                            <div style="--falcon-circle-progress-bar:50"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#2A7BE4" stroke-width="12"></circle>
-                              </svg></div>
-                            <h6 class="mb-0 text-700">Medium</h6>
-                          </div><select class="form-select form-select-sm" aria-label="agents actions" style="width:9.375rem;">
-                            <option>Select Agent</option>
-                            <option>Anindya</option>
-                            <option>Nowrin</option>
-                            <option selected="selected">Khalid</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="bg-white dark__bg-1100 d-md-flex d-xl-inline-block d-xxl-flex align-items-center p-x1 rounded-3 shadow-sm card-view-height">
-                        <div class="d-flex align-items-start align-items-sm-center">
-                          <div class="form-check me-2 me-xxl-3 mb-0"><input class="form-check-input" type="checkbox" id="card-view-tickets-5" data-bulk-select-row="data-bulk-select-row" /></div><a class="d-none d-sm-block" href="../app/support-desk/contact-details.html">
-                            <div class="avatar avatar-xl avatar-3xl">
-                              <div class="avatar-name rounded-circle"><span>M</span></div>
-                            </div>
-                          </a>
-                          <div class="ms-1 ms-sm-3">
-                            <p class="fw-semi-bold mb-3 mb-sm-2"><a href="../app/support-desk/tickets-preview.html">I need your help #2256</a></p>
-                            <div class="row align-items-center gx-0 gy-2">
-                              <div class="col-auto me-2">
-                                <h6 class="client mb-0"><a class="text-800 d-flex align-items-center gap-1" href="../app/support-desk/contact-details.html"><span class="fas fa-user" data-fa-transform="shrink-3 up-1"></span><span>Morrison</span></a></h6>
-                              </div>
-                              <div class="col-auto lh-1 me-3"><small class="badge rounded badge-subtle-info false">Responded</small></div>
-                              <div class="col-auto">
-                                <h6 class="mb-0 text-500">2d ago</h6>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="border-bottom mt-4 mb-x1"></div>
-                        <div class="d-flex justify-content-between ms-auto">
-                          <div class="d-flex align-items-center gap-2 ms-md-4 ms-xl-0" style="width:7.5rem;">
-                            <div style="--falcon-circle-progress-bar:50"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#2A7BE4" stroke-width="12"></circle>
-                              </svg></div>
-                            <h6 class="mb-0 text-700">Medium</h6>
-                          </div><select class="form-select form-select-sm" aria-label="agents actions" style="width:9.375rem;">
-                            <option>Select Agent</option>
-                            <option>Anindya</option>
-                            <option>Nowrin</option>
-                            <option selected="selected">Khalid</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="bg-white dark__bg-1100 d-md-flex d-xl-inline-block d-xxl-flex align-items-center p-x1 rounded-3 shadow-sm card-view-height">
-                        <div class="d-flex align-items-start align-items-sm-center">
-                          <div class="form-check me-2 me-xxl-3 mb-0"><input class="form-check-input" type="checkbox" id="card-view-tickets-6" data-bulk-select-row="data-bulk-select-row" /></div><a class="d-none d-sm-block" href="../app/support-desk/contact-details.html">
-                            <div class="avatar avatar-xl avatar-3xl">
-                              <div class="avatar-name rounded-circle"><span>MB</span></div>
-                            </div>
-                          </a>
-                          <div class="ms-1 ms-sm-3">
-                            <p class="fw-semi-bold mb-3 mb-sm-2"><a href="../app/support-desk/tickets-preview.html">I need your help #2256</a></p>
-                            <div class="row align-items-center gx-0 gy-2">
-                              <div class="col-auto me-2">
-                                <h6 class="client mb-0"><a class="text-800 d-flex align-items-center gap-1" href="../app/support-desk/contact-details.html"><span class="fas fa-user" data-fa-transform="shrink-3 up-1"></span><span>Morrison Banneker</span></a></h6>
-                              </div>
-                              <div class="col-auto lh-1 me-3"><small class="badge rounded badge-subtle-secondary dark__bg-1000">Closed</small></div>
-                              <div class="col-auto">
-                                <h6 class="mb-0 text-500">2d ago</h6>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="border-bottom mt-4 mb-x1"></div>
-                        <div class="d-flex justify-content-between ms-auto">
-                          <div class="d-flex align-items-center gap-2 ms-md-4 ms-xl-0" style="width:7.5rem;">
-                            <div style="--falcon-circle-progress-bar:50"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#2A7BE4" stroke-width="12"></circle>
-                              </svg></div>
-                            <h6 class="mb-0 text-700">Medium</h6>
-                          </div><select class="form-select form-select-sm" aria-label="agents actions" style="width:9.375rem;">
-                            <option>Select Agent</option>
-                            <option>Anindya</option>
-                            <option>Nowrin</option>
-                            <option selected="selected">Khalid</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="bg-white dark__bg-1100 d-md-flex d-xl-inline-block d-xxl-flex align-items-center p-x1 rounded-3 shadow-sm card-view-height">
-                        <div class="d-flex align-items-start align-items-sm-center">
-                          <div class="form-check me-2 me-xxl-3 mb-0"><input class="form-check-input" type="checkbox" id="card-view-tickets-7" data-bulk-select-row="data-bulk-select-row" /></div><a class="d-none d-sm-block" href="../app/support-desk/contact-details.html">
-                            <div class="avatar avatar-xl avatar-3xl">
-                              <img class="rounded-circle" src="../assets/img/team/14-thumb.png" alt="" />
-                            </div>
-                          </a>
-                          <div class="ms-1 ms-sm-3">
-                            <p class="fw-semi-bold mb-3 mb-sm-2"><a href="../app/support-desk/tickets-preview.html">Regarding Falcon Theme #3262</a></p>
-                            <div class="row align-items-center gx-0 gy-2">
-                              <div class="col-auto me-2">
-                                <h6 class="client mb-0"><a class="text-800 d-flex align-items-center gap-1" href="../app/support-desk/contact-details.html"><span class="fas fa-user" data-fa-transform="shrink-3 up-1"></span><span>Aar Kay</span></a></h6>
-                              </div>
-                              <div class="col-auto lh-1 me-3"><small class="badge rounded badge-subtle-success false">Recent</small></div>
-                              <div class="col-auto">
-                                <h6 class="mb-0 text-500">2d ago</h6>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="border-bottom mt-4 mb-x1"></div>
-                        <div class="d-flex justify-content-between ms-auto">
-                          <div class="d-flex align-items-center gap-2 ms-md-4 ms-xl-0" style="width:7.5rem;">
-                            <div style="--falcon-circle-progress-bar:75"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#F68F57" stroke-width="12"></circle>
-                              </svg></div>
-                            <h6 class="mb-0 text-700">High</h6>
-                          </div><select class="form-select form-select-sm" aria-label="agents actions" style="width:9.375rem;">
-                            <option>Select Agent</option>
-                            <option>Anindya</option>
-                            <option>Nowrin</option>
-                            <option>Khalid</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="text-center d-none" id="tickets-card-fallback">
-                      <p class="fw-bold fs-8 mt-3">No ticket found</p>
-                    </div>
-                  </div>
-                  <div class="card-footer">
-                    <div class="row align-items-center">
-                      <div class="pagination d-none"></div>
-                      <div class="col"><span class="d-none d-sm-inline-block me-2 fs-10" data-list-info="data-list-info"></span></div>
-                      <div class="col-auto d-flex"><button class="btn btn-sm btn-primary" type="button" data-list-pagination="prev"><span>Previous</span></button><button class="btn btn-sm btn-primary px-4 ms-2" type="button" data-list-pagination="next"><span>Next</span></button></div>
-                    </div>
+                  <div class="tab-pane code-tab-pane" role="tabpanel" aria-labelledby="tab-dom-ea953977-d4b6-48f9-bbe7-d1c79783f8e0" id="dom-ea953977-d4b6-48f9-bbe7-d1c79783f8e0"><pre class="scrollbar rounded-1" style="max-height:420px"><code class="language-html">&lt;div class=&quot;position-absolute z-2&quot; style=&quot;right:16px&quot;&gt;&lt;button class=&quot;btn btn-falcon-default btn-sm mb-1 usa-map-reset&quot;&gt;&lt;span class=&quot;fas fa-sync-alt fs-10&quot;&gt;&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;
+&lt;!-- Find the JS file for the following chart at: src/js/charts/echarts/examples/map-usa.js--&gt;
+&lt;!-- If you are not using gulp based workflow, you can find the transpiled code at: public/assets/js/echarts-example.js--&gt;
+&lt;div class=&quot;echart-map-usa-example&quot; style=&quot;min-height: 400px;&quot; data-echart-responsive=&quot;true&quot;&gt;&lt;/div&gt;
+&lt;h5 class=&quot;mt-3&quot;&gt;JavaScript &lt;/h5&gt;&lt;pre class=&quot;scrollbar mt-2&quot;&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;script src=&amp;quot;assets/data/usa.js&amp;quot;&amp;gt; &amp;lt;/script&amp;gt;&lt;/code&gt;&lt;/pre&gt;</code></pre>
                   </div>
                 </div>
               </div>
@@ -1425,7 +926,8 @@ onMounted(() => {
         </div>
       </div>
     </div>
-  </main><!-- ===============================================--><!--    End of Main Content--><!-- ===============================================-->
+  </main>
+  <!-- ===============================================--><!--    End of Main Content--><!-- ===============================================-->
 
   <div class="offcanvas offcanvas-end settings-panel border-0" id="settings-offcanvas" tabindex="-1" aria-labelledby="settings-offcanvas">
     <div class="offcanvas-header settings-panel-header justify-content-between bg-shape">
@@ -1442,33 +944,33 @@ onMounted(() => {
       <p class="fs-10">Choose the perfect color mode for your app.</p>
       <div class="btn-group d-block w-100 btn-group-navbar-style">
         <div class="row gx-2">
-          <div class="col-4"><input class="btn-check" id="themeSwitcherLight" name="theme-color" type="radio" value="light" data-theme-control="theme" /><label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherLight"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="../assets/img/generic/falcon-mode-default.jpg" alt=""/></span><span class="label-text">Light</span></label></div>
-          <div class="col-4"><input class="btn-check" id="themeSwitcherDark" name="theme-color" type="radio" value="dark" data-theme-control="theme" /><label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherDark"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="../assets/img/generic/falcon-mode-dark.jpg" alt=""/></span><span class="label-text"> Dark</span></label></div>
-          <div class="col-4"><input class="btn-check" id="themeSwitcherAuto" name="theme-color" type="radio" value="auto" data-theme-control="theme" /><label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherAuto"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="../assets/img/generic/falcon-mode-auto.jpg" alt=""/></span><span class="label-text"> Auto</span></label></div>
+          <div class="col-4"><input class="btn-check" id="themeSwitcherLight" name="theme-color" type="radio" value="light" data-theme-control="theme" /><label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherLight"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="../../../assets/img/generic/falcon-mode-default.jpg" alt=""/></span><span class="label-text">Light</span></label></div>
+          <div class="col-4"><input class="btn-check" id="themeSwitcherDark" name="theme-color" type="radio" value="dark" data-theme-control="theme" /><label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherDark"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="../../../assets/img/generic/falcon-mode-dark.jpg" alt=""/></span><span class="label-text"> Dark</span></label></div>
+          <div class="col-4"><input class="btn-check" id="themeSwitcherAuto" name="theme-color" type="radio" value="auto" data-theme-control="theme" /><label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherAuto"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="../../../assets/img/generic/falcon-mode-auto.jpg" alt=""/></span><span class="label-text"> Auto</span></label></div>
         </div>
       </div>
       <hr />
       <div class="d-flex justify-content-between">
-        <div class="d-flex align-items-start"><img class="me-2" src="../assets/img/icons/left-arrow-from-left.svg" width="20" alt="" />
+        <div class="d-flex align-items-start"><img class="me-2" src="../../../assets/img/icons/left-arrow-from-left.svg" width="20" alt="" />
           <div class="flex-1">
             <h5 class="fs-9">RTL Mode</h5>
-            <p class="fs-10 mb-0">Switch your language direction </p><a class="fs-10" href="../documentation/customization/configuration.html">RTL Documentation</a>
+            <p class="fs-10 mb-0">Switch your language direction </p><a class="fs-10" href="../../../documentation/customization/configuration.html">RTL Documentation</a>
           </div>
         </div>
         <div class="form-check form-switch"><input class="form-check-input ms-0" id="mode-rtl" type="checkbox" data-theme-control="isRTL" /></div>
       </div>
       <hr />
       <div class="d-flex justify-content-between">
-        <div class="d-flex align-items-start"><img class="me-2" src="../assets/img/icons/arrows-h.svg" width="20" alt="" />
+        <div class="d-flex align-items-start"><img class="me-2" src="../../../assets/img/icons/arrows-h.svg" width="20" alt="" />
           <div class="flex-1">
             <h5 class="fs-9">Fluid Layout</h5>
-            <p class="fs-10 mb-0">Toggle container layout system </p><a class="fs-10" href="../documentation/customization/configuration.html">Fluid Documentation</a>
+            <p class="fs-10 mb-0">Toggle container layout system </p><a class="fs-10" href="../../../documentation/customization/configuration.html">Fluid Documentation</a>
           </div>
         </div>
         <div class="form-check form-switch"><input class="form-check-input ms-0" id="mode-fluid" type="checkbox" data-theme-control="isFluid" /></div>
       </div>
       <hr />
-      <div class="d-flex align-items-start"><img class="me-2" src="../assets/img/icons/paragraph.svg" width="20" alt="" />
+      <div class="d-flex align-items-start"><img class="me-2" src="../../../assets/img/icons/paragraph.svg" width="20" alt="" />
         <div class="flex-1">
           <h5 class="fs-9 d-flex align-items-center">Navigation Position</h5>
           <p class="fs-10 mb-2">Select a suitable navigation system for your web application </p>
@@ -1483,16 +985,16 @@ onMounted(() => {
       <hr />
       <h5 class="fs-9 d-flex align-items-center">Vertical Navbar Style</h5>
       <p class="fs-10 mb-0">Switch between styles for your vertical navbar </p>
-      <p> <a class="fs-10" href="../modules/components/navs-and-tabs/vertical-navbar.html#navbar-styles">See Documentation</a></p>
+      <p> <a class="fs-10" href="../../../modules/components/navs-and-tabs/vertical-navbar.html#navbar-styles">See Documentation</a></p>
       <div class="btn-group d-block w-100 btn-group-navbar-style">
         <div class="row gx-2">
-          <div class="col-6"><input class="btn-check" id="navbar-style-transparent" type="radio" name="navbarStyle" value="transparent" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-transparent"> <img class="img-fluid img-prototype" src="../assets/img/generic/default.png" alt="" /><span class="label-text"> Transparent</span></label></div>
-          <div class="col-6"><input class="btn-check" id="navbar-style-inverted" type="radio" name="navbarStyle" value="inverted" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-inverted"> <img class="img-fluid img-prototype" src="../assets/img/generic/inverted.png" alt="" /><span class="label-text"> Inverted</span></label></div>
-          <div class="col-6"><input class="btn-check" id="navbar-style-card" type="radio" name="navbarStyle" value="card" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-card"> <img class="img-fluid img-prototype" src="../assets/img/generic/card.png" alt="" /><span class="label-text"> Card</span></label></div>
-          <div class="col-6"><input class="btn-check" id="navbar-style-vibrant" type="radio" name="navbarStyle" value="vibrant" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-vibrant"> <img class="img-fluid img-prototype" src="../assets/img/generic/vibrant.png" alt="" /><span class="label-text"> Vibrant</span></label></div>
+          <div class="col-6"><input class="btn-check" id="navbar-style-transparent" type="radio" name="navbarStyle" value="transparent" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-transparent"> <img class="img-fluid img-prototype" src="../../../assets/img/generic/default.png" alt="" /><span class="label-text"> Transparent</span></label></div>
+          <div class="col-6"><input class="btn-check" id="navbar-style-inverted" type="radio" name="navbarStyle" value="inverted" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-inverted"> <img class="img-fluid img-prototype" src="../../../assets/img/generic/inverted.png" alt="" /><span class="label-text"> Inverted</span></label></div>
+          <div class="col-6"><input class="btn-check" id="navbar-style-card" type="radio" name="navbarStyle" value="card" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-card"> <img class="img-fluid img-prototype" src="../../../assets/img/generic/card.png" alt="" /><span class="label-text"> Card</span></label></div>
+          <div class="col-6"><input class="btn-check" id="navbar-style-vibrant" type="radio" name="navbarStyle" value="vibrant" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-vibrant"> <img class="img-fluid img-prototype" src="../../../assets/img/generic/vibrant.png" alt="" /><span class="label-text"> Vibrant</span></label></div>
         </div>
       </div>
-      <div class="text-center mt-5"><img class="mb-4" src="../assets/img/icons/spot-illustrations/47.png" alt="" width="120" />
+      <div class="text-center mt-5"><img class="mb-4" src="../../../assets/img/icons/spot-illustrations/47.png" alt="" width="120" />
         <h5>Like What You See?</h5>
         <p class="fs-10">Get Falcon now and create beautiful dashboards with hundreds of widgets.</p><a class="mb-3 btn btn-primary" href="https://themes.getbootstrap.com/product/falcon-admin-dashboard-webapp-template/" target="_blank">Purchase</a>
       </div>

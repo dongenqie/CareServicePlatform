@@ -7680,26 +7680,19 @@ var revenueChartInit = function revenueChartInit() {
     dates: utils.getDates(new Date('5-6-2019'), new Date('5-6-2021'), 1000 * 60 * 60 * 24 * 30),
     dataset: {
       revenue: [[645, 500, 550, 550, 473, 405, 286, 601], 
-      [440, 250, 270, 400, 175, 180, 200, 400],
-      [340, 360, 230, 250, 410, 430, 450, 200]],
+      [440, 250, 270, 400, 175, 180, 200, 400]],
       users: [[545, 500, 650, 727, 773, 705, 686, 501], 
-      [340, 360, 230, 250, 410, 430, 450, 200],
-      [440, 250, 270, 400, 175, 180, 200, 400]],
+      [340, 360, 230, 250, 410, 430, 450, 200]],
       deals: [[545, 400, 450, 627, 473, 450, 460, 780], 
-      [245, 300, 450, 427, 273, 250, 260, 580],
-      [340, 360, 330, 300, 410, 380, 450, 400]],
+      [245, 300, 450, 427, 273, 250, 260, 580]],
       profit: [[545, 400, 450, 627, 673, 605, 686, 501], 
-      [340, 360, 330, 300, 410, 380, 450, 400],
-      [350, 370, 230, 250, 410, 430, 450, 200]],
-      county: [[545, 400, 450, 627, 673, 605, 686, 501], 
-      [340, 360, 330, 300, 410, 380, 450, 400],
-      [440, 250, 270, 400, 175, 180, 200, 400]],
+      [340, 360, 330, 300, 410, 380, 450, 400]]
     }
   };
   var tooltipFormatter = function tooltipFormatter(params) {
-    return "\n    <div class=\"card\">\n      <div class=\"card-header bg-body-tertiary py-2\">\n        <h6 class=\"text-600 mb-0\">".concat(params[0].axisValue, "</h6>\n      </div>\n      <div class=\"card-body py-2\">\n        <h6 class=\"text-600 fw-normal\">\n          <span class=\"fas fa-circle text-primary me-2\"></span>总成本: \n          <span class=\"fw-medium\">$").concat(params[0].data, "</span></h6>\n        <h6 class=\"text-600 mb-0 fw-normal\"> \n          <span class=\"fas fa-circle text-warning me-2\"></span>医药费: \n          <span class=\"fw-medium\">$").concat(params[1].data, "</span></h6>\n        <h6 class=\"text-600 mb-0 fw-normal\"> \n          <span class=\"fas fa-circle text-success me-2\"></span>检查费: \n          <span class=\"fw-medium\">$").concat(params[2].data, "</span></h6>\n      </div>\n    </div>\n  ");
+    return "\n    <div class=\"card\">\n      <div class=\"card-header bg-body-tertiary py-2\">\n        <h6 class=\"text-600 mb-0\">".concat(params[0].axisValue, "</h6>\n      </div>\n      <div class=\"card-body py-2\">\n        <h6 class=\"text-600 fw-normal\">\n          <span class=\"fas fa-circle text-primary me-2\"></span>Revenue: \n          <span class=\"fw-medium\">$").concat(params[0].data, "</span></h6>\n        <h6 class=\"text-600 mb-0 fw-normal\"> \n          <span class=\"fas fa-circle text-warning me-2\"></span>Revenue Goal: \n          <span class=\"fw-medium\">$").concat(params[1].data, "</span></h6>\n      </div>\n    </div>\n  ");
   };
-  var getDefaultOptions = function getDefaultOptions(data1, data2, data3) {
+  var getDefaultOptions = function getDefaultOptions(data1, data2) {
     return function () {
       return {
         color: utils.getColors().white,
@@ -7719,7 +7712,19 @@ var revenueChartInit = function revenueChartInit() {
         },
         xAxis: {
           type: 'category',
-          data: ['2015年', '2016年', '2017年', '2018年', '2019年', '2020年', '2021年', '2022年'], 
+          data: utils.getPastDates(8).map(function (date) {
+            return window.dayjs(date).format('DD MMM, YYYY');
+          }),
+          axisLabel: {
+            color: utils.getGrays()['600'],
+            formatter: function formatter(value) {
+              return window.dayjs(value).format('MMM DD');
+            },
+            align: 'left',
+            fontSize: 11,
+            padding: [0, 0, 0, 5],
+            showMaxLabel: false
+          },
           axisLine: {
             show: false
           },
@@ -7746,7 +7751,7 @@ var revenueChartInit = function revenueChartInit() {
         },
         series: [{
           type: 'bar',
-          name: '总成本',
+          name: 'Revenue',
           data: data1,
           lineStyle: {
             color: utils.getColor('primary')
@@ -7764,7 +7769,7 @@ var revenueChartInit = function revenueChartInit() {
           }
         }, {
           type: 'line',
-          name: '医药费',
+          name: 'Revenue Goal',
           data: data2,
           symbol: 'circle',
           symbolSize: 6,
@@ -7776,21 +7781,6 @@ var revenueChartInit = function revenueChartInit() {
             type: 'dashed',
             width: 2,
             color: utils.getColor('warning')
-          }
-        }, {
-          type: 'line',
-          name: '检查费',
-          data: data3,
-          symbol: 'circle',
-          symbolSize: 6,
-          animation: false,
-          itemStyle: {
-            color: utils.getColor('success')
-          },
-          lineStyle: {
-            type: 'dashed',
-            width: 2,
-            color: utils.getColor('success')
           }
         }],
         grid: {
@@ -7807,13 +7797,12 @@ var revenueChartInit = function revenueChartInit() {
     var chart = window.echarts.init(el);
     echartSetOption(chart, userOptions, options);
   };
-  var chartKeys = ['revenue', 'users', 'deals', 'profit', 'county'];
+  var chartKeys = ['revenue', 'users', 'deals', 'profit'];
   chartKeys.forEach(function (key) {
     var el = document.querySelector(".echart-crm-".concat(key));
-    el && initChart(el, getDefaultOptions(data.dataset[key][0], data.dataset[key][1], data.dataset[key][2]));
+    el && initChart(el, getDefaultOptions(data.dataset[key][0], data.dataset[key][1]));
   });
 };
-
 var echartsCustomerSatisfactionInit = function echartsCustomerSatisfactionInit() {
   var $echartCustomerSatisfaction = document.querySelector('.echart-customer-setisfaction');
   if ($echartCustomerSatisfaction) {

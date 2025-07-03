@@ -7697,7 +7697,7 @@ var revenueChartInit = function revenueChartInit() {
     }
   };
   var tooltipFormatter = function tooltipFormatter(params) {
-    return "\n    <div class=\"card\">\n      <div class=\"card-header bg-body-tertiary py-2\">\n        <h6 class=\"text-600 mb-0\">".concat(params[0].axisValue, "</h6>\n      </div>\n      <div class=\"card-body py-2\">\n        <h6 class=\"text-600 fw-normal\">\n          <span class=\"fas fa-circle text-primary me-2\"></span>总成本: \n          <span class=\"fw-medium\">$").concat(params[0].data, "</span></h6>\n        <h6 class=\"text-600 mb-0 fw-normal\"> \n          <span class=\"fas fa-circle text-warning me-2\"></span>医药费: \n          <span class=\"fw-medium\">$").concat(params[1].data, "</span></h6>\n        <h6 class=\"text-600 mb-0 fw-normal\"> \n          <span class=\"fas fa-circle text-success me-2\"></span>检查费: \n          <span class=\"fw-medium\">$").concat(params[2].data, "</span></h6>\n      </div>\n    </div>\n  ");
+    return "\n    <div class=\"card\">\n      <div class=\"card-header bg-body-tertiary py-2\">\n        <h6 class=\"text-600 mb-0\">".concat(params[0].axisValue, "</h6>\n      </div>\n      <div class=\"card-body py-2\">\n        <h6 class=\"text-600 fw-normal\">\n          <span class=\"fas fa-circle text-primary me-2\"></span>总成本: \n          <span class=\"fw-medium\">$").concat(params[0].data, "</span></h6>\n        <h6 class=\"text-600 mb-0 fw-normal\"> \n          <span class=\"fas fa-circle text-warning me-2\"></span>医药费: \n          <span class=\"fw-medium\">$").concat(params[1].data, "</span></h6>\n        <h6 class=\"text-600 mb-0 fw-normal\"> \n          <span class=\"fas fa-circle text-success me-2\"></span>检查费: \n          <span class=\"fw-medium\">$").concat(params[1].data, "</span></h6>\n      </div>\n    </div>\n  ");
   };
   var getDefaultOptions = function getDefaultOptions(data1, data2, data3) {
     return function () {
@@ -7810,7 +7810,7 @@ var revenueChartInit = function revenueChartInit() {
   var chartKeys = ['revenue', 'users', 'deals', 'profit', 'county'];
   chartKeys.forEach(function (key) {
     var el = document.querySelector(".echart-crm-".concat(key));
-    el && initChart(el, getDefaultOptions(data.dataset[key][0], data.dataset[key][1], data.dataset[key][2]));
+    el && initChart(el, getDefaultOptions(data.dataset[key][0], data.dataset[key][1], data.dataset[key][1]));
   });
 };
 

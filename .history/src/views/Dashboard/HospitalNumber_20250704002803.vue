@@ -2,9 +2,11 @@
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineOptions } from 'vue'
+import * as echarts from 'echarts';
+import getGuangXiMap from '@/api/getGuangXiMap';
 
 // 声明组件名
-defineOptions({ name: 'HospitalGrade' })
+defineOptions({ name: 'HospitalNumber' })
 
 // 路由跳转方法
 const router = useRouter()
@@ -135,7 +137,7 @@ onMounted(() => {
                   </a>
                   <ul class="nav collapse show" id="dashboard">
                     <li class="nav-item">
-                      <a class="nav-link" @click="goToDashboard" href="">
+                      <a class="nav-link active" @click="goToDashboard" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">默认首页</span></div>
                       </a><!-- more inner pages-->
                     </li>
@@ -156,8 +158,7 @@ onMounted(() => {
                       <li class="nav-item"><a class="nav-link" @click="goToHospitalType" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">医院类型</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
                       </a><!-- more inner pages--></li>
-                      <li class="nav-item">
-                        <a class="nav-link active" @click="goToHospitalGrade" href="">
+                      <li class="nav-item"><a class="nav-link" @click="goToHospitalGrade" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">医院等级</span></div>
                       </a><!-- more inner pages--></li>
                       <li class="nav-item"><a class="nav-link" @click="goToMedicalExpenses" href="">
@@ -448,8 +449,8 @@ onMounted(() => {
       <div class="content">
         <nav class="navbar navbar-light navbar-glass navbar-top navbar-expand" style="display: none;">
           <button class="btn navbar-toggler-humburger-icon navbar-toggler me-1 me-sm-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
-          <a class="navbar-brand me-1 me-sm-3" href="">
-            <div class="d-flex align-items-center"><img class="me-2" src="" alt="" width="40" /><span class="font-sans-serif text-primary">falcon</span></div>
+          <a class="navbar-brand me-1 me-sm-3" href="../../../index.html">
+            <div class="d-flex align-items-center"><img class="me-2" src="../../../assets/img/icons/spot-illustrations/falcon.png" alt="" width="40" /><span class="font-sans-serif text-primary">falcon</span></div>
           </a>
           <ul class="navbar-nav align-items-center d-none d-lg-block">
             <li class="nav-item">
@@ -460,30 +461,30 @@ onMounted(() => {
                 <div class="btn-close-falcon-container position-absolute end-0 top-50 translate-middle shadow-none" data-bs-dismiss="search"><button class="btn btn-link btn-close-falcon p-0" aria-label="Close"></button></div>
                 <div class="dropdown-menu border font-base start-0 mt-2 py-0 overflow-hidden w-100">
                   <div class="scrollbar list py-3" style="max-height: 24rem;">
-                    <h6 class="dropdown-header fw-medium text-uppercase px-x1 fs-11 pt-0 pb-2">Recently Browsed</h6><a class="dropdown-item fs-10 px-x1 py-1 hover-primary" href="app/events/event-detail.html">
+                    <h6 class="dropdown-header fw-medium text-uppercase px-x1 fs-11 pt-0 pb-2">Recently Browsed</h6><a class="dropdown-item fs-10 px-x1 py-1 hover-primary" href="../../../app/events/event-detail.html">
                       <div class="d-flex align-items-center">
                         <span class="fas fa-circle me-2 text-300 fs-11"></span>
                         <div class="fw-normal title">Pages <span class="fas fa-chevron-right mx-1 text-500 fs-11" data-fa-transform="shrink-2"></span> Events</div>
                       </div>
                     </a>
-                    <a class="dropdown-item fs-10 px-x1 py-1 hover-primary" href="app/e-commerce/customers.html">
+                    <a class="dropdown-item fs-10 px-x1 py-1 hover-primary" href="../../../app/e-commerce/customers.html">
                       <div class="d-flex align-items-center">
                         <span class="fas fa-circle me-2 text-300 fs-11"></span>
                         <div class="fw-normal title">E-commerce <span class="fas fa-chevron-right mx-1 text-500 fs-11" data-fa-transform="shrink-2"></span> Customers</div>
                       </div>
                     </a>
                     <hr class="text-200 dark__text-900" />
-                    <h6 class="dropdown-header fw-medium text-uppercase px-x1 fs-11 pt-0 pb-2">Suggested Filter</h6><a class="dropdown-item px-x1 py-1 fs-9" href="app/e-commerce/customers.html">
+                    <h6 class="dropdown-header fw-medium text-uppercase px-x1 fs-11 pt-0 pb-2">Suggested Filter</h6><a class="dropdown-item px-x1 py-1 fs-9" href="../../../app/e-commerce/customers.html">
                       <div class="d-flex align-items-center"><span class="badge fw-medium text-decoration-none me-2 badge-subtle-warning">customers:</span>
                         <div class="flex-1 fs-10 title">All customers list</div>
                       </div>
                     </a>
-                    <a class="dropdown-item px-x1 py-1 fs-9" href="app/events/event-detail.html">
+                    <a class="dropdown-item px-x1 py-1 fs-9" href="../../../app/events/event-detail.html">
                       <div class="d-flex align-items-center"><span class="badge fw-medium text-decoration-none me-2 badge-subtle-success">events:</span>
                         <div class="flex-1 fs-10 title">Latest events in current month</div>
                       </div>
                     </a>
-                    <a class="dropdown-item px-x1 py-1 fs-9" href="app/e-commerce/product/product-grid.html">
+                    <a class="dropdown-item px-x1 py-1 fs-9" href="../../../app/e-commerce/product/product-grid.html">
                       <div class="d-flex align-items-center"><span class="badge fw-medium text-decoration-none me-2 badge-subtle-info">products:</span>
                         <div class="flex-1 fs-10 title">Most popular products</div>
                       </div>
@@ -491,7 +492,7 @@ onMounted(() => {
                     <hr class="text-200 dark__text-900" />
                     <h6 class="dropdown-header fw-medium text-uppercase px-x1 fs-11 pt-0 pb-2">Files</h6><a class="dropdown-item px-x1 py-2" href="#!">
                       <div class="d-flex align-items-center">
-                        <div class="file-thumbnail me-2"><img class="border h-100 w-100 object-fit-cover rounded-3" src="" alt="" /></div>
+                        <div class="file-thumbnail me-2"><img class="border h-100 w-100 object-fit-cover rounded-3" src="../../../assets/img/products/3-thumb.png" alt="" /></div>
                         <div class="flex-1">
                           <h6 class="mb-0 title">iPhone</h6>
                           <p class="fs-11 mb-0 d-flex"><span class="fw-semi-bold">Antony</span><span class="fw-medium text-600 ms-2">27 Sep at 10:30 AM</span></p>
@@ -500,7 +501,7 @@ onMounted(() => {
                     </a>
                     <a class="dropdown-item px-x1 py-2" href="#!">
                       <div class="d-flex align-items-center">
-                        <div class="file-thumbnail me-2"><img class="img-fluid" src="" alt="" /></div>
+                        <div class="file-thumbnail me-2"><img class="img-fluid" src="../../../assets/img/icons/zip.png" alt="" /></div>
                         <div class="flex-1">
                           <h6 class="mb-0 title">Falcon v1.8.2</h6>
                           <p class="fs-11 mb-0 d-flex"><span class="fw-semi-bold">John</span><span class="fw-medium text-600 ms-2">30 Sep at 12:30 PM</span></p>
@@ -508,10 +509,10 @@ onMounted(() => {
                       </div>
                     </a>
                     <hr class="text-200 dark__text-900" />
-                    <h6 class="dropdown-header fw-medium text-uppercase px-x1 fs-11 pt-0 pb-2">Members</h6><a class="dropdown-item px-x1 py-2" href="pages/user/profile.html">
+                    <h6 class="dropdown-header fw-medium text-uppercase px-x1 fs-11 pt-0 pb-2">Members</h6><a class="dropdown-item px-x1 py-2" href="../../../pages/user/profile.html">
                       <div class="d-flex align-items-center">
                         <div class="avatar avatar-l status-online me-2">
-                          <img class="rounded-circle" src="" alt="" />
+                          <img class="rounded-circle" src="../../../assets/img/team/1.jpg" alt="" />
                         </div>
                         <div class="flex-1">
                           <h6 class="mb-0 title">Anna Karinina</h6>
@@ -519,10 +520,10 @@ onMounted(() => {
                         </div>
                       </div>
                     </a>
-                    <a class="dropdown-item px-x1 py-2" href="pages/user/profile.html">
+                    <a class="dropdown-item px-x1 py-2" href="../../../pages/user/profile.html">
                       <div class="d-flex align-items-center">
                         <div class="avatar avatar-l me-2">
-                          <img class="rounded-circle" src="" alt="" />
+                          <img class="rounded-circle" src="../../../assets/img/team/2.jpg" alt="" />
                         </div>
                         <div class="flex-1">
                           <h6 class="mb-0 title">Antony Hopkins</h6>
@@ -530,10 +531,10 @@ onMounted(() => {
                         </div>
                       </div>
                     </a>
-                    <a class="dropdown-item px-x1 py-2" href="pages/user/profile.html">
+                    <a class="dropdown-item px-x1 py-2" href="../../../pages/user/profile.html">
                       <div class="d-flex align-items-center">
                         <div class="avatar avatar-l me-2">
-                          <img class="rounded-circle" src="" alt="" />
+                          <img class="rounded-circle" src="../../../assets/img/team/3.jpg" alt="" />
                         </div>
                         <div class="flex-1">
                           <h6 class="mb-0 title">Emma Watson</h6>
@@ -557,19 +558,19 @@ onMounted(() => {
                 </div>
               </div>
             </li>
-            <!--消息通知-->
+            <li class="nav-item d-none d-sm-block">
+              <a class="nav-link px-0 notification-indicator notification-indicator-warning notification-indicator-fill fa-icon-wait" href="../../../app/e-commerce/shopping-cart.html"><span class="fas fa-shopping-cart" data-fa-transform="shrink-7" style="font-size: 33px;"></span><span class="notification-indicator-number">1</span></a>
+            </li>
             <li class="nav-item dropdown">
-              <a class="nav-link notification-indicator notification-indicator-primary px-0 fa-icon-wait" id="navbarDropdownNotification" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-hide-on-body-scroll="data-hide-on-body-scroll">
-                <span class="fas fa-bell" data-fa-transform="shrink-6" style="font-size: 33px;"></span>
-              </a>
+              <a class="nav-link notification-indicator notification-indicator-primary px-0 fa-icon-wait" id="navbarDropdownNotification" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-hide-on-body-scroll="data-hide-on-body-scroll"><span class="fas fa-bell" data-fa-transform="shrink-6" style="font-size: 33px;"></span></a>
               <div class="dropdown-menu dropdown-caret dropdown-caret dropdown-menu-end dropdown-menu-card dropdown-menu-notification dropdown-caret-bg" aria-labelledby="navbarDropdownNotification">
                 <div class="card card-notification shadow-none">
                   <div class="card-header">
                     <div class="row justify-content-between align-items-center">
                       <div class="col-auto">
-                        <h6 class="card-header-title mb-0">通知</h6>
+                        <h6 class="card-header-title mb-0">Notifications</h6>
                       </div>
-                      <div class="col-auto ps-0 ps-sm-3"><a class="card-link fw-normal" href="#">标为已读</a></div>
+                      <div class="col-auto ps-0 ps-sm-3"><a class="card-link fw-normal" href="#">Mark all as read</a></div>
                     </div>
                   </div>
                   <div class="scrollbar-overlay" style="max-height:19rem">
@@ -579,12 +580,12 @@ onMounted(() => {
                         <a class="notification notification-flush notification-unread" href="#!">
                           <div class="notification-avatar">
                             <div class="avatar avatar-2xl me-3">
-                              <img class="rounded-circle" src="../../assets/img/profile/1.jpg" alt="" />
+                              <img class="rounded-circle" src="../../../assets/img/team/1-thumb.png" alt="" />
                             </div>
                           </div>
                           <div class="notification-body">
-                            <p class="mb-1"><strong>泽泽</strong> 咨询了管理员 : "数据展示能否自定义仪表盘？"</p>
-                            <span class="notification-time"><span class="me-2" role="img" aria-label="Emoji">💬</span>2025/6/29 15:38</span>
+                            <p class="mb-1"><strong>Emma Watson</strong> replied to your comment : "Hello world 😍"</p>
+                            <span class="notification-time"><span class="me-2" role="img" aria-label="Emoji">💬</span>Just now</span>
                           </div>
                         </a>
                       </div>
@@ -606,7 +607,7 @@ onMounted(() => {
                         <a class="notification notification-flush" href="#!">
                           <div class="notification-avatar">
                             <div class="avatar avatar-2xl me-3">
-                              <img class="rounded-circle" src="../../assets/img/profile/2.jpg" alt="" />
+                              <img class="rounded-circle" src="../../../assets/img/icons/weather-sm.jpg" alt="" />
                             </div>
                           </div>
                           <div class="notification-body">
@@ -619,7 +620,7 @@ onMounted(() => {
                         <a class="border-bottom-0 notification-unread  notification notification-flush" href="#!">
                           <div class="notification-avatar">
                             <div class="avatar avatar-xl me-3">
-                              <img class="rounded-circle" src="../../assets/img/profile/3.jpg" alt="" />
+                              <img class="rounded-circle" src="../../../assets/img/logos/oxford.png" alt="" />
                             </div>
                           </div>
                           <div class="notification-body">
@@ -632,7 +633,7 @@ onMounted(() => {
                         <a class="border-bottom-0 notification notification-flush" href="#!">
                           <div class="notification-avatar">
                             <div class="avatar avatar-xl me-3">
-                              <img class="rounded-circle" src="../../assets/img/profile/4.jpg" alt="" />
+                              <img class="rounded-circle" src="../../../assets/img/team/10.jpg" alt="" />
                             </div>
                           </div>
                           <div class="notification-body">
@@ -643,84 +644,86 @@ onMounted(() => {
                       </div>
                     </div>
                   </div>
-                  <div class="card-footer text-center border-top"><a class="card-link d-block" href="app/social/notifications.html">View all</a></div>
+                  <div class="card-footer text-center border-top"><a class="card-link d-block" href="../../../app/social/notifications.html">View all</a></div>
                 </div>
               </div>
             </li>
-            <!--社交网络-->
-            <li class="nav-item dropdown ">
-              <a class="nav-link fa-icon-wait nine-dots p-1" id="navbarDropdownMenu" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-hide-on-body-scroll="data-hide-on-body-scroll">
-                <svg class="svg-inline--fa fa-comments fa-w-18" data-fa-transform="shrink-6" style="font-size: 33px;transform-origin: 0.5625em 0.5em;" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="comments" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" data-fa-i2svg="">
-                  <g transform="translate(288 256)">
-                    <g transform="translate(0, 0)  scale(0.625, 0.625)  rotate(0 0 0)"><path fill="currentColor" d="M416 192c0-88.4-93.1-160-208-160S0 103.6 0 192c0 34.3 14.1 65.9 38 92-13.4 30.2-35.5 54.2-35.8 54.5-2.2 2.3-2.8 5.7-1.5 8.7S4.8 352 8 352c36.6 0 66.9-12.3 88.7-25 32.2 15.7 70.3 25 111.3 25 114.9 0 208-71.6 208-160zm122 220c23.9-26 38-57.7 38-92 0-66.9-53.5-124.2-129.3-148.1.9 6.6 1.3 13.3 1.3 20.1 0 105.9-107.7 192-240 192-10.8 0-21.3-.8-31.7-1.9C207.8 439.6 281.8 480 368 480c41 0 79.1-9.2 111.3-25 21.8 12.7 52.1 25 88.7 25 3.2 0 6.1-1.9 7.3-4.8 1.3-2.9.7-6.3-1.5-8.7-.3-.3-22.4-24.2-35.8-54.5z" transform="translate(-288 -256)"></path>
-                    </g>
-                  </g>
-                </svg>
-              </a>
+            <li class="nav-item dropdown px-1">
+              <a class="nav-link fa-icon-wait nine-dots p-1" id="navbarDropdownMenu" role="button" data-hide-on-body-scroll="data-hide-on-body-scroll" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="43" viewBox="0 0 16 16" fill="none">
+                  <circle cx="2" cy="2" r="2" fill="#6C6E71"></circle>
+                  <circle cx="2" cy="8" r="2" fill="#6C6E71"></circle>
+                  <circle cx="2" cy="14" r="2" fill="#6C6E71"></circle>
+                  <circle cx="8" cy="8" r="2" fill="#6C6E71"></circle>
+                  <circle cx="8" cy="14" r="2" fill="#6C6E71"></circle>
+                  <circle cx="14" cy="8" r="2" fill="#6C6E71"></circle>
+                  <circle cx="14" cy="14" r="2" fill="#6C6E71"></circle>
+                  <circle cx="8" cy="2" r="2" fill="#6C6E71"></circle>
+                  <circle cx="14" cy="2" r="2" fill="#6C6E71"></circle>
+                </svg></a>
               <div class="dropdown-menu dropdown-caret dropdown-caret dropdown-menu-end dropdown-menu-card dropdown-caret-bg" aria-labelledby="navbarDropdownMenu">
                 <div class="card shadow-none">
                   <div class="scrollbar-overlay nine-dots-dropdown">
                     <div class="card-body px-3">
                       <div class="row text-center gx-0 gy-0">
-                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="pages/user/profile.html" target="_blank">
-                            <div class="avatar avatar-2xl"> <img class="rounded-circle" src="" alt="" /></div>
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="../../../pages/user/profile.html" target="_blank">
+                            <div class="avatar avatar-2xl"> <img class="rounded-circle" src="../../../assets/img/team/3.jpg" alt="" /></div>
                             <p class="mb-0 fw-medium text-800 text-truncate fs-11">Account</p>
                           </a></div>
-                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="https://themewagon.com/" target="_blank"><img class="rounded" src="" alt="" width="40" height="40" />
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="https://themewagon.com/" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/themewagon.png" alt="" width="40" height="40" />
                             <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Themewagon</p>
                           </a></div>
-                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="https://mailbluster.com/" target="_blank"><img class="rounded" src="" alt="" width="40" height="40" />
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="https://mailbluster.com/" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/mailbluster.png" alt="" width="40" height="40" />
                             <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Mailbluster</p>
                           </a></div>
-                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="" alt="" width="40" height="40" />
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/google.png" alt="" width="40" height="40" />
                             <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Google</p>
                           </a></div>
-                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="" alt="" width="40" height="40" />
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/spotify.png" alt="" width="40" height="40" />
                             <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Spotify</p>
                           </a></div>
-                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="" alt="" width="40" height="40" />
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/steam.png" alt="" width="40" height="40" />
                             <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Steam</p>
                           </a></div>
-                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="" alt="" width="40" height="40" />
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/github-light.png" alt="" width="40" height="40" />
                             <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Github</p>
                           </a></div>
-                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="" alt="" width="40" height="40" />
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/discord.png" alt="" width="40" height="40" />
                             <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Discord</p>
                           </a></div>
-                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="" alt="" width="40" height="40" />
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/xbox.png" alt="" width="40" height="40" />
                             <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">xbox</p>
                           </a></div>
-                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="" alt="" width="40" height="40" />
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/trello.png" alt="" width="40" height="40" />
                             <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Kanban</p>
                           </a></div>
-                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="" alt="" width="40" height="40" />
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/hp.png" alt="" width="40" height="40" />
                             <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Hp</p>
                           </a></div>
                         <div class="col-12">
                           <hr class="my-3 mx-n3 bg-200" />
                         </div>
-                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="" alt="" width="40" height="40" />
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/linkedin.png" alt="" width="40" height="40" />
                             <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Linkedin</p>
                           </a></div>
-                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="" alt="" width="40" height="40" />
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/twitter.png" alt="" width="40" height="40" />
                             <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Twitter</p>
                           </a></div>
-                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="" alt="" width="40" height="40" />
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/facebook.png" alt="" width="40" height="40" />
                             <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Facebook</p>
                           </a></div>
-                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="" alt="" width="40" height="40" />
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/instagram.png" alt="" width="40" height="40" />
                             <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Instagram</p>
                           </a></div>
-                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="" alt="" width="40" height="40" />
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/pinterest.png" alt="" width="40" height="40" />
                             <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Pinterest</p>
                           </a></div>
-                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="" alt="" width="40" height="40" />
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/slack.png" alt="" width="40" height="40" />
                             <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Slack</p>
                           </a></div>
-                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="" alt="" width="40" height="40" />
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/deviantart.png" alt="" width="40" height="40" />
                             <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Deviantart</p>
                           </a></div>
-                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="app/events/event-detail.html" target="_blank">
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="../../../app/events/event-detail.html" target="_blank">
                             <div class="avatar avatar-2xl">
                               <div class="avatar-name rounded-circle bg-primary-subtle text-primary"><span class="fs-7">E</span></div>
                             </div>
@@ -733,11 +736,9 @@ onMounted(() => {
                 </div>
               </div>
             </li>
-            <!--个人信息-->
-            <li class="nav-item dropdown">
-              <a class="nav-link pe-0 ps-2" id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <li class="nav-item dropdown"><a class="nav-link pe-0 ps-2" id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <div class="avatar avatar-xl">
-                  <img class="rounded-circle" src="../../assets/img/profile/5.jpg" alt="" />
+                  <img class="rounded-circle" src="../../../assets/img/team/3-thumb.png" alt="" />
                 </div>
               </a>
               <div class="dropdown-menu dropdown-caret dropdown-caret dropdown-menu-end py-0" aria-labelledby="navbarDropdownUser">
@@ -745,648 +746,461 @@ onMounted(() => {
                   <a class="dropdown-item fw-bold text-warning" href="#!"><span class="fas fa-crown me-1"></span><span>Go Pro</span></a>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="#!">Set status</a>
-                  <a class="dropdown-item" href="pages/user/profile.html">Profile &amp; account</a>
+                  <a class="dropdown-item" href="../../../pages/user/profile.html">Profile &amp; account</a>
                   <a class="dropdown-item" href="#!">Feedback</a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="pages/user/settings.html">Settings</a>
-                  <a class="dropdown-item" @click="goToLogout">Logout</a>
+                  <a class="dropdown-item" href="../../../pages/user/settings.html">Settings</a>
+                  <a class="dropdown-item" href="../../../pages/authentication/card/logout.html">Logout</a>
                 </div>
               </div>
             </li>
           </ul>
         </nav>
-        <!--欢迎栏-->
-        <div class="row g-3 mb-3">
-          <div class="col-xxl-6">
-            <div class="row g-0 h-100">
-              <div class="col-12 mb-3">
-                <div class="card bg-body-tertiary dark__bg-opacity-50 shadow-none">
-                  <div class="bg-holder bg-card d-none d-sm-block" style="background-image:url(../../assets/img/illustrations/ticket-bg.png);"></div><!--/.bg-holder-->
-                  <div class="d-flex align-items-center z-1 p-0">
-                    <img src="../../assets/img/illustrations/crm-bar-chart.png" alt="" width="96" />
-                    <div class="ms-n3">
-                      <h6 class="mb-1 text-primary">欢迎来到</h6>
-                      <h4 class="mb-0 text-primary fw-bold">健康大数据中心<span class="text-info fw-medium">医院等级研究实验室</span></h4>
+        <nav class="navbar navbar-light navbar-glass navbar-top navbar-expand-lg" style="display: none;" data-move-target="#navbarVerticalNav" data-navbar-top="combo">
+          <button class="btn navbar-toggler-humburger-icon navbar-toggler me-1 me-sm-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
+          <a class="navbar-brand me-1 me-sm-3" href="../../../index.html">
+            <div class="d-flex align-items-center"><img class="me-2" src="../../../assets/img/icons/spot-illustrations/falcon.png" alt="" width="40" /><span class="font-sans-serif text-primary">falcon</span></div>
+          </a>
+          <div class="collapse navbar-collapse scrollbar" id="navbarStandard">
+            <ul class="navbar-nav" data-top-nav-dropdowns="data-top-nav-dropdowns">
+              <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="dashboards">Dashboard</a>
+                <div class="dropdown-menu dropdown-caret dropdown-menu-card border-0 mt-0" aria-labelledby="dashboards">
+                  <div class="bg-white dark__bg-1000 rounded-3 py-2"><a class="dropdown-item link-600 fw-medium" href="../../../index.html">Default</a><a class="dropdown-item link-600 fw-medium" href="../../../dashboard/analytics.html">Analytics</a><a class="dropdown-item link-600 fw-medium" href="../../../dashboard/crm.html">CRM</a><a class="dropdown-item link-600 fw-medium" href="../../../dashboard/e-commerce.html">E commerce</a><a class="dropdown-item link-600 fw-medium" href="../../../dashboard/lms.html">LMS<span class="badge rounded-pill ms-2 badge-subtle-success">New</span></a><a class="dropdown-item link-600 fw-medium" href="../../../dashboard/project-management.html">Management</a><a class="dropdown-item link-600 fw-medium" href="../../../dashboard/saas.html">SaaS</a><a class="dropdown-item link-600 fw-medium" href="../../../dashboard/support-desk.html">Support desk<span class="badge rounded-pill ms-2 badge-subtle-success">New</span></a></div>
+                </div>
+              </li>
+              <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="apps">App</a>
+                <div class="dropdown-menu dropdown-caret dropdown-menu-card border-0 mt-0" aria-labelledby="apps">
+                  <div class="card navbar-card-app shadow-none dark__bg-1000">
+                    <div class="card-body scrollbar max-h-dropdown"><img class="img-dropdown" src="../../../assets/img/icons/spot-illustrations/authentication-corner.png" width="130" alt="" />
+                      <div class="row">
+                        <div class="col-6 col-md-4">
+                          <div class="nav flex-column"><a class="nav-link py-1 link-600 fw-medium" href="../../../app/calendar.html">Calendar</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/chat.html">Chat</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/kanban.html">Kanban</a>
+                            <p class="nav-link text-700 mb-0 fw-bold">Social</p><a class="nav-link py-1 link-600 fw-medium" href="../../../app/social/feed.html">Feed</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/social/activity-log.html">Activity log</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/social/notifications.html">Notifications</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/social/followers.html">Followers</a>
+                            <p class="nav-link text-700 mb-0 fw-bold">Support Desk</p><a class="nav-link py-1 link-600 fw-medium" href="../../../app/support-desk/table-view.html">Table view</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/support-desk/card-view.html">Card view</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/support-desk/contacts.html">Contacts</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/support-desk/contact-details.html">Contact details</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/support-desk/tickets-preview.html">Tickets preview</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/support-desk/quick-links.html">Quick links</a>
+                          </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                          <div class="nav flex-column">
+                            <p class="nav-link text-700 mb-0 fw-bold">E-Learning</p><a class="nav-link py-1 link-600 fw-medium" href="../../../app/e-learning/course/course-list.html">Course list</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/e-learning/course/course-grid.html">Course grid</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/e-learning/course/course-details.html">Course details</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/e-learning/course/create-a-course.html">Create a course</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/e-learning/student-overview.html">Student overview</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/e-learning/trainer-profile.html">Trainer profile</a>
+                            <p class="nav-link text-700 mb-0 fw-bold">Events</p><a class="nav-link py-1 link-600 fw-medium" href="../../../app/events/create-an-event.html">Create an event</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/events/event-detail.html">Event detail</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/events/event-list.html">Event list</a>
+                            <p class="nav-link text-700 mb-0 fw-bold">Email</p><a class="nav-link py-1 link-600 fw-medium" href="../../../app/email/inbox.html">Inbox</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/email/email-detail.html">Email detail</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/email/compose.html">Compose</a>
+                          </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                          <div class="nav flex-column">
+                            <p class="nav-link text-700 mb-0 fw-bold">E-Commerce</p><a class="nav-link py-1 link-600 fw-medium" href="../../../app/e-commerce/product/product-list.html">Product list</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/e-commerce/product/product-grid.html">Product grid</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/e-commerce/product/product-details.html">Product details</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/e-commerce/product/add-product.html">Add product</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/e-commerce/orders/order-list.html">Order list</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/e-commerce/orders/order-details.html">Order details</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/e-commerce/customers.html">Customers</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/e-commerce/customer-details.html">Customer details</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/e-commerce/shopping-cart.html">Shopping cart</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/e-commerce/checkout.html">Checkout</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/e-commerce/billing.html">Billing</a><a class="nav-link py-1 link-600 fw-medium" href="../../../app/e-commerce/invoice.html">Invoice</a>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <img src="../../assets/img/illustrations/crm-line-chart.png" alt="" width="96" />
+                  </div>
+                </div>
+              </li>
+              <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="pagess">Pages</a>
+                <div class="dropdown-menu dropdown-caret dropdown-menu-card border-0 mt-0" aria-labelledby="pagess">
+                  <div class="card navbar-card-pages shadow-none dark__bg-1000">
+                    <div class="card-body scrollbar max-h-dropdown"><img class="img-dropdown" src="../../../assets/img/icons/spot-illustrations/authentication-corner.png" width="130" alt="" />
+                      <div class="row">
+                        <div class="col-6 col-xxl-3">
+                          <div class="nav flex-column">
+                            <p class="nav-link text-700 mb-0 fw-bold">Simple Auth</p><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/simple/login.html">Login</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/simple/logout.html">Logout</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/simple/register.html">Register</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/simple/forgot-password.html">Forgot password</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/simple/confirm-mail.html">Confirm mail</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/simple/reset-password.html">Reset password</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/simple/lock-screen.html">Lock screen</a>
+                          </div>
+                        </div>
+                        <div class="col-6 col-xxl-3">
+                          <div class="nav flex-column">
+                            <p class="nav-link text-700 mb-0 fw-bold">Card Auth</p><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/card/login.html">Login</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/card/logout.html">Logout</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/card/register.html">Register</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/card/forgot-password.html">Forgot password</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/card/confirm-mail.html">Confirm mail</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/card/reset-password.html">Reset password</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/card/lock-screen.html">Lock screen</a>
+                          </div>
+                        </div>
+                        <div class="col-6 col-xxl-3">
+                          <div class="nav flex-column">
+                            <p class="nav-link text-700 mb-0 fw-bold">Split Auth</p><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/split/login.html">Login</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/split/logout.html">Logout</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/split/register.html">Register</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/split/forgot-password.html">Forgot password</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/split/confirm-mail.html">Confirm mail</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/split/reset-password.html">Reset password</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/split/lock-screen.html">Lock screen</a>
+                          </div>
+                        </div>
+                        <div class="col-6 col-xxl-3">
+                          <div class="nav flex-column">
+                            <p class="nav-link text-700 mb-0 fw-bold">Layouts</p><a class="nav-link py-1 link-600 fw-medium" href="../../../demo/navbar-vertical.html">Navbar vertical</a><a class="nav-link py-1 link-600 fw-medium" href="../../../demo/navbar-top.html">Top nav</a><a class="nav-link py-1 link-600 fw-medium" href="../../../demo/navbar-double-top.html">Double top<span class="badge rounded-pill ms-2 badge-subtle-success">New</span></a><a class="nav-link py-1 link-600 fw-medium" href="../../../demo/combo-nav.html">Combo nav</a>
+                            <p class="nav-link text-700 mb-0 fw-bold">Others</p><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/starter.html">Starter</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/landing.html">Landing</a>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-6 col-xxl-3">
+                          <div class="nav flex-column">
+                            <p class="nav-link text-700 mb-0 fw-bold">User</p><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/user/profile.html">Profile</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/user/settings.html">Settings</a>
+                          </div>
+                        </div>
+                        <div class="col-6 col-xxl-3">
+                          <div class="nav flex-column">
+                            <p class="nav-link text-700 mb-0 fw-bold">Pricing</p><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/pricing/pricing-default.html">Pricing default</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/pricing/pricing-alt.html">Pricing alt</a>
+                          </div>
+                        </div>
+                        <div class="col-6 col-xxl-3">
+                          <div class="nav flex-column">
+                            <p class="nav-link text-700 mb-0 fw-bold">Errors</p><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/errors/404.html">404</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/errors/500.html">500</a>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-6 col-xxl-3">
+                          <div class="nav flex-column">
+                            <p class="nav-link text-700 mb-0 fw-bold">Miscellaneous</p><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/miscellaneous/associations.html">Associations</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/miscellaneous/invite-people.html">Invite people</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/miscellaneous/privacy-policy.html">Privacy policy</a>
+                          </div>
+                        </div>
+                        <div class="col-6 col-xxl-3">
+                          <div class="nav flex-column">
+                            <p class="nav-link text-700 mb-0 fw-bold">FAQ</p><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/faq/faq-basic.html">Faq basic</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/faq/faq-alt.html">Faq alt</a><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/faq/faq-accordion.html">Faq accordion</a>
+                          </div>
+                        </div>
+                        <div class="col-6 col-xxl-3">
+                          <div class="nav flex-column">
+                            <p class="nav-link text-700 mb-0 fw-bold">Other Auth</p><a class="nav-link py-1 link-600 fw-medium" href="../../../pages/authentication/wizard.html">Wizard</a><a class="nav-link py-1 link-600 fw-medium" href="../../../#authentication-modal" data-bs-toggle="modal">Modal</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="moduless">Modules</a>
+                <div class="dropdown-menu dropdown-caret dropdown-menu-card border-0 mt-0" aria-labelledby="moduless">
+                  <div class="card navbar-card-components shadow-none dark__bg-1000">
+                    <div class="card-body scrollbar max-h-dropdown"><img class="img-dropdown" src="../../../assets/img/icons/spot-illustrations/authentication-corner.png" width="130" alt="" />
+                      <div class="row">
+                        <div class="col-6 col-xxl-3">
+                          <div class="nav flex-column">
+                            <p class="nav-link text-700 mb-0 fw-bold">Components</p><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/accordion.html">Accordion</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/alerts.html">Alerts</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/anchor.html">Anchor</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/animated-icons.html">Animated icons</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/background.html">Background</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/badges.html">Badges</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/bottom-bar.html">Bottom bar<span class="badge rounded-pill ms-2 badge-subtle-success">New</span></a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/breadcrumbs.html">Breadcrumbs</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/buttons.html">Buttons</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/calendar.html">Calendar</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/cards.html">Cards</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/carousel/bootstrap.html">Bootstrap carousel</a>
+                          </div>
+                        </div>
+                        <div class="col-6 col-xxl-3">
+                          <div class="nav flex-column mt-md-4 pt-md-1"><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/carousel/swiper.html">Swiper</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/collapse.html">Collapse</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/cookie-notice.html">Cookie notice</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/countup.html">Countup</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/dropdowns.html">Dropdowns</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/jquery-components.html">Jquery<span class="badge rounded-pill ms-2 badge-subtle-success">New</span></a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/list-group.html">List group</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/modals.html">Modals</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/navs-and-tabs/navs.html">Navs</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/navs-and-tabs/navbar.html">Navbar</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/navs-and-tabs/vertical-navbar.html">Navbar vertical</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/navs-and-tabs/top-navbar.html">Top nav</a></div>
+                        </div>
+                        <div class="col-6 col-xxl-3">
+                          <div class="nav flex-column mt-xxl-4 pt-xxl-1"><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/navs-and-tabs/double-top-navbar.html">Double top<span class="badge rounded-pill ms-2 badge-subtle-success">New</span></a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/navs-and-tabs/combo-navbar.html">Combo nav</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/navs-and-tabs/tabs.html">Tabs</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/offcanvas.html">Offcanvas</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/pictures/avatar.html">Avatar</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/pictures/images.html">Images</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/pictures/figures.html">Figures</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/pictures/hoverbox.html">Hoverbox</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/pictures/lightbox.html">Lightbox</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/progress-bar.html">Progress bar</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/placeholder.html">Placeholder</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/pagination.html">Pagination</a></div>
+                        </div>
+                        <div class="col-6 col-xxl-3">
+                          <div class="nav flex-column mt-xxl-4 pt-xxl-1"><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/popovers.html">Popovers</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/scrollspy.html">Scrollspy</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/search.html">Search</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/sortable.html">Sortable</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/spinners.html">Spinners</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/timeline.html">Timeline</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/toasts.html">Toasts</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/tooltips.html">Tooltips</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/treeview.html">Treeview</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/typed-text.html">Typed text</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/videos/embed.html">Embed</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/components/videos/plyr.html">Plyr</a></div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-6 col-xxl-3">
+                          <div class="nav flex-column">
+                            <p class="nav-link text-700 mb-0 fw-bold">Utilities</p><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/background.html">Background</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/borders.html">Borders</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/clearfix.html">Clearfix</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/colors.html">Colors</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/colored-links.html">Colored links</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/display.html">Display</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/flex.html">Flex</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/float.html">Float</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/focus-ring.html">Focus ring</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/grid.html">Grid</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/icon-link.html">Icon link</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/overlayscrollbar.html">Overlay scrollbar</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/position.html">Position</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/ratio.html">Ratio</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/spacing.html">Spacing</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/sizing.html">Sizing</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/stretched-link.html">Stretched link</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/text-truncation.html">Text truncation</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/typography.html">Typography</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/vertical-align.html">Vertical align</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/vertical-rule.html">Vertical rule</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/utilities/visibility.html">Visibility</a>
+                          </div>
+                        </div>
+                        <div class="col-6 col-xxl-3">
+                          <div class="nav flex-column">
+                            <p class="nav-link text-700 mb-0 fw-bold">Tables</p><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/tables/basic-tables.html">Basic tables</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/tables/advance-tables.html">Advance tables</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/tables/bulk-select.html">Bulk select</a>
+                            <p class="nav-link text-700 mb-0 fw-bold">Charts</p><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/charts/chartjs.html">Chartjs</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/charts/d3js.html">D3js<span class="badge rounded-pill ms-2 badge-subtle-success">New</span></a>
+                            <p class="nav-link text-700 mb-0 fw-bold">ECharts</p><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/charts/echarts/line-charts.html">Line charts</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/charts/echarts/bar-charts.html">Bar charts</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/charts/echarts/candlestick-charts.html">Candlestick charts</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/charts/echarts/geo-map.html">Geo map</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/charts/echarts/scatter-charts.html">Scatter charts</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/charts/echarts/pie-charts.html">Pie charts</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/charts/echarts/gauge-charts.html">Gauge charts</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/charts/echarts/radar-charts.html">Radar charts</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/charts/echarts/heatmap-charts.html">Heatmap charts</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/charts/echarts/how-to-use.html">How to use</a>
+                          </div>
+                        </div>
+                        <div class="col-6 col-xxl-3">
+                          <div class="nav flex-column">
+                            <p class="nav-link text-700 mb-0 fw-bold">Forms</p><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/forms/basic/form-control.html">Form control</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/forms/basic/input-group.html">Input group</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/forms/basic/select.html">Select</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/forms/basic/checks.html">Checks</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/forms/basic/range.html">Range</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/forms/basic/layout.html">Layout</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/forms/advance/advance-select.html">Advance select</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/forms/advance/date-picker.html">Date picker</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/forms/advance/editor.html">Editor</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/forms/advance/emoji-button.html">Emoji button</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/forms/advance/file-uploader.html">File uploader</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/forms/advance/input-mask.html">Input mask</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/forms/advance/range-slider.html">Range slider</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/forms/advance/rating.html">Rating</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/forms/floating-labels.html">Floating labels</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/forms/wizard.html">Wizard</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/forms/validation.html">Validation</a>
+                          </div>
+                        </div>
+                        <div class="col-6 col-xxl-3">
+                          <div class="nav flex-column pt-xxl-1">
+                            <p class="nav-link text-700 mb-0 fw-bold">Icons</p><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/icons/font-awesome.html">Font awesome</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/icons/bootstrap-icons.html">Bootstrap icons</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/icons/feather.html">Feather</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/icons/material-icons.html">Material icons</a>
+                            <p class="nav-link text-700 mb-0 fw-bold">Maps</p><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/maps/google-map.html">Google map</a><a class="nav-link py-1 link-600 fw-medium" href="../../../modules/maps/leaflet-map.html">Leaflet map</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="documentations">Documentation</a>
+                <div class="dropdown-menu dropdown-caret dropdown-menu-card border-0 mt-0" aria-labelledby="documentations">
+                  <div class="bg-white dark__bg-1000 rounded-3 py-2"><a class="dropdown-item link-600 fw-medium" href="../../../documentation/getting-started.html">Getting started</a><a class="dropdown-item link-600 fw-medium" href="../../../documentation/customization/configuration.html">Configuration</a><a class="dropdown-item link-600 fw-medium" href="../../../documentation/customization/styling.html">Styling<span class="badge rounded-pill ms-2 badge-subtle-success">Updated</span></a><a class="dropdown-item link-600 fw-medium" href="../../../documentation/customization/dark-mode.html">Dark mode</a><a class="dropdown-item link-600 fw-medium" href="../../../documentation/customization/plugin.html">Plugin</a><a class="dropdown-item link-600 fw-medium" href="../../../documentation/faq.html">Faq</a><a class="dropdown-item link-600 fw-medium" href="../../../documentation/gulp.html">Gulp</a><a class="dropdown-item link-600 fw-medium" href="../../../documentation/design-file.html">Design file</a><a class="dropdown-item link-600 fw-medium" href="../../../changelog.html">Changelog</a></div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <ul class="navbar-nav navbar-nav-icons ms-auto flex-row align-items-center">
+            <li class="nav-item ps-2 pe-0">
+              <div class="dropdown theme-control-dropdown"><a class="nav-link d-flex align-items-center dropdown-toggle fa-icon-wait fs-9 pe-1 py-0" href="#" role="button" id="themeSwitchDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-sun fs-7" data-fa-transform="shrink-2" data-theme-dropdown-toggle-icon="light"></span><span class="fas fa-moon fs-7" data-fa-transform="shrink-3" data-theme-dropdown-toggle-icon="dark"></span><span class="fas fa-adjust fs-7" data-fa-transform="shrink-2" data-theme-dropdown-toggle-icon="auto"></span></a>
+                <div class="dropdown-menu dropdown-menu-end dropdown-caret border py-0 mt-3" aria-labelledby="themeSwitchDropdown">
+                  <div class="bg-white dark__bg-1000 rounded-2 py-2"><button class="dropdown-item d-flex align-items-center gap-2" type="button" value="light" data-theme-control="theme"><span class="fas fa-sun"></span>Light<span class="fas fa-check dropdown-check-icon ms-auto text-600"></span></button><button class="dropdown-item d-flex align-items-center gap-2" type="button" value="dark" data-theme-control="theme"><span class="fas fa-moon" data-fa-transform=""></span>Dark<span class="fas fa-check dropdown-check-icon ms-auto text-600"></span></button><button class="dropdown-item d-flex align-items-center gap-2" type="button" value="auto" data-theme-control="theme"><span class="fas fa-adjust" data-fa-transform=""></span>Auto<span class="fas fa-check dropdown-check-icon ms-auto text-600"></span></button></div>
+                </div>
+              </div>
+            </li>
+            <li class="nav-item d-none d-sm-block">
+              <a class="nav-link px-0 notification-indicator notification-indicator-warning notification-indicator-fill fa-icon-wait" href="../../../app/e-commerce/shopping-cart.html"><span class="fas fa-shopping-cart" data-fa-transform="shrink-7" style="font-size: 33px;"></span><span class="notification-indicator-number">1</span></a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link notification-indicator notification-indicator-primary px-0 fa-icon-wait" id="navbarDropdownNotification" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-hide-on-body-scroll="data-hide-on-body-scroll"><span class="fas fa-bell" data-fa-transform="shrink-6" style="font-size: 33px;"></span></a>
+              <div class="dropdown-menu dropdown-caret dropdown-caret dropdown-menu-end dropdown-menu-card dropdown-menu-notification dropdown-caret-bg" aria-labelledby="navbarDropdownNotification">
+                <div class="card card-notification shadow-none">
+                  <div class="card-header">
+                    <div class="row justify-content-between align-items-center">
+                      <div class="col-auto">
+                        <h6 class="card-header-title mb-0">Notifications</h6>
+                      </div>
+                      <div class="col-auto ps-0 ps-sm-3"><a class="card-link fw-normal" href="#">Mark all as read</a></div>
+                    </div>
+                  </div>
+                  <div class="scrollbar-overlay" style="max-height:19rem">
+                    <div class="list-group list-group-flush fw-normal fs-10">
+                      <div class="list-group-title border-bottom">NEW</div>
+                      <div class="list-group-item">
+                        <a class="notification notification-flush notification-unread" href="#!">
+                          <div class="notification-avatar">
+                            <div class="avatar avatar-2xl me-3">
+                              <img class="rounded-circle" src="../../../assets/img/team/1-thumb.png" alt="" />
+                            </div>
+                          </div>
+                          <div class="notification-body">
+                            <p class="mb-1"><strong>Emma Watson</strong> replied to your comment : "Hello world 😍"</p>
+                            <span class="notification-time"><span class="me-2" role="img" aria-label="Emoji">💬</span>Just now</span>
+                          </div>
+                        </a>
+                      </div>
+                      <div class="list-group-item">
+                        <a class="notification notification-flush notification-unread" href="#!">
+                          <div class="notification-avatar">
+                            <div class="avatar avatar-2xl me-3">
+                              <div class="avatar-name rounded-circle"><span>AB</span></div>
+                            </div>
+                          </div>
+                          <div class="notification-body">
+                            <p class="mb-1"><strong>Albert Brooks</strong> reacted to <strong>Mia Khalifa's</strong> status</p>
+                            <span class="notification-time"><span class="me-2 fab fa-gratipay text-danger"></span>9hr</span>
+                          </div>
+                        </a>
+                      </div>
+                      <div class="list-group-title border-bottom">EARLIER</div>
+                      <div class="list-group-item">
+                        <a class="notification notification-flush" href="#!">
+                          <div class="notification-avatar">
+                            <div class="avatar avatar-2xl me-3">
+                              <img class="rounded-circle" src="../../../assets/img/icons/weather-sm.jpg" alt="" />
+                            </div>
+                          </div>
+                          <div class="notification-body">
+                            <p class="mb-1">The forecast today shows a low of 20&#8451; in California. See today's weather.</p>
+                            <span class="notification-time"><span class="me-2" role="img" aria-label="Emoji">🌤️</span>1d</span>
+                          </div>
+                        </a>
+                      </div>
+                      <div class="list-group-item">
+                        <a class="border-bottom-0 notification-unread  notification notification-flush" href="#!">
+                          <div class="notification-avatar">
+                            <div class="avatar avatar-xl me-3">
+                              <img class="rounded-circle" src="../../../assets/img/logos/oxford.png" alt="" />
+                            </div>
+                          </div>
+                          <div class="notification-body">
+                            <p class="mb-1"><strong>University of Oxford</strong> created an event : "Causal Inference Hilary 2019"</p>
+                            <span class="notification-time"><span class="me-2" role="img" aria-label="Emoji">✌️</span>1w</span>
+                          </div>
+                        </a>
+                      </div>
+                      <div class="list-group-item">
+                        <a class="border-bottom-0 notification notification-flush" href="#!">
+                          <div class="notification-avatar">
+                            <div class="avatar avatar-xl me-3">
+                              <img class="rounded-circle" src="../../../assets/img/team/10.jpg" alt="" />
+                            </div>
+                          </div>
+                          <div class="notification-body">
+                            <p class="mb-1"><strong>James Cameron</strong> invited to join the group: United Nations International Children's Fund</p>
+                            <span class="notification-time"><span class="me-2" role="img" aria-label="Emoji">🙋‍</span>2d</span>
+                          </div>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-footer text-center border-top"><a class="card-link d-block" href="../../../app/social/notifications.html">View all</a></div>
+                </div>
+              </div>
+            </li>
+            <li class="nav-item dropdown px-1">
+              <a class="nav-link fa-icon-wait nine-dots p-1" id="navbarDropdownMenu" role="button" data-hide-on-body-scroll="data-hide-on-body-scroll" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="43" viewBox="0 0 16 16" fill="none">
+                  <circle cx="2" cy="2" r="2" fill="#6C6E71"></circle>
+                  <circle cx="2" cy="8" r="2" fill="#6C6E71"></circle>
+                  <circle cx="2" cy="14" r="2" fill="#6C6E71"></circle>
+                  <circle cx="8" cy="8" r="2" fill="#6C6E71"></circle>
+                  <circle cx="8" cy="14" r="2" fill="#6C6E71"></circle>
+                  <circle cx="14" cy="8" r="2" fill="#6C6E71"></circle>
+                  <circle cx="14" cy="14" r="2" fill="#6C6E71"></circle>
+                  <circle cx="8" cy="2" r="2" fill="#6C6E71"></circle>
+                  <circle cx="14" cy="2" r="2" fill="#6C6E71"></circle>
+                </svg></a>
+              <div class="dropdown-menu dropdown-caret dropdown-caret dropdown-menu-end dropdown-menu-card dropdown-caret-bg" aria-labelledby="navbarDropdownMenu">
+                <div class="card shadow-none">
+                  <div class="scrollbar-overlay nine-dots-dropdown">
+                    <div class="card-body px-3">
+                      <div class="row text-center gx-0 gy-0">
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="../../../pages/user/profile.html" target="_blank">
+                            <div class="avatar avatar-2xl"> <img class="rounded-circle" src="../../../assets/img/team/3.jpg" alt="" /></div>
+                            <p class="mb-0 fw-medium text-800 text-truncate fs-11">Account</p>
+                          </a></div>
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="https://themewagon.com/" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/themewagon.png" alt="" width="40" height="40" />
+                            <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Themewagon</p>
+                          </a></div>
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="https://mailbluster.com/" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/mailbluster.png" alt="" width="40" height="40" />
+                            <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Mailbluster</p>
+                          </a></div>
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/google.png" alt="" width="40" height="40" />
+                            <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Google</p>
+                          </a></div>
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/spotify.png" alt="" width="40" height="40" />
+                            <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Spotify</p>
+                          </a></div>
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/steam.png" alt="" width="40" height="40" />
+                            <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Steam</p>
+                          </a></div>
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/github-light.png" alt="" width="40" height="40" />
+                            <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Github</p>
+                          </a></div>
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/discord.png" alt="" width="40" height="40" />
+                            <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Discord</p>
+                          </a></div>
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/xbox.png" alt="" width="40" height="40" />
+                            <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">xbox</p>
+                          </a></div>
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/trello.png" alt="" width="40" height="40" />
+                            <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Kanban</p>
+                          </a></div>
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/hp.png" alt="" width="40" height="40" />
+                            <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Hp</p>
+                          </a></div>
+                        <div class="col-12">
+                          <hr class="my-3 mx-n3 bg-200" />
+                        </div>
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/linkedin.png" alt="" width="40" height="40" />
+                            <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Linkedin</p>
+                          </a></div>
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/twitter.png" alt="" width="40" height="40" />
+                            <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Twitter</p>
+                          </a></div>
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/facebook.png" alt="" width="40" height="40" />
+                            <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Facebook</p>
+                          </a></div>
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/instagram.png" alt="" width="40" height="40" />
+                            <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Instagram</p>
+                          </a></div>
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/pinterest.png" alt="" width="40" height="40" />
+                            <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Pinterest</p>
+                          </a></div>
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/slack.png" alt="" width="40" height="40" />
+                            <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Slack</p>
+                          </a></div>
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="../../../assets/img/nav-icons/deviantart.png" alt="" width="40" height="40" />
+                            <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Deviantart</p>
+                          </a></div>
+                        <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="../../../app/events/event-detail.html" target="_blank">
+                            <div class="avatar avatar-2xl">
+                              <div class="avatar-name rounded-circle bg-primary-subtle text-primary"><span class="fs-7">E</span></div>
+                            </div>
+                            <p class="mb-0 fw-medium text-800 text-truncate fs-11">Events</p>
+                          </a></div>
+                        <div class="col-12"><a class="btn btn-outline-primary btn-sm mt-4" href="#!">Show more</a></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="col-12">
-                <div class="card h-100">
-                  <div class="card-body">
-                    <div class="row g-0">
-                      <div class="col-md-6 border-200 border-bottom border-end-md pb-x1 pe-md-x1">
-                        <div class="row g-0">
-                          <div class="col-6">                            
-                            <img class="mt-1" src="../../assets/img/tickets/hold-tickets.png" alt="" width="39" />
-                            <h2 class="mt-2 mb-1 text-700 fw-normal">25<span class="fas fa-caret-up ms-2 me-1 fs-10 text-primary"></span><span class="fs-10 fw-semi-bold text-primary">5.3%</span></h2>
-                            <h6 class="mb-0">1级医院</h6>
-                          </div>
-                          <div class="col-6 d-flex align-items-center px-0">
-                            <div class="h-50 w-100" data-echarts='{"tooltip":{"trigger":"axis","formatter":"{b0} : {c0}"},"xAxis":{"data":["Week 1","Week 2","Week 3","Week 4","Week 5","Week 6"]},"series":[{"type":"line","data":[10,40,30,35,20,40],"color":"#2c7be5","smooth":true,"lineStyle":{"width":2},"areaStyle":{"color":{"type":"linear","x":0,"y":0,"x2":0,"y2":1,"colorStops":[{"offset":0,"color":"rgba(44, 123, 229, .25)"},{"offset":1,"color":"rgba(44, 123, 229, 0)"}]}}}],"grid":{"bottom":"2%","top":"2%","right":"0","left":"0px"}}' data-echart-responsive="true"></div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6 ps-md-x1 pb-x1 pt-x1 pt-md-0 border-bottom border-200">
-                        <div class="row g-0">
-                          <div class="col-6"><img class="mt-1" src="../../assets/img/tickets/open-tickets.png" alt="" width="39" />
-                            <h2 class="mt-2 mb-1 text-700 fw-normal">05<span class="fas fa-caret-up ms-2 me-1 fs-10 text-success"></span><span class="fs-10 fw-semi-bold text-success">3.20%</span></h2>
-                            <h6 class="mb-0">2级医院</h6>
-                          </div>
-                          <div class="col-6 d-flex align-items-center px-0">
-                            <div class="h-50 w-100" data-echarts='{"tooltip":{"trigger":"axis","formatter":"{b0} : {c0}"},"xAxis":{"data":["Week 1","Week 2","Week 3","Week 4","Week 5","Week 6"]},"series":[{"type":"line","data":[10,12,16,14,20,25],"color":"#00d27a","smooth":true,"lineStyle":{"width":2},"areaStyle":{"color":{"type":"linear","x":0,"y":0,"x2":0,"y2":1,"colorStops":[{"offset":0,"color":"rgba(0, 210, 122, .25)"},{"offset":1,"color":"rgba(0, 210, 122, 0)"}]}}}],"grid":{"bottom":"2%","top":"2%","right":"0","left":"0px"}}' data-echart-responsive="true"></div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6 border-200 border-bottom border-bottom-md-0 border-end-md pt-x1 pe-md-x1 pb-x1 pb-md-0">
-                        <div class="row g-0">
-                          <div class="col-6"><img class="mt-1" src="../../assets/img/tickets/due-tickets.png" alt="" width="39" />
-                            <h2 class="mt-2 mb-1 text-700 fw-normal">02<span class="fas fa-caret-up ms-2 me-1 fs-10 text-info"></span><span class="fs-10 fw-semi-bold text-info">2.3%</span></h2>
-                            <h6 class="mb-0">3级医院</h6>
-                          </div>
-                          <div class="col-6 d-flex align-items-center px-0">
-                            <div class="h-50 w-100" data-echarts='{"tooltip":{"trigger":"axis","formatter":"{b0} : {c0}"},"xAxis":{"data":["Week 1","Week 2","Week 3","Week 4","Week 5","Week 6"]},"series":[{"type":"line","data":[15,10,15,10,12,10],"color":"#27bcfd","smooth":true,"lineStyle":{"width":2},"areaStyle":{"color":{"type":"linear","x":0,"y":0,"x2":0,"y2":1,"colorStops":[{"offset":0,"color":"rgba(39, 188, 253, .25)"},{"offset":1,"color":"rgba(39, 188, 253, 0)"}]}}}],"grid":{"bottom":"2%","top":"2%","right":"0","left":"0px"}}' data-echart-responsive="true"></div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6 ps-md-x1 pt-x1">
-                        <div class="row g-0">
-                          <div class="col-6"><img class="mt-1" src="../../assets/img/tickets/unassigned.png" alt="" width="39" />
-                            <h2 class="mt-2 mb-1 text-700 fw-normal">03<span class="fas fa-caret-up ms-2 me-1 fs-10 text-warning"></span><span class="fs-10 fw-semi-bold text-warning">3.12%</span></h2>
-                            <h6 class="mb-0">未评级医院</h6>
-                          </div>
-                          <div class="col-6 d-flex align-items-center px-0">
-                            <div class="h-50 w-100" data-echarts='{"tooltip":{"trigger":"axis","formatter":"{b0} : {c0}"},"xAxis":{"data":["Week 1","Week 2","Week 3","Week 4","Week 5","Week 6"]},"series":[{"type":"line","data":[10,15,12,11,14,12],"color":"#f5803e","smooth":true,"lineStyle":{"width":2},"areaStyle":{"color":{"type":"linear","x":0,"y":0,"x2":0,"y2":1,"colorStops":[{"offset":0,"color":"rgba(245, 128, 62, .25)"},{"offset":1,"color":"rgba(245, 128, 62, 0)"}]}}}],"grid":{"bottom":"2%","top":"2%","right":"0","left":"0px"}}' data-echart-responsive="true"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+            </li>
+            <li class="nav-item dropdown"><a class="nav-link pe-0 ps-2" id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <div class="avatar avatar-xl">
+                  <img class="rounded-circle" src="../../../assets/img/team/3-thumb.png" alt="" />
                 </div>
+              </a>
+              <div class="dropdown-menu dropdown-caret dropdown-caret dropdown-menu-end py-0" aria-labelledby="navbarDropdownUser">
+                <div class="bg-white dark__bg-1000 rounded-2 py-2">
+                  <a class="dropdown-item fw-bold text-warning" href="#!"><span class="fas fa-crown me-1"></span><span>Go Pro</span></a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#!">Set status</a>
+                  <a class="dropdown-item" href="../../../pages/user/profile.html">Profile &amp; account</a>
+                  <a class="dropdown-item" href="#!">Feedback</a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="../../../pages/user/settings.html">Settings</a>
+                  <a class="dropdown-item" href="../../../pages/authentication/card/logout.html">Logout</a>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </nav>
+        <div class="card mb-3">
+          <div class="bg-holder d-none d-lg-block bg-card" style="background-image:url(../../../assets/img/icons/spot-illustrations/corner-4.png);"></div><!--/.bg-holder-->
+          <div class="card-body position-relative">
+            <div class="row">
+              <div class="col-lg-8">
+                <h3>Getting Started</h3>
+                <p class="mb-0">ECharts can uses geoJSON format as map outline. You can use third-party <a href="https://geojson.org/" target="_blank">geoJSON</a> data (like maps) and register them into ECharts. You can get the JSON data from this <a href="https://github.com/pissang/starbucks/tree/gh-pages/json">Starbuck's Github repository</a>.</p><a class="btn btn-link btn-sm ps-0 mt-2" href="https://echarts.apache.org/en/option.html#series-map.type" target="_blank">Echart's map documentation<span class="fas fa-chevron-right ms-1 fs-11"></span></a>
               </div>
             </div>
           </div>
         </div>
-        <!--不同年份医院等级图-->
         <div class="row g-3">
-          <div class="col-xxl-8">
-            <div class="card h-100">
-              <div class="card-header d-md-flex justify-content-between border-bottom border-200 py-3 py-md-2">
-                <h6 class="mb-2 mb-md-0 py-md-2">不同年份医院等级变化图</h6>
-                <div class="row g-md-0">
-                  <div class="col-auto d-md-flex">
-                    <div class="d-flex align-items-center me-md-3 form-check mb-0"><input class="form-check-input dot mt-0 shadow-none remove-checked-icon rounded-circle cursor-pointer" type="checkbox" data-number-of-tickets="1级医院" value="" id="onHoldTickets" checked="checked" /><label class="form-check-label lh-base mb-0 fs-11 text-500 fw-semi-bold font-base cursor-pointer" for="onHoldTickets">1级医院</label></div>
-                    <div class="d-flex align-items-center me-md-3 form-check mb-0 mt-n1 mt-md-0"><input class="form-check-input dot mt-0 shadow-none remove-checked-icon rounded-circle open-tickets cursor-pointer" type="checkbox" data-number-of-tickets="2级医院" value="" id="openTickets" checked="checked" /><label class="form-check-label lh-base mb-0 fs-11 text-500 fw-semi-bold font-base cursor-pointer" for="openTickets">2级医院</label></div>
+          <div class="col-lg-6">
+            <div class="card h-100 position-relative">
+              <div class="card-header">
+                <div class="row flex-between-end">
+                  <div class="col-auto align-self-center">
+                    <h5 class="mb-0" data-anchor="data-anchor">World map</h5>
                   </div>
-                  <div class="col-auto d-md-flex">
-                    <div class="d-flex align-items-center me-md-3 form-check mb-0"><input class="form-check-input dot mt-0 shadow-none remove-checked-icon rounded-circle due-tickets cursor-pointer" type="checkbox" data-number-of-tickets="3级医院" value="" id="dueTickets" checked="checked" /><label class="form-check-label lh-base mb-0 fs-11 text-500 fw-semi-bold font-base cursor-pointer" for="dueTickets">3级医院</label></div>
-                    <div class="d-flex align-items-center form-check mb-0 mt-n1 mt-md-0"><input class="form-check-input dot mt-0 shadow-none remove-checked-icon rounded-circle unassigned-tickets cursor-pointer" type="checkbox" data-number-of-tickets="未评级医院" value="" id="unassignedTickets" checked="checked" /><label class="form-check-label lh-base mb-0 fs-11 text-500 fw-semi-bold font-base cursor-pointer" for="unassignedTickets">未评级医院</label></div>
+                  <div class="col-auto ms-auto">
+                    <div class="nav nav-pills nav-pills-falcon flex-grow-1" role="tablist"><button class="btn btn-sm active" data-bs-toggle="pill" data-bs-target="#dom-5169bdcd-914d-47fb-884e-97bb99519ada" type="button" role="tab" aria-controls="dom-5169bdcd-914d-47fb-884e-97bb99519ada" aria-selected="true" id="tab-dom-5169bdcd-914d-47fb-884e-97bb99519ada">Preview</button><button class="btn btn-sm" data-bs-toggle="pill" data-bs-target="#dom-68714773-227c-454c-9a83-96ea61771ac1" type="button" role="tab" aria-controls="dom-68714773-227c-454c-9a83-96ea61771ac1" aria-selected="false" id="tab-dom-68714773-227c-454c-9a83-96ea61771ac1">Code</button></div>
                   </div>
                 </div>
               </div>
-              <div class="card-body scrollbar overflow-y-hidden">
-                <div class="d-flex">
-                  <div class="d-flex align-items-center">
-                    <div>
-                      <h6 class="fs-9 d-flex align-items-center text-700 mb-1">125<small class="badge text-success bg-transparent px-0"><span class="fas fa-caret-up fs-11 ms-2 me-1"></span><span>5.3%</span></small></h6>
-                      <h6 class="text-600 mb-0 fs-11 text-nowrap">1级医院</h6>
-                    </div>
-                    <div class="bg-200 mx-3" style="height: 24px; width: 1px"></div>
+              <div class="card-body bg-body-tertiary">
+                <div class="tab-content">
+                  <div class="tab-pane preview-tab-pane active" role="tabpanel" aria-labelledby="tab-dom-5169bdcd-914d-47fb-884e-97bb99519ada" id="dom-5169bdcd-914d-47fb-884e-97bb99519ada">
+                    <div class="position-absolute z-2" style="right:16px"><button class="btn btn-falcon-default btn-sm mb-1 session-by-country-map-reset"><span class="fas fa-sync-alt fs-10"></span></button></div><!-- Find the JS file for the following chart at: src/js/charts/echarts/session-by-country-map.js--><!-- If you are not using gulp based workflow, you can find the transpiled code at: public/assets/js/theme.js-->
+                    <div class="echart-session-by-country-map" style="min-height: 400px;" data-echart-responsive="true"></div>
+                    <h5 class="mt-3">JavaScript </h5><pre class="scrollbar mt-2"><code class="language-html">&lt;script src=&quot;assets/data/world.js&quot;&gt; &lt;/script&gt;</code></pre>
                   </div>
-                  <div class="d-flex align-items-center">
-                    <div>
-                      <h6 class="fs-9 d-flex align-items-center text-700 mb-1">100<small class="badge px-0 text-primary"><span class="fas fa-caret-up fs-11 ms-2 me-1"></span><span>3.20%</span></small></h6>
-                      <h6 class="fs-11 text-600 mb-0 text-nowrap">2级医院</h6>
-                    </div>
-                    <div class="bg-200 mx-3" style="height: 24px; width: 1px"></div>
+                  <div class="tab-pane code-tab-pane" role="tabpanel" aria-labelledby="tab-dom-68714773-227c-454c-9a83-96ea61771ac1" id="dom-68714773-227c-454c-9a83-96ea61771ac1"><pre class="scrollbar rounded-1" style="max-height:420px"><code class="language-html">&lt;div class=&quot;position-absolute z-2&quot; style=&quot;right:16px&quot;&gt;&lt;button class=&quot;btn btn-falcon-default btn-sm mb-1 session-by-country-map-reset&quot;&gt;&lt;span class=&quot;fas fa-sync-alt fs-10&quot;&gt;&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;
+&lt;!-- Find the JS file for the following chart at: src/js/charts/echarts/session-by-country-map.js--&gt;
+&lt;!-- If you are not using gulp based workflow, you can find the transpiled code at: public/assets/js/theme.js--&gt;
+&lt;div class=&quot;echart-session-by-country-map&quot; style=&quot;min-height: 400px;&quot; data-echart-responsive=&quot;true&quot;&gt;&lt;/div&gt;
+&lt;h5 class=&quot;mt-3&quot;&gt;JavaScript &lt;/h5&gt;&lt;pre class=&quot;scrollbar mt-2&quot;&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;script src=&amp;quot;assets/data/world.js&amp;quot;&amp;gt; &amp;lt;/script&amp;gt;&lt;/code&gt;&lt;/pre&gt;</code></pre>
                   </div>
-                  <div class="d-flex align-items-center">
-                    <div>
-                      <h6 class="fs-9 d-flex align-items-center text-700 mb-1">53<small class="badge px-0 text-warning"><span class="fas fa-caret-down fs-11 ms-2 me-1"></span><span>2.3%</span></small></h6>
-                      <h6 class="fs-11 text-600 mb-0 text-nowrap">3级医院</h6>
-                    </div>
-                    <div class="bg-200 mx-3" style="height: 24px; width: 1px"></div>
-                  </div>
-                  <div>
-                    <h6 class="fs-9 d-flex align-items-center text-700 mb-1">136<small class="badge px-0 text-danger"><span class="fas fa-caret-up fs-11 ms-2 me-1"></span><span>3.12%</span></small></h6>
-                    <h6 class="fs-11 text-600 mb-0 text-nowrap">未评级医院</h6>
-                  </div>
-                </div>
-                <div class="echart-number-of-tickets" data-echart-responsive="true"></div>
-              </div>
-              <div class="card-footer bg-body-tertiary py-2">
-                <div class="row g-2 flex-between-center">
-                  <div class="col-auto">
-                    <select class="form-select form-select-sm">
-                      <option selected="selected">2011~2015</option>
-                      <option>2016~2020</option>
-                    </select></div>
-                  <div class="col-auto"><a class="btn btn-link btn-sm px-0" href="">导出数据<span class="fas fa-chevron-right ms-1 fs-11"></span></a></div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="col-xxl-9">
-            <div class="card" id="ticketsTable">
-              <div class="card-header border-bottom border-200 px-0">
-                <div class="d-lg-flex justify-content-between">
-                  <div class="row flex-between-center gy-2 px-x1">
-                    <div class="col-auto pe-0">
-                      <h6 class="mb-0">各省医院等级表</h6>
-                    </div>
-                    <div class="col-auto">
-                      <form>
-                        <div class="input-group input-search-width">
-                          <input class="form-control form-control-sm shadow-none" type="search" placeholder="搜索省份名称" aria-label="search" />
-                          <button class="btn btn-sm btn-outline-secondary border-300 hover-border-secondary">
-                            <span class="fa fa-search fs-10"></span>
-                          </button>
-                        </div>
-                      </form>
-                    </div>
+          <div class="col-lg-6">
+            <div class="card h-100 position-relative">
+              <div class="card-header">
+                <div class="row flex-between-end">
+                  <div class="col-auto align-self-center">
+                    <h5 class="mb-0" data-anchor="data-anchor">Usa map</h5>
                   </div>
-                  <div class="border-bottom border-200 my-3"></div>
-                  <div class="d-flex align-items-center justify-content-between justify-content-lg-end px-x1"><button class="btn btn-sm btn-falcon-default" type="button"><span class="fas fa-filter" data-fa-transform="shrink-4 down-1"></span><span class="ms-1 d-none d-sm-inline-block">Filter</span></button>
-                    <div class="bg-300 mx-3 d-none d-lg-block" style="width:1px; height:29px"></div>
-                    <div class="d-none" id="table-ticket-actions">
-                      <div class="d-flex">
-                        <select class="form-select form-select-sm" aria-label="Bulk actions">
-                          <option selected="">请选择操作</option>
-                          <option value="Refund">导出数据</option>
-                          <option value="Delete">删除数据</option>
-                        </select>
-                        <button class="btn btn-falcon-default btn-sm ms-2" type="button">Apply</button>
-                      </div>
-                    </div>
-                    <div class="d-flex align-items-center" id="table-ticket-replace-element">
-                      <button class="btn btn-falcon-default btn-sm mx-2" type="button"><span class="fas fa-plus" data-fa-transform="shrink-3"></span><span class="d-none d-sm-inline-block d-xl-none d-xxl-inline-block ms-1">New</span></button><button class="btn btn-falcon-default btn-sm" type="button"><span class="fas fa-external-link-alt" data-fa-transform="shrink-3"></span><span class="d-none d-sm-inline-block d-xl-none d-xxl-inline-block ms-1">Export</span></button>
-                      <div class="dropdown font-sans-serif ms-2"><button class="btn btn-falcon-default text-600 btn-sm dropdown-toggle dropdown-caret-none" type="button" id="preview-dropdown" data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs-11"></span></button>
-                        <div class="dropdown-menu dropdown-menu-end border py-2" aria-labelledby="preview-dropdown"><a class="dropdown-item" href="#!">View</a><a class="dropdown-item" href="#!">Export</a>
-                          <div class="dropdown-divider"></div><a class="dropdown-item text-danger" href="#!">Remove</a>
-                        </div>
-                      </div>
-                    </div>
+                  <div class="col-auto ms-auto">
+                    <div class="nav nav-pills nav-pills-falcon flex-grow-1" role="tablist"><button class="btn btn-sm active" data-bs-toggle="pill" data-bs-target="#dom-695acc32-bbe4-451c-951d-8acba6c6f439" type="button" role="tab" aria-controls="dom-695acc32-bbe4-451c-951d-8acba6c6f439" aria-selected="true" id="tab-dom-695acc32-bbe4-451c-951d-8acba6c6f439">Preview</button><button class="btn btn-sm" data-bs-toggle="pill" data-bs-target="#dom-ea953977-d4b6-48f9-bbe7-d1c79783f8e0" type="button" role="tab" aria-controls="dom-ea953977-d4b6-48f9-bbe7-d1c79783f8e0" aria-selected="false" id="tab-dom-ea953977-d4b6-48f9-bbe7-d1c79783f8e0">Code</button></div>
                   </div>
                 </div>
               </div>
-              <div class="tab-content" id="ticketViewContent">
-                <div class="fade tab-pane active show" id="table-view" role="tabpanel" aria-labelledby="tableView" data-list='{"valueNames":["client","subject","status","priority","agent"],"page":6,"pagination":true}'>
-                  <div class="card-body p-0">
-                    <div class="table-responsive scrollbar">
-                      <table class="table table-sm mb-0 fs-10 table-view-tickets">
-                        <thead class="bg-body-tertiary">
-                          <tr>
-                            <th class="py-2 fs-9 pe-2" style="width: 28px;">
-                              <div class="form-check d-flex align-items-center">
-                                <input class="form-check-input" id="checkbox-bulk-table-tickets-select" type="checkbox" data-bulk-select='{"body":"table-ticket-body","actions":"table-ticket-actions","replacedElement":"table-ticket-replace-element"}' />
-                              </div>
-                            </th>
-                            <th class="text-800 sort align-middle ps-2" data-sort="client" style="min-width:8.625rem">省份</th>
-                            <th class="text-800 sort align-middle" data-sort="subject" style="min-width:5.625rem">医院总数</th>
-                            <th class="text-800 sort align-middle" data-sort="status">1级医院</th>
-                            <th class="text-800 sort align-middle" data-sort="priority">2级医院</th>
-                            <th class="text-800 sort align-middle" data-sort="agent">3级医院</th>
-                            <th class="text-800 sort align-middle" data-sort="agent">未评级医院</th>
-                            <th class="text-800 sort align-middle" data-sort="status">状态</th>
-                          </tr>
-                        </thead>
-                        <tbody class="list" id="table-ticket-body">
-                          <tr>
-                            <td class="align-middle fs-9 py-3">
-                              <div class="form-check mb-0"><input class="form-check-input" type="checkbox" id="table-view-tickets-1" data-bulk-select-row="data-bulk-select-row" /></div>
-                            </td>
-                            <td class="align-middle client white-space-nowrap pe-3 pe-xxl-4 ps-2">
-                              <div class="d-flex align-items-center gap-2 position-relative">
-                                <h6 class="mb-0"><a class="stretched-link text-900" href="">安徽省</a></h6>
-                              </div>
-                            </td>
-                            <td class="align-middle subject py-2 pe-4">
-                              <a class="fw-semi-bold" href="">1234567</a></td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle priority pe-4">
-                              <div class="d-flex align-items-center gap-2">
-                                <div style="--falcon-circle-progress-bar:75"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                    <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                    <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#F68F57" stroke-width="12"></circle>
-                                  </svg></div>
-                                <h6 class="mb-0 text-700">High</h6>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td class="align-middle fs-9 py-3">
-                              <div class="form-check mb-0"><input class="form-check-input" type="checkbox" id="table-view-tickets-2" data-bulk-select-row="data-bulk-select-row" /></div>
-                            </td>
-                            <td class="align-middle client white-space-nowrap pe-3 pe-xxl-4 ps-2">
-                              <div class="d-flex align-items-center gap-2 position-relative">
-                                <h6 class="mb-0"><a class="stretched-link text-900" href="">广西壮族自治区</a></h6>
-                              </div>
-                            </td>
-                            <td class="align-middle subject py-2 pe-4">
-                              <a class="fw-semi-bold" href="">1323435</a>
-                            </td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle priority pe-4">
-                              <div class="d-flex align-items-center gap-2">
-                                <div style="--falcon-circle-progress-bar:50"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                    <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                    <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#2A7BE4" stroke-width="12"></circle>
-                                  </svg></div>
-                                <h6 class="mb-0 text-700">Medium</h6>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td class="align-middle fs-9 py-3">
-                              <div class="form-check mb-0"><input class="form-check-input" type="checkbox" id="table-view-tickets-2" data-bulk-select-row="data-bulk-select-row" /></div>
-                            </td>
-                            <td class="align-middle client white-space-nowrap pe-3 pe-xxl-4 ps-2">
-                              <div class="d-flex align-items-center gap-2 position-relative">
-                                <h6 class="mb-0"><a class="stretched-link text-900" href="">广西壮族自治区</a></h6>
-                              </div>
-                            </td>
-                            <td class="align-middle subject py-2 pe-4">
-                              <a class="fw-semi-bold" href="">1323435</a>
-                            </td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle priority pe-4">
-                              <div class="d-flex align-items-center gap-2">
-                                <div style="--falcon-circle-progress-bar:25"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                    <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                    <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#00D27B" stroke-width="12"></circle>
-                                  </svg></div>
-                                <h6 class="mb-0 text-700">Low</h6>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td class="align-middle fs-9 py-3">
-                              <div class="form-check mb-0"><input class="form-check-input" type="checkbox" id="table-view-tickets-2" data-bulk-select-row="data-bulk-select-row" /></div>
-                            </td>
-                            <td class="align-middle client white-space-nowrap pe-3 pe-xxl-4 ps-2">
-                              <div class="d-flex align-items-center gap-2 position-relative">
-                                <h6 class="mb-0"><a class="stretched-link text-900" href="">广西壮族自治区</a></h6>
-                              </div>
-                            </td>
-                            <td class="align-middle subject py-2 pe-4">
-                              <a class="fw-semi-bold" href="">1323435</a>
-                            </td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle priority pe-4">
-                              <div class="d-flex align-items-center gap-2">
-                                <div style="--falcon-circle-progress-bar:100"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                    <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                    <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#e63757" stroke-width="12"></circle>
-                                  </svg></div>
-                                <h6 class="mb-0 text-700">Urgent</h6>
-                              </div>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      <div class="text-center d-none" id="tickets-table-fallback">
-                        <p class="fw-bold fs-8 mt-3">No ticket found</p>
-                      </div>
-                    </div>
+              <div class="card-body bg-body-tertiary">
+                <div class="tab-content">
+                  <div class="tab-pane preview-tab-pane active" role="tabpanel" aria-labelledby="tab-dom-695acc32-bbe4-451c-951d-8acba6c6f439" id="dom-695acc32-bbe4-451c-951d-8acba6c6f439">
+                    <div class="position-absolute z-2" style="right:16px"><button class="btn btn-falcon-default btn-sm mb-1 usa-map-reset"><span class="fas fa-sync-alt fs-10"></span></button></div><!-- Find the JS file for the following chart at: src/js/charts/echarts/examples/map-usa.js--><!-- If you are not using gulp based workflow, you can find the transpiled code at: public/assets/js/echarts-example.js-->
+                    <div class="echart-map-usa-example" style="min-height: 400px;" data-echart-responsive="true"></div>
+                    <h5 class="mt-3">JavaScript </h5><pre class="scrollbar mt-2"><code class="language-html">&lt;script src=&quot;assets/data/usa.js&quot;&gt; &lt;/script&gt;</code></pre>
                   </div>
-                  <div class="card-footer">
-                    <div class="row align-items-center">
-                      <div class="pagination d-none"></div>
-                      <div class="col"><span class="d-none d-sm-inline-block me-2 fs-10" data-list-info="data-list-info"></span></div>
-                      <div class="col-auto d-flex"><button class="btn btn-sm btn-primary" type="button" data-list-pagination="prev"><span>Previous</span></button><button class="btn btn-sm btn-primary px-4 ms-2" type="button" data-list-pagination="next"><span>Next</span></button></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="fade tab-pane" id="card-view" role="tabpanel" aria-labelledby="cardView" data-list='{"valueNames":["client","subject","status","priority","agent"],"page":4,"pagination":true}'>
-                  <div class="card-body p-0">
-                    <div class="form-check d-none"><input class="form-check-input" id="checkbox-bulk-card-tickets-select" type="checkbox" data-bulk-select='{"body":"card-ticket-body","actions":"table-ticket-actions","replacedElement":"table-ticket-replace-element"}' /></div>
-                    <div class="list bg-body-tertiary p-x1 d-flex flex-column gap-3" id="card-ticket-body">
-                      <div class="bg-white dark__bg-1100 d-md-flex d-xl-inline-block d-xxl-flex align-items-center p-x1 rounded-3 shadow-sm card-view-height">
-                        <div class="d-flex align-items-start align-items-sm-center">
-                          <div class="form-check me-2 me-xxl-3 mb-0"><input class="form-check-input" type="checkbox" id="card-view-tickets-0" data-bulk-select-row="data-bulk-select-row" /></div><a class="d-none d-sm-block" href="../app/support-desk/contact-details.html">
-                            <div class="avatar avatar-xl avatar-3xl">
-                              <div class="avatar-name rounded-circle"><span>EW</span></div>
-                            </div>
-                          </a>
-                          <div class="ms-1 ms-sm-3">
-                            <p class="fw-semi-bold mb-3 mb-sm-2"><a href="../app/support-desk/tickets-preview.html">Synapse Design #1125</a></p>
-                            <div class="row align-items-center gx-0 gy-2">
-                              <div class="col-auto me-2">
-                                <h6 class="client mb-0"><a class="text-800 d-flex align-items-center gap-1" href="../app/support-desk/contact-details.html"><span class="fas fa-user" data-fa-transform="shrink-3 up-1"></span><span>Emma Watson</span></a></h6>
-                              </div>
-                              <div class="col-auto lh-1 me-3"><small class="badge rounded badge-subtle-success false">Recent</small></div>
-                              <div class="col-auto">
-                                <h6 class="mb-0 text-500">2d ago</h6>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="border-bottom mt-4 mb-x1"></div>
-                        <div class="d-flex justify-content-between ms-auto">
-                          <div class="d-flex align-items-center gap-2 ms-md-4 ms-xl-0" style="width:7.5rem;">
-                            <div style="--falcon-circle-progress-bar:100"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#e63757" stroke-width="12"></circle>
-                              </svg></div>
-                            <h6 class="mb-0 text-700">Urgent</h6>
-                          </div><select class="form-select form-select-sm" aria-label="agents actions" style="width:9.375rem;">
-                            <option>Select Agent</option>
-                            <option selected="selected">Anindya</option>
-                            <option>Nowrin</option>
-                            <option>Khalid</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="bg-white dark__bg-1100 d-md-flex d-xl-inline-block d-xxl-flex align-items-center p-x1 rounded-3 shadow-sm card-view-height">
-                        <div class="d-flex align-items-start align-items-sm-center">
-                          <div class="form-check me-2 me-xxl-3 mb-0"><input class="form-check-input" type="checkbox" id="card-view-tickets-1" data-bulk-select-row="data-bulk-select-row" /></div><a class="d-none d-sm-block" href="../app/support-desk/contact-details.html">
-                            <div class="avatar avatar-xl avatar-3xl">
-                              <div class="avatar-name rounded-circle"><span>L</span></div>
-                            </div>
-                          </a>
-                          <div class="ms-1 ms-sm-3">
-                            <p class="fw-semi-bold mb-3 mb-sm-2"><a href="../app/support-desk/tickets-preview.html">Change of refund my last buy | Order #125631</a></p>
-                            <div class="row align-items-center gx-0 gy-2">
-                              <div class="col-auto me-2">
-                                <h6 class="client mb-0"><a class="text-800 d-flex align-items-center gap-1" href="../app/support-desk/contact-details.html"><span class="fas fa-user" data-fa-transform="shrink-3 up-1"></span><span>Luke</span></a></h6>
-                              </div>
-                              <div class="col-auto lh-1 me-3"><small class="badge rounded badge-subtle-danger false">Overdue</small></div>
-                              <div class="col-auto">
-                                <h6 class="mb-0 text-500">2d ago</h6>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="border-bottom mt-4 mb-x1"></div>
-                        <div class="d-flex justify-content-between ms-auto">
-                          <div class="d-flex align-items-center gap-2 ms-md-4 ms-xl-0" style="width:7.5rem;">
-                            <div style="--falcon-circle-progress-bar:75"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#F68F57" stroke-width="12"></circle>
-                              </svg></div>
-                            <h6 class="mb-0 text-700">High</h6>
-                          </div><select class="form-select form-select-sm" aria-label="agents actions" style="width:9.375rem;">
-                            <option>Select Agent</option>
-                            <option selected="selected">Anindya</option>
-                            <option>Nowrin</option>
-                            <option>Khalid</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="bg-white dark__bg-1100 d-md-flex d-xl-inline-block d-xxl-flex align-items-center p-x1 rounded-3 shadow-sm card-view-height">
-                        <div class="d-flex align-items-start align-items-sm-center">
-                          <div class="form-check me-2 me-xxl-3 mb-0"><input class="form-check-input" type="checkbox" id="card-view-tickets-2" data-bulk-select-row="data-bulk-select-row" /></div><a class="d-none d-sm-block" href="../app/support-desk/contact-details.html">
-                            <div class="avatar avatar-xl avatar-3xl">
-                              <img class="rounded-circle" src="../assets/img/team/1-thumb.png" alt="" />
-                            </div>
-                          </a>
-                          <div class="ms-1 ms-sm-3">
-                            <p class="fw-semi-bold mb-3 mb-sm-2"><a href="../app/support-desk/tickets-preview.html">I need your help #2256</a></p>
-                            <div class="row align-items-center gx-0 gy-2">
-                              <div class="col-auto me-2">
-                                <h6 class="client mb-0"><a class="text-800 d-flex align-items-center gap-1" href="../app/support-desk/contact-details.html"><span class="fas fa-user" data-fa-transform="shrink-3 up-1"></span><span>Finley</span></a></h6>
-                              </div>
-                              <div class="col-auto lh-1 me-3"><small class="badge rounded badge-subtle-warning false">Remaining</small></div>
-                              <div class="col-auto">
-                                <h6 class="mb-0 text-500">2d ago</h6>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="border-bottom mt-4 mb-x1"></div>
-                        <div class="d-flex justify-content-between ms-auto">
-                          <div class="d-flex align-items-center gap-2 ms-md-4 ms-xl-0" style="width:7.5rem;">
-                            <div style="--falcon-circle-progress-bar:50"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#2A7BE4" stroke-width="12"></circle>
-                              </svg></div>
-                            <h6 class="mb-0 text-700">Medium</h6>
-                          </div><select class="form-select form-select-sm" aria-label="agents actions" style="width:9.375rem;">
-                            <option>Select Agent</option>
-                            <option>Anindya</option>
-                            <option selected="selected">Nowrin</option>
-                            <option>Khalid</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="bg-white dark__bg-1100 d-md-flex d-xl-inline-block d-xxl-flex align-items-center p-x1 rounded-3 shadow-sm card-view-height">
-                        <div class="d-flex align-items-start align-items-sm-center">
-                          <div class="form-check me-2 me-xxl-3 mb-0"><input class="form-check-input" type="checkbox" id="card-view-tickets-3" data-bulk-select-row="data-bulk-select-row" /></div><a class="d-none d-sm-block" href="../app/support-desk/contact-details.html">
-                            <div class="avatar avatar-xl avatar-3xl">
-                              <div class="avatar-name rounded-circle"><span>PG</span></div>
-                            </div>
-                          </a>
-                          <div class="ms-1 ms-sm-3">
-                            <p class="fw-semi-bold mb-3 mb-sm-2"><a href="../app/support-desk/tickets-preview.html">I need your help #2256</a></p>
-                            <div class="row align-items-center gx-0 gy-2">
-                              <div class="col-auto me-2">
-                                <h6 class="client mb-0"><a class="text-800 d-flex align-items-center gap-1" href="../app/support-desk/contact-details.html"><span class="fas fa-user" data-fa-transform="shrink-3 up-1"></span><span>Peter Gill</span></a></h6>
-                              </div>
-                              <div class="col-auto lh-1 me-3"><small class="badge rounded badge-subtle-info false">Responded</small></div>
-                              <div class="col-auto">
-                                <h6 class="mb-0 text-500">2d ago</h6>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="border-bottom mt-4 mb-x1"></div>
-                        <div class="d-flex justify-content-between ms-auto">
-                          <div class="d-flex align-items-center gap-2 ms-md-4 ms-xl-0" style="width:7.5rem;">
-                            <div style="--falcon-circle-progress-bar:25"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#00D27B" stroke-width="12"></circle>
-                              </svg></div>
-                            <h6 class="mb-0 text-700">Low</h6>
-                          </div><select class="form-select form-select-sm" aria-label="agents actions" style="width:9.375rem;">
-                            <option>Select Agent</option>
-                            <option>Anindya</option>
-                            <option selected="selected">Nowrin</option>
-                            <option>Khalid</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="bg-white dark__bg-1100 d-md-flex d-xl-inline-block d-xxl-flex align-items-center p-x1 rounded-3 shadow-sm card-view-height">
-                        <div class="d-flex align-items-start align-items-sm-center">
-                          <div class="form-check me-2 me-xxl-3 mb-0"><input class="form-check-input" type="checkbox" id="card-view-tickets-4" data-bulk-select-row="data-bulk-select-row" /></div><a class="d-none d-sm-block" href="../app/support-desk/contact-details.html">
-                            <div class="avatar avatar-xl avatar-3xl">
-                              <img class="rounded-circle" src="../assets/img/team/25-thumb.png" alt="" />
-                            </div>
-                          </a>
-                          <div class="ms-1 ms-sm-3">
-                            <p class="fw-semi-bold mb-3 mb-sm-2"><a href="../app/support-desk/tickets-preview.html">Contact Froms #3264</a></p>
-                            <div class="row align-items-center gx-0 gy-2">
-                              <div class="col-auto me-2">
-                                <h6 class="client mb-0"><a class="text-800 d-flex align-items-center gap-1" href="../app/support-desk/contact-details.html"><span class="fas fa-user" data-fa-transform="shrink-3 up-1"></span><span>Freya</span></a></h6>
-                              </div>
-                              <div class="col-auto lh-1 me-3"><small class="badge rounded badge-subtle-secondary dark__bg-1000">Closed</small></div>
-                              <div class="col-auto">
-                                <h6 class="mb-0 text-500">2d ago</h6>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="border-bottom mt-4 mb-x1"></div>
-                        <div class="d-flex justify-content-between ms-auto">
-                          <div class="d-flex align-items-center gap-2 ms-md-4 ms-xl-0" style="width:7.5rem;">
-                            <div style="--falcon-circle-progress-bar:50"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#2A7BE4" stroke-width="12"></circle>
-                              </svg></div>
-                            <h6 class="mb-0 text-700">Medium</h6>
-                          </div><select class="form-select form-select-sm" aria-label="agents actions" style="width:9.375rem;">
-                            <option>Select Agent</option>
-                            <option>Anindya</option>
-                            <option>Nowrin</option>
-                            <option selected="selected">Khalid</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="bg-white dark__bg-1100 d-md-flex d-xl-inline-block d-xxl-flex align-items-center p-x1 rounded-3 shadow-sm card-view-height">
-                        <div class="d-flex align-items-start align-items-sm-center">
-                          <div class="form-check me-2 me-xxl-3 mb-0"><input class="form-check-input" type="checkbox" id="card-view-tickets-5" data-bulk-select-row="data-bulk-select-row" /></div><a class="d-none d-sm-block" href="../app/support-desk/contact-details.html">
-                            <div class="avatar avatar-xl avatar-3xl">
-                              <div class="avatar-name rounded-circle"><span>M</span></div>
-                            </div>
-                          </a>
-                          <div class="ms-1 ms-sm-3">
-                            <p class="fw-semi-bold mb-3 mb-sm-2"><a href="../app/support-desk/tickets-preview.html">I need your help #2256</a></p>
-                            <div class="row align-items-center gx-0 gy-2">
-                              <div class="col-auto me-2">
-                                <h6 class="client mb-0"><a class="text-800 d-flex align-items-center gap-1" href="../app/support-desk/contact-details.html"><span class="fas fa-user" data-fa-transform="shrink-3 up-1"></span><span>Morrison</span></a></h6>
-                              </div>
-                              <div class="col-auto lh-1 me-3"><small class="badge rounded badge-subtle-info false">Responded</small></div>
-                              <div class="col-auto">
-                                <h6 class="mb-0 text-500">2d ago</h6>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="border-bottom mt-4 mb-x1"></div>
-                        <div class="d-flex justify-content-between ms-auto">
-                          <div class="d-flex align-items-center gap-2 ms-md-4 ms-xl-0" style="width:7.5rem;">
-                            <div style="--falcon-circle-progress-bar:50"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#2A7BE4" stroke-width="12"></circle>
-                              </svg></div>
-                            <h6 class="mb-0 text-700">Medium</h6>
-                          </div><select class="form-select form-select-sm" aria-label="agents actions" style="width:9.375rem;">
-                            <option>Select Agent</option>
-                            <option>Anindya</option>
-                            <option>Nowrin</option>
-                            <option selected="selected">Khalid</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="bg-white dark__bg-1100 d-md-flex d-xl-inline-block d-xxl-flex align-items-center p-x1 rounded-3 shadow-sm card-view-height">
-                        <div class="d-flex align-items-start align-items-sm-center">
-                          <div class="form-check me-2 me-xxl-3 mb-0"><input class="form-check-input" type="checkbox" id="card-view-tickets-6" data-bulk-select-row="data-bulk-select-row" /></div><a class="d-none d-sm-block" href="../app/support-desk/contact-details.html">
-                            <div class="avatar avatar-xl avatar-3xl">
-                              <div class="avatar-name rounded-circle"><span>MB</span></div>
-                            </div>
-                          </a>
-                          <div class="ms-1 ms-sm-3">
-                            <p class="fw-semi-bold mb-3 mb-sm-2"><a href="../app/support-desk/tickets-preview.html">I need your help #2256</a></p>
-                            <div class="row align-items-center gx-0 gy-2">
-                              <div class="col-auto me-2">
-                                <h6 class="client mb-0"><a class="text-800 d-flex align-items-center gap-1" href="../app/support-desk/contact-details.html"><span class="fas fa-user" data-fa-transform="shrink-3 up-1"></span><span>Morrison Banneker</span></a></h6>
-                              </div>
-                              <div class="col-auto lh-1 me-3"><small class="badge rounded badge-subtle-secondary dark__bg-1000">Closed</small></div>
-                              <div class="col-auto">
-                                <h6 class="mb-0 text-500">2d ago</h6>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="border-bottom mt-4 mb-x1"></div>
-                        <div class="d-flex justify-content-between ms-auto">
-                          <div class="d-flex align-items-center gap-2 ms-md-4 ms-xl-0" style="width:7.5rem;">
-                            <div style="--falcon-circle-progress-bar:50"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#2A7BE4" stroke-width="12"></circle>
-                              </svg></div>
-                            <h6 class="mb-0 text-700">Medium</h6>
-                          </div><select class="form-select form-select-sm" aria-label="agents actions" style="width:9.375rem;">
-                            <option>Select Agent</option>
-                            <option>Anindya</option>
-                            <option>Nowrin</option>
-                            <option selected="selected">Khalid</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="bg-white dark__bg-1100 d-md-flex d-xl-inline-block d-xxl-flex align-items-center p-x1 rounded-3 shadow-sm card-view-height">
-                        <div class="d-flex align-items-start align-items-sm-center">
-                          <div class="form-check me-2 me-xxl-3 mb-0"><input class="form-check-input" type="checkbox" id="card-view-tickets-7" data-bulk-select-row="data-bulk-select-row" /></div><a class="d-none d-sm-block" href="../app/support-desk/contact-details.html">
-                            <div class="avatar avatar-xl avatar-3xl">
-                              <img class="rounded-circle" src="../assets/img/team/14-thumb.png" alt="" />
-                            </div>
-                          </a>
-                          <div class="ms-1 ms-sm-3">
-                            <p class="fw-semi-bold mb-3 mb-sm-2"><a href="../app/support-desk/tickets-preview.html">Regarding Falcon Theme #3262</a></p>
-                            <div class="row align-items-center gx-0 gy-2">
-                              <div class="col-auto me-2">
-                                <h6 class="client mb-0"><a class="text-800 d-flex align-items-center gap-1" href="../app/support-desk/contact-details.html"><span class="fas fa-user" data-fa-transform="shrink-3 up-1"></span><span>Aar Kay</span></a></h6>
-                              </div>
-                              <div class="col-auto lh-1 me-3"><small class="badge rounded badge-subtle-success false">Recent</small></div>
-                              <div class="col-auto">
-                                <h6 class="mb-0 text-500">2d ago</h6>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="border-bottom mt-4 mb-x1"></div>
-                        <div class="d-flex justify-content-between ms-auto">
-                          <div class="d-flex align-items-center gap-2 ms-md-4 ms-xl-0" style="width:7.5rem;">
-                            <div style="--falcon-circle-progress-bar:75"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
-                                <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="12"></circle>
-                                <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#F68F57" stroke-width="12"></circle>
-                              </svg></div>
-                            <h6 class="mb-0 text-700">High</h6>
-                          </div><select class="form-select form-select-sm" aria-label="agents actions" style="width:9.375rem;">
-                            <option>Select Agent</option>
-                            <option>Anindya</option>
-                            <option>Nowrin</option>
-                            <option>Khalid</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="text-center d-none" id="tickets-card-fallback">
-                      <p class="fw-bold fs-8 mt-3">No ticket found</p>
-                    </div>
-                  </div>
-                  <div class="card-footer">
-                    <div class="row align-items-center">
-                      <div class="pagination d-none"></div>
-                      <div class="col"><span class="d-none d-sm-inline-block me-2 fs-10" data-list-info="data-list-info"></span></div>
-                      <div class="col-auto d-flex"><button class="btn btn-sm btn-primary" type="button" data-list-pagination="prev"><span>Previous</span></button><button class="btn btn-sm btn-primary px-4 ms-2" type="button" data-list-pagination="next"><span>Next</span></button></div>
-                    </div>
+                  <div class="tab-pane code-tab-pane" role="tabpanel" aria-labelledby="tab-dom-ea953977-d4b6-48f9-bbe7-d1c79783f8e0" id="dom-ea953977-d4b6-48f9-bbe7-d1c79783f8e0"><pre class="scrollbar rounded-1" style="max-height:420px"><code class="language-html">&lt;div class=&quot;position-absolute z-2&quot; style=&quot;right:16px&quot;&gt;&lt;button class=&quot;btn btn-falcon-default btn-sm mb-1 usa-map-reset&quot;&gt;&lt;span class=&quot;fas fa-sync-alt fs-10&quot;&gt;&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;
+&lt;!-- Find the JS file for the following chart at: src/js/charts/echarts/examples/map-usa.js--&gt;
+&lt;!-- If you are not using gulp based workflow, you can find the transpiled code at: public/assets/js/echarts-example.js--&gt;
+&lt;div class=&quot;echart-map-usa-example&quot; style=&quot;min-height: 400px;&quot; data-echart-responsive=&quot;true&quot;&gt;&lt;/div&gt;
+&lt;h5 class=&quot;mt-3&quot;&gt;JavaScript &lt;/h5&gt;&lt;pre class=&quot;scrollbar mt-2&quot;&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;script src=&amp;quot;assets/data/usa.js&amp;quot;&amp;gt; &amp;lt;/script&amp;gt;&lt;/code&gt;&lt;/pre&gt;</code></pre>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <!--尾栏-->
         <footer class="footer">
           <div class="row g-0 justify-content-between fs-10 mt-4 mb-3">
             <div class="col-12 col-sm-auto text-center">
-              <p class="mb-0 text-600">感谢您对我们健康大数据研究中心的支持<span class="d-none d-sm-inline-block">| </span><br class="d-sm-none" /> 2025 &copy; <a href="https://themewagon.com">网页模板来源bootstrap-falcon</a></p>
+              <p class="mb-0 text-600">Thank you for creating with Falcon <span class="d-none d-sm-inline-block">| </span><br class="d-sm-none" /> 2025 &copy; <a href="https://themewagon.com">Themewagon</a></p>
             </div>
             <div class="col-12 col-sm-auto text-center">
-              <p class="mb-0 text-600">v1.15.3</p>
+              <p class="mb-0 text-600">v3.24.0</p>
             </div>
           </div>
         </footer>
@@ -1442,33 +1256,33 @@ onMounted(() => {
       <p class="fs-10">Choose the perfect color mode for your app.</p>
       <div class="btn-group d-block w-100 btn-group-navbar-style">
         <div class="row gx-2">
-          <div class="col-4"><input class="btn-check" id="themeSwitcherLight" name="theme-color" type="radio" value="light" data-theme-control="theme" /><label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherLight"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="../assets/img/generic/falcon-mode-default.jpg" alt=""/></span><span class="label-text">Light</span></label></div>
-          <div class="col-4"><input class="btn-check" id="themeSwitcherDark" name="theme-color" type="radio" value="dark" data-theme-control="theme" /><label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherDark"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="../assets/img/generic/falcon-mode-dark.jpg" alt=""/></span><span class="label-text"> Dark</span></label></div>
-          <div class="col-4"><input class="btn-check" id="themeSwitcherAuto" name="theme-color" type="radio" value="auto" data-theme-control="theme" /><label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherAuto"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="../assets/img/generic/falcon-mode-auto.jpg" alt=""/></span><span class="label-text"> Auto</span></label></div>
+          <div class="col-4"><input class="btn-check" id="themeSwitcherLight" name="theme-color" type="radio" value="light" data-theme-control="theme" /><label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherLight"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="../../../assets/img/generic/falcon-mode-default.jpg" alt=""/></span><span class="label-text">Light</span></label></div>
+          <div class="col-4"><input class="btn-check" id="themeSwitcherDark" name="theme-color" type="radio" value="dark" data-theme-control="theme" /><label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherDark"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="../../../assets/img/generic/falcon-mode-dark.jpg" alt=""/></span><span class="label-text"> Dark</span></label></div>
+          <div class="col-4"><input class="btn-check" id="themeSwitcherAuto" name="theme-color" type="radio" value="auto" data-theme-control="theme" /><label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherAuto"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="../../../assets/img/generic/falcon-mode-auto.jpg" alt=""/></span><span class="label-text"> Auto</span></label></div>
         </div>
       </div>
       <hr />
       <div class="d-flex justify-content-between">
-        <div class="d-flex align-items-start"><img class="me-2" src="../assets/img/icons/left-arrow-from-left.svg" width="20" alt="" />
+        <div class="d-flex align-items-start"><img class="me-2" src="../../../assets/img/icons/left-arrow-from-left.svg" width="20" alt="" />
           <div class="flex-1">
             <h5 class="fs-9">RTL Mode</h5>
-            <p class="fs-10 mb-0">Switch your language direction </p><a class="fs-10" href="../documentation/customization/configuration.html">RTL Documentation</a>
+            <p class="fs-10 mb-0">Switch your language direction </p><a class="fs-10" href="../../../documentation/customization/configuration.html">RTL Documentation</a>
           </div>
         </div>
         <div class="form-check form-switch"><input class="form-check-input ms-0" id="mode-rtl" type="checkbox" data-theme-control="isRTL" /></div>
       </div>
       <hr />
       <div class="d-flex justify-content-between">
-        <div class="d-flex align-items-start"><img class="me-2" src="../assets/img/icons/arrows-h.svg" width="20" alt="" />
+        <div class="d-flex align-items-start"><img class="me-2" src="../../../assets/img/icons/arrows-h.svg" width="20" alt="" />
           <div class="flex-1">
             <h5 class="fs-9">Fluid Layout</h5>
-            <p class="fs-10 mb-0">Toggle container layout system </p><a class="fs-10" href="../documentation/customization/configuration.html">Fluid Documentation</a>
+            <p class="fs-10 mb-0">Toggle container layout system </p><a class="fs-10" href="../../../documentation/customization/configuration.html">Fluid Documentation</a>
           </div>
         </div>
         <div class="form-check form-switch"><input class="form-check-input ms-0" id="mode-fluid" type="checkbox" data-theme-control="isFluid" /></div>
       </div>
       <hr />
-      <div class="d-flex align-items-start"><img class="me-2" src="../assets/img/icons/paragraph.svg" width="20" alt="" />
+      <div class="d-flex align-items-start"><img class="me-2" src="../../../assets/img/icons/paragraph.svg" width="20" alt="" />
         <div class="flex-1">
           <h5 class="fs-9 d-flex align-items-center">Navigation Position</h5>
           <p class="fs-10 mb-2">Select a suitable navigation system for your web application </p>
@@ -1483,16 +1297,16 @@ onMounted(() => {
       <hr />
       <h5 class="fs-9 d-flex align-items-center">Vertical Navbar Style</h5>
       <p class="fs-10 mb-0">Switch between styles for your vertical navbar </p>
-      <p> <a class="fs-10" href="../modules/components/navs-and-tabs/vertical-navbar.html#navbar-styles">See Documentation</a></p>
+      <p> <a class="fs-10" href="../../../modules/components/navs-and-tabs/vertical-navbar.html#navbar-styles">See Documentation</a></p>
       <div class="btn-group d-block w-100 btn-group-navbar-style">
         <div class="row gx-2">
-          <div class="col-6"><input class="btn-check" id="navbar-style-transparent" type="radio" name="navbarStyle" value="transparent" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-transparent"> <img class="img-fluid img-prototype" src="../assets/img/generic/default.png" alt="" /><span class="label-text"> Transparent</span></label></div>
-          <div class="col-6"><input class="btn-check" id="navbar-style-inverted" type="radio" name="navbarStyle" value="inverted" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-inverted"> <img class="img-fluid img-prototype" src="../assets/img/generic/inverted.png" alt="" /><span class="label-text"> Inverted</span></label></div>
-          <div class="col-6"><input class="btn-check" id="navbar-style-card" type="radio" name="navbarStyle" value="card" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-card"> <img class="img-fluid img-prototype" src="../assets/img/generic/card.png" alt="" /><span class="label-text"> Card</span></label></div>
-          <div class="col-6"><input class="btn-check" id="navbar-style-vibrant" type="radio" name="navbarStyle" value="vibrant" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-vibrant"> <img class="img-fluid img-prototype" src="../assets/img/generic/vibrant.png" alt="" /><span class="label-text"> Vibrant</span></label></div>
+          <div class="col-6"><input class="btn-check" id="navbar-style-transparent" type="radio" name="navbarStyle" value="transparent" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-transparent"> <img class="img-fluid img-prototype" src="../../../assets/img/generic/default.png" alt="" /><span class="label-text"> Transparent</span></label></div>
+          <div class="col-6"><input class="btn-check" id="navbar-style-inverted" type="radio" name="navbarStyle" value="inverted" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-inverted"> <img class="img-fluid img-prototype" src="../../../assets/img/generic/inverted.png" alt="" /><span class="label-text"> Inverted</span></label></div>
+          <div class="col-6"><input class="btn-check" id="navbar-style-card" type="radio" name="navbarStyle" value="card" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-card"> <img class="img-fluid img-prototype" src="../../../assets/img/generic/card.png" alt="" /><span class="label-text"> Card</span></label></div>
+          <div class="col-6"><input class="btn-check" id="navbar-style-vibrant" type="radio" name="navbarStyle" value="vibrant" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-vibrant"> <img class="img-fluid img-prototype" src="../../../assets/img/generic/vibrant.png" alt="" /><span class="label-text"> Vibrant</span></label></div>
         </div>
       </div>
-      <div class="text-center mt-5"><img class="mb-4" src="../assets/img/icons/spot-illustrations/47.png" alt="" width="120" />
+      <div class="text-center mt-5"><img class="mb-4" src="../../../assets/img/icons/spot-illustrations/47.png" alt="" width="120" />
         <h5>Like What You See?</h5>
         <p class="fs-10">Get Falcon now and create beautiful dashboards with hundreds of widgets.</p><a class="mb-3 btn btn-primary" href="https://themes.getbootstrap.com/product/falcon-admin-dashboard-webapp-template/" target="_blank">Purchase</a>
       </div>

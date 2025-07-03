@@ -7810,10 +7810,9 @@ var revenueChartInit = function revenueChartInit() {
   var chartKeys = ['revenue', 'users', 'deals', 'profit', 'county'];
   chartKeys.forEach(function (key) {
     var el = document.querySelector(".echart-crm-".concat(key));
-    el && initChart(el, getDefaultOptions(data.dataset[key][0], data.dataset[key][1], data.dataset[key][2]));
+    el && initChart(el, getDefaultOptions(data.dataset[key][0], data.dataset[key][1]));
   });
 };
-
 var echartsCustomerSatisfactionInit = function echartsCustomerSatisfactionInit() {
   var $echartCustomerSatisfaction = document.querySelector('.echart-customer-setisfaction');
   if ($echartCustomerSatisfaction) {

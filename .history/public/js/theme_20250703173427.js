@@ -7674,32 +7674,21 @@ var courseStatusInit = function courseStatusInit() {
 /* -------------------------------------------------------------------------- */
 /*                                Audience Chart                              */
 /* -------------------------------------------------------------------------- */
-//各类型医疗卫生机构医院总成本、医药费、检查费折线图
+
 var revenueChartInit = function revenueChartInit() {
   var data = {
     dates: utils.getDates(new Date('5-6-2019'), new Date('5-6-2021'), 1000 * 60 * 60 * 24 * 30),
     dataset: {
-      revenue: [[645, 500, 550, 550, 473, 405, 286, 601], 
-      [440, 250, 270, 400, 175, 180, 200, 400],
-      [340, 360, 230, 250, 410, 430, 450, 200]],
-      users: [[545, 500, 650, 727, 773, 705, 686, 501], 
-      [340, 360, 230, 250, 410, 430, 450, 200],
-      [440, 250, 270, 400, 175, 180, 200, 400]],
-      deals: [[545, 400, 450, 627, 473, 450, 460, 780], 
-      [245, 300, 450, 427, 273, 250, 260, 580],
-      [340, 360, 330, 300, 410, 380, 450, 400]],
-      profit: [[545, 400, 450, 627, 673, 605, 686, 501], 
-      [340, 360, 330, 300, 410, 380, 450, 400],
-      [350, 370, 230, 250, 410, 430, 450, 200]],
-      county: [[545, 400, 450, 627, 673, 605, 686, 501], 
-      [340, 360, 330, 300, 410, 380, 450, 400],
-      [440, 250, 270, 400, 175, 180, 200, 400]],
+      revenue: [[645, 500, 550, 550, 473, 405, 286, 601, 743, 450, 604, 815, 855, 722, 700, 896, 866, 952, 719, 558, 737, 885, 972, 650, 600], [440, 250, 270, 400, 175, 180, 200, 400, 600, 380, 340, 550, 650, 450, 400, 688, 650, 721, 500, 300, 445, 680, 568, 400, 371]],
+      users: [[545, 500, 650, 727, 773, 705, 686, 501, 643, 580, 604, 615, 755, 722, 727, 816, 836, 952, 719, 758, 937, 785, 872, 850, 800], [340, 360, 230, 250, 410, 430, 450, 200, 220, 540, 500, 250, 355, 320, 500, 630, 680, 500, 520, 550, 750, 720, 700, 780, 750]],
+      deals: [[545, 400, 450, 627, 473, 450, 460, 780, 770, 800, 504, 550, 500, 530, 727, 716, 736, 820, 719, 758, 737, 885, 872, 850, 800], [245, 300, 450, 427, 273, 250, 260, 580, 570, 500, 402, 450, 400, 330, 527, 516, 536, 620, 519, 558, 537, 483, 472, 250, 300]],
+      profit: [[545, 400, 450, 627, 673, 605, 686, 501, 843, 518, 504, 715, 955, 622, 627, 716, 736, 952, 619, 558, 937, 785, 872, 550, 400], [340, 360, 330, 300, 410, 380, 450, 400, 420, 240, 200, 250, 355, 320, 500, 630, 680, 400, 420, 450, 650, 620, 700, 450, 340]]
     }
   };
   var tooltipFormatter = function tooltipFormatter(params) {
-    return "\n    <div class=\"card\">\n      <div class=\"card-header bg-body-tertiary py-2\">\n        <h6 class=\"text-600 mb-0\">".concat(params[0].axisValue, "</h6>\n      </div>\n      <div class=\"card-body py-2\">\n        <h6 class=\"text-600 fw-normal\">\n          <span class=\"fas fa-circle text-primary me-2\"></span>总成本: \n          <span class=\"fw-medium\">$").concat(params[0].data, "</span></h6>\n        <h6 class=\"text-600 mb-0 fw-normal\"> \n          <span class=\"fas fa-circle text-warning me-2\"></span>医药费: \n          <span class=\"fw-medium\">$").concat(params[1].data, "</span></h6>\n        <h6 class=\"text-600 mb-0 fw-normal\"> \n          <span class=\"fas fa-circle text-success me-2\"></span>检查费: \n          <span class=\"fw-medium\">$").concat(params[2].data, "</span></h6>\n      </div>\n    </div>\n  ");
+    return "\n    <div class=\"card\">\n      <div class=\"card-header bg-body-tertiary py-2\">\n        <h6 class=\"text-600 mb-0\">".concat(params[0].axisValue, "</h6>\n      </div>\n      <div class=\"card-body py-2\">\n        <h6 class=\"text-600 fw-normal\">\n          <span class=\"fas fa-circle text-primary me-2\"></span>Revenue: \n          <span class=\"fw-medium\">$").concat(params[0].data, "</span></h6>\n        <h6 class=\"text-600 mb-0 fw-normal\"> \n          <span class=\"fas fa-circle text-warning me-2\"></span>Revenue Goal: \n          <span class=\"fw-medium\">$").concat(params[1].data, "</span></h6>\n      </div>\n    </div>\n  ");
   };
-  var getDefaultOptions = function getDefaultOptions(data1, data2, data3) {
+  var getDefaultOptions = function getDefaultOptions(data1, data2) {
     return function () {
       return {
         color: utils.getColors().white,
@@ -7719,7 +7708,19 @@ var revenueChartInit = function revenueChartInit() {
         },
         xAxis: {
           type: 'category',
-          data: ['2015年', '2016年', '2017年', '2018年', '2019年', '2020年', '2021年', '2022年'], 
+          data: utils.getPastDates(25).map(function (date) {
+            return window.dayjs(date).format('DD MMM, YYYY');
+          }),
+          axisLabel: {
+            color: utils.getGrays()['600'],
+            formatter: function formatter(value) {
+              return window.dayjs(value).format('MMM DD');
+            },
+            align: 'left',
+            fontSize: 11,
+            padding: [0, 0, 0, 5],
+            showMaxLabel: false
+          },
           axisLine: {
             show: false
           },
@@ -7746,7 +7747,7 @@ var revenueChartInit = function revenueChartInit() {
         },
         series: [{
           type: 'bar',
-          name: '总成本',
+          name: 'Revenue',
           data: data1,
           lineStyle: {
             color: utils.getColor('primary')
@@ -7764,7 +7765,7 @@ var revenueChartInit = function revenueChartInit() {
           }
         }, {
           type: 'line',
-          name: '医药费',
+          name: 'Revenue Goal',
           data: data2,
           symbol: 'circle',
           symbolSize: 6,
@@ -7776,21 +7777,6 @@ var revenueChartInit = function revenueChartInit() {
             type: 'dashed',
             width: 2,
             color: utils.getColor('warning')
-          }
-        }, {
-          type: 'line',
-          name: '检查费',
-          data: data3,
-          symbol: 'circle',
-          symbolSize: 6,
-          animation: false,
-          itemStyle: {
-            color: utils.getColor('success')
-          },
-          lineStyle: {
-            type: 'dashed',
-            width: 2,
-            color: utils.getColor('success')
           }
         }],
         grid: {
@@ -7807,13 +7793,12 @@ var revenueChartInit = function revenueChartInit() {
     var chart = window.echarts.init(el);
     echartSetOption(chart, userOptions, options);
   };
-  var chartKeys = ['revenue', 'users', 'deals', 'profit', 'county'];
+  var chartKeys = ['revenue', 'users', 'deals', 'profit'];
   chartKeys.forEach(function (key) {
     var el = document.querySelector(".echart-crm-".concat(key));
-    el && initChart(el, getDefaultOptions(data.dataset[key][0], data.dataset[key][1], data.dataset[key][2]));
+    el && initChart(el, getDefaultOptions(data.dataset[key][0], data.dataset[key][1]));
   });
 };
-
 var echartsCustomerSatisfactionInit = function echartsCustomerSatisfactionInit() {
   var $echartCustomerSatisfaction = document.querySelector('.echart-customer-setisfaction');
   if ($echartCustomerSatisfaction) {
@@ -8459,18 +8444,15 @@ var leadConversionInit = function leadConversionInit() {
 /* -------------------------------------------------------------------------- */
 /*                             Echarts Line Payment                           */
 /* -------------------------------------------------------------------------- */
-//医疗费用医院总成本曲线图
+
 var linePaymentChartInit = function linePaymentChartInit() {
   var $echartsLinePaymentChart = document.querySelector('.echart-line-payment');
   var dataset = {
-    total: [1, 0, 2, 1, 2, 1, 1, 5],
-    committee: [1, 3, 2, 1, 4, 6, 1, 2],
-    province: [1, 0, 2, 1, 2, 1, 1, 2],
-    prefectureLevel: [1, 2, 4, 1, 2, 1, 1, 3],
-    countyLevel: [1, 0, 3, 1, 2, 4, 1, 0],
-    county: [1, 3, 2, 1, 2, 1, 1, 5],
+    all: [4, 1, 6, 2, 7, 12, 4, 6],
+    successful: [3, 1, 4, 1, 5, 9, 2, 6],
+    failed: [1, 0, 2, 1, 2, 1, 1, 0]
   };
-  var labels = ['2015年  ', '2016年  ', '2017年  ', '2018年  ', '2019年  ', '2020年  ', '2021年  ', '2022年  '];
+  var labels = ["2015年  ", '2016年  ', '2017', '2018', '2019', '2020', '2021', '2022'];
   if ($echartsLinePaymentChart) {
     var userOptions = utils.getData($echartsLinePaymentChart, 'options');
     var chart = window.echarts.init($echartsLinePaymentChart);
@@ -8550,8 +8532,8 @@ var linePaymentChartInit = function linePaymentChartInit() {
         series: [{
           type: 'line',
           smooth: true,
-          data: dataset.total.map(function (d) {
-            return d;
+          data: dataset.successful.map(function (d) {
+            return (d * 3.14).toFixed(2);
           }),
           symbol: 'emptyCircle',
           itemStyle: {
@@ -9558,7 +9540,7 @@ var marketingExpensesInit = function marketingExpensesInit() {
 /* -------------------------------------------------------------------------- */
 /*                                Market Share                                */
 /* -------------------------------------------------------------------------- */
-//各类型医疗卫生机构医院总成本、医药费、检查费占比图
+
 var mostLeadsInit = function mostLeadsInit() {
   var ECHART_MOST_LEADS = '.echart-most-leads';
   var $echartMostLeads = document.querySelector(ECHART_MOST_LEADS);
@@ -9567,7 +9549,7 @@ var mostLeadsInit = function mostLeadsInit() {
     var chart = window.echarts.init($echartMostLeads);
     var getDefaultOptions = function getDefaultOptions() {
       return {
-        color: [utils.getColors().primary, utils.getColors().info, utils.rgbaColor(utils.getColors().primary, 0.5)],
+        color: [utils.getColors().primary, utils.rgbaColor(utils.getColors().primary, 0.5), utils.getColors().warning, utils.getColors().info],
         tooltip: {
           trigger: 'item',
           padding: [7, 10],
@@ -9617,15 +9599,18 @@ var mostLeadsInit = function mostLeadsInit() {
             }
           },
           data: [{
-            value: 25379.70,
-            name: '总成本'
+            value: 60,
+            name: 'Social'
           }, {
-            value: 5880.90,
-            name: '医药费'
+            value: 30,
+            name: 'Other'
           }, {
-            value: 2126.70,
-            name: '检查费'
-          },]
+            value: 10,
+            name: 'Call'
+          }, {
+            value: 120,
+            name: 'Email'
+          }]
         }]
       };
     };

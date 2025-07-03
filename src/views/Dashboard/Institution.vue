@@ -131,11 +131,11 @@ onMounted(() => {
               <li class="nav-item">
                   <!-- parent pages-->
                   <a class="nav-link dropdown-indicator" href="" role="button" data-bs-toggle="collapse" aria-expanded="true" aria-controls="dashboard">
-                      <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-chart-pie"></span></span><span class="nav-link-text ps-1">通用模块</span></div>
+                      <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-chart-pie"></span></span><span class="nav-link-text ps-1">数据展示</span></div>
                   </a>
                   <ul class="nav collapse show" id="dashboard">
                     <li class="nav-item">
-                      <a class="nav-link active" @click="goToDashboard" href="">
+                      <a class="nav-link" @click="goToDashboard" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">默认首页</span></div>
                       </a><!-- more inner pages-->
                     </li>
@@ -149,7 +149,7 @@ onMounted(() => {
                       </a><!-- more inner pages-->
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" @click="goToInstitution" href="">
+                      <a class="nav-link active" @click="goToInstitution" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">全国医疗卫生机构</span></div>
                       </a><!-- more inner pages-->
                     </li>
@@ -754,6 +754,25 @@ onMounted(() => {
             </li>
           </ul>
         </nav>
+        <div class="row g-3 mb-3">
+          <div class="col-xxl-6">
+            <div class="row g-0 h-100">
+              <div class="col-12">
+                <div class="card bg-body-tertiary dark__bg-opacity-50 shadow-none">
+                  <div class="bg-holder bg-card d-none d-sm-block" style="background-image:url(../../assets/img/illustrations/ticket-bg.png);"></div><!--/.bg-holder-->
+                  <div class="d-flex align-items-center z-1 p-0">
+                    <img src="../../assets/img/illustrations/crm-bar-chart.png" alt="" width="96" />
+                    <div class="ms-n3">
+                      <h6 class="mb-1 text-primary">欢迎来到</h6>
+                      <h4 class="mb-0 text-primary fw-bold">健康大数据中心<span class="text-info fw-medium">全国医疗卫生机构研究实验室</span></h4>
+                    </div>
+                    <img src="../../assets/img/illustrations/crm-line-chart.png" alt="" width="96" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="row g-3 mb-3">
           <div class=" col-xxl-6">
             <div class="card">
@@ -1432,10 +1451,10 @@ onMounted(() => {
         <footer class="footer">
           <div class="row g-0 justify-content-between fs-10 mt-4 mb-3">
             <div class="col-12 col-sm-auto text-center">
-              <p class="mb-0 text-600">Thank you for creating with Falcon <span class="d-none d-sm-inline-block">| </span><br class="d-sm-none" /> 2025 &copy; <a href="https://themewagon.com">Themewagon</a></p>
+              <p class="mb-0 text-600">感谢您对我们健康大数据研究中心的支持<span class="d-none d-sm-inline-block">| </span><br class="d-sm-none" /> 2025 &copy; <a href="https://themewagon.com">网页模板来源bootstrap-falcon</a></p>
             </div>
             <div class="col-12 col-sm-auto text-center">
-              <p class="mb-0 text-600">v3.24.0</p>
+              <p class="mb-0 text-600">v1.15.3</p>
             </div>
           </div>
         </footer>
