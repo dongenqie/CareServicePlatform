@@ -13,7 +13,7 @@ export default {
   <!-- ===============================================--><!--    Main Content--><!-- ===============================================-->
   <main class="main" id="top">
     <nav class="navbar navbar-standard navbar-expand-lg fixed-top navbar-dark" data-navbar-darken-on-scroll="data-navbar-darken-on-scroll">
-      <div class="container"><a class="navbar-brand" href=""><span class="text-white dark__text-white">健康大数据研究中心</span></a><button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarStandard" aria-controls="navbarStandard" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+      <div class="container"><a class="navbar-brand" href="../index.html"><span class="text-white dark__text-white">Falcon</span></a><button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarStandard" aria-controls="navbarStandard" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse scrollbar" id="navbarStandard">
           <ul class="navbar-nav" data-top-nav-dropdowns="data-top-nav-dropdowns">
             <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="dashboards">Dashboard</a>
@@ -221,12 +221,12 @@ export default {
 
     <!-- ============================================--><!-- <section> begin ============================-->
     <section class="py-0 overflow-hidden" id="banner" data-bs-theme="light">
-      <div class="bg-holder overlay" style="background-image:url(https://www.zkj.com/Public/Uploads/uploadfile/images/20230825/weixintupian_20230825155201.png);background-position: center bottom;"></div><!--/.bg-holder-->
+      <div class="bg-holder overlay" style="background-image:url(https://prium.github.io/falcon/v3.24.0/assets/img/generic/bg-2.jpg);background-position: center bottom;"></div><!--/.bg-holder-->
       <div class="container">
         <div class="row flex-center pt-8 pt-lg-10 pb-lg-9 pb-xl-0">
-          <div class="col-md-11 col-lg-8 col-xl-4 pb-7 pb-xl-9 text-center text-xl-start">
-            <h1 class="text-white fw-light"> <span class="typed-text fw-bold" data-typed-text='["医院","人口","医疗资源","机构"]'></span><br /></h1>
-            <p class="lead text-white opacity-75">欢迎来到健康大数据研究中心</p><a class="btn btn-outline-light border-2 rounded-pill btn-lg mt-4 fs-9 py-2" href="#!">Start!<span class="fas fa-play ms-2" data-fa-transform="shrink-6 down-1"></span></a>
+          <div class="col-md-11 col-lg-8 col-xl-4 pb-7 pb-xl-9 text-center text-xl-start"><a class="btn btn-outline-danger mb-4 fs-10 border-2 rounded-pill" href="#!"><span class="me-2" role="img" aria-label="Gift">🎁</span>Become a pro</a>
+            <h1 class="text-white fw-light">Bring <span class="typed-text fw-bold" data-typed-text='["design","beauty","elegance","perfection"]'></span><br />to your webapp</h1>
+            <p class="lead text-white opacity-75">With the power of Falcon, you can now focus only on functionaries for your digital products, while leaving the UI design on us!</p><a class="btn btn-outline-light border-2 rounded-pill btn-lg mt-4 fs-9 py-2" href="#!">Start building with the falcon<span class="fas fa-play ms-2" data-fa-transform="shrink-6 down-1"></span></a>
           </div>
           <div class="col-xl-7 offset-xl-1 align-self-end mt-4 mt-xl-0"><a class="img-landing-banner rounded" href="../index.html"><img class="img-fluid d-dark-none" src="../assets/img/generic/dashboard-alt.jpg" alt="" /><img class="img-fluid d-light-none" src="../assets/img/generic/dashboard-alt-dark.png" alt="" /></a></div>
         </div>

@@ -225,8 +225,8 @@ export default {
       <div class="container">
         <div class="row flex-center pt-8 pt-lg-10 pb-lg-9 pb-xl-0">
           <div class="col-md-11 col-lg-8 col-xl-4 pb-7 pb-xl-9 text-center text-xl-start">
-            <h1 class="text-white fw-light"> <span class="typed-text fw-bold" data-typed-text='["医院","人口","医疗资源","机构"]'></span><br /></h1>
-            <p class="lead text-white opacity-75">欢迎来到健康大数据研究中心</p><a class="btn btn-outline-light border-2 rounded-pill btn-lg mt-4 fs-9 py-2" href="#!">Start!<span class="fas fa-play ms-2" data-fa-transform="shrink-6 down-1"></span></a>
+            <h1 class="text-white fw-light"> <span class="typed-text fw-bold" data-typed-text='["医院","人口","医疗资源","机构"]'></span><br />to your webapp</h1>
+            <p class="lead text-white opacity-75">欢迎来到健康大数据研究中心</p><a class="btn btn-outline-light border-2 rounded-pill btn-lg mt-4 fs-9 py-2" href="#!">Start building with the falcon<span class="fas fa-play ms-2" data-fa-transform="shrink-6 down-1"></span></a>
           </div>
           <div class="col-xl-7 offset-xl-1 align-self-end mt-4 mt-xl-0"><a class="img-landing-banner rounded" href="../index.html"><img class="img-fluid d-dark-none" src="../assets/img/generic/dashboard-alt.jpg" alt="" /><img class="img-fluid d-light-none" src="../assets/img/generic/dashboard-alt-dark.png" alt="" /></a></div>
         </div>

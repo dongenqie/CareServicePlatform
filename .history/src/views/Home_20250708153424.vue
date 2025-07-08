@@ -13,7 +13,7 @@ export default {
   <!-- ===============================================--><!--    Main Content--><!-- ===============================================-->
   <main class="main" id="top">
     <nav class="navbar navbar-standard navbar-expand-lg fixed-top navbar-dark" data-navbar-darken-on-scroll="data-navbar-darken-on-scroll">
-      <div class="container"><a class="navbar-brand" href=""><span class="text-white dark__text-white">健康大数据研究中心</span></a><button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarStandard" aria-controls="navbarStandard" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+      <div class="container"><a class="navbar-brand" href="../index.html"><span class="text-white dark__text-white">Falcon</span></a><button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarStandard" aria-controls="navbarStandard" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse scrollbar" id="navbarStandard">
           <ul class="navbar-nav" data-top-nav-dropdowns="data-top-nav-dropdowns">
             <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="dashboards">Dashboard</a>
@@ -177,7 +177,40 @@ export default {
                 </div>
               </div>
             </li>
-            <li class="nav-item"><a class="nav-link dropdown-toggle" id="navbarDropdownLogin" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @click="goToLogin">Login</a>
+            <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" id="navbarDropdownLogin" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login</a>
+              <div class="dropdown-menu dropdown-caret dropdown-menu-end dropdown-menu-card" aria-labelledby="navbarDropdownLogin">
+                <div class="card shadow-none navbar-card-login">
+                  <div class="card-body fs-10 p-4 fw-normal">
+                    <div class="row text-start justify-content-between align-items-center mb-2">
+                      <div class="col-auto">
+                        <h5 class="mb-0">Log in</h5>
+                      </div>
+                      <div class="col-auto">
+                        <p class="fs-10 text-600 mb-0">or <a href="../pages/authentication/simple/register.html">Create an account</a></p>
+                      </div>
+                    </div>
+                    <form>
+                      <div class="mb-3"><input class="form-control" type="email" placeholder="Email address" /></div>
+                      <div class="mb-3"><input class="form-control" type="password" placeholder="Password" /></div>
+                      <div class="row flex-between-center">
+                        <div class="col-auto">
+                          <div class="form-check mb-0"><input class="form-check-input" type="checkbox" id="modal-checkbox" /><label class="form-check-label mb-0" for="modal-checkbox">Remember me</label></div>
+                        </div>
+                        <div class="col-auto"><a class="fs-10" href="../pages/authentication/simple/forgot-password.html">Forgot Password?</a></div>
+                      </div>
+                      <div class="mb-3"><button class="btn btn-primary d-block w-100 mt-3" type="submit" name="submit">Log in</button></div>
+                    </form>
+                    <div class="position-relative mt-4">
+                      <hr />
+                      <div class="divider-content-center">or log in with</div>
+                    </div>
+                    <div class="row g-2 mt-2">
+                      <div class="col-sm-6"><a class="btn btn-outline-google-plus btn-sm d-block w-100" href="#"><span class="fab fa-google-plus-g me-2" data-fa-transform="grow-8"></span> google</a></div>
+                      <div class="col-sm-6"><a class="btn btn-outline-facebook btn-sm d-block w-100" href="#"><span class="fab fa-facebook-square me-2" data-fa-transform="grow-8"></span> facebook</a></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </li>
             <li class="nav-item"><a class="nav-link" href="#!" data-bs-toggle="modal" data-bs-target="#exampleModal">Register</a></li>
           </ul>
@@ -221,12 +254,12 @@ export default {
 
     <!-- ============================================--><!-- <section> begin ============================-->
     <section class="py-0 overflow-hidden" id="banner" data-bs-theme="light">
-      <div class="bg-holder overlay" style="background-image:url(https://www.zkj.com/Public/Uploads/uploadfile/images/20230825/weixintupian_20230825155201.png);background-position: center bottom;"></div><!--/.bg-holder-->
+      <div class="bg-holder overlay" style="background-image:url(../assets/img/generic/bg-1.jpg);background-position: center bottom;"></div><!--/.bg-holder-->
       <div class="container">
         <div class="row flex-center pt-8 pt-lg-10 pb-lg-9 pb-xl-0">
-          <div class="col-md-11 col-lg-8 col-xl-4 pb-7 pb-xl-9 text-center text-xl-start">
-            <h1 class="text-white fw-light"> <span class="typed-text fw-bold" data-typed-text='["医院","人口","医疗资源","机构"]'></span><br /></h1>
-            <p class="lead text-white opacity-75">欢迎来到健康大数据研究中心</p><a class="btn btn-outline-light border-2 rounded-pill btn-lg mt-4 fs-9 py-2" href="#!">Start!<span class="fas fa-play ms-2" data-fa-transform="shrink-6 down-1"></span></a>
+          <div class="col-md-11 col-lg-8 col-xl-4 pb-7 pb-xl-9 text-center text-xl-start"><a class="btn btn-outline-danger mb-4 fs-10 border-2 rounded-pill" href="#!"><span class="me-2" role="img" aria-label="Gift">🎁</span>Become a pro</a>
+            <h1 class="text-white fw-light">Bring <span class="typed-text fw-bold" data-typed-text='["design","beauty","elegance","perfection"]'></span><br />to your webapp</h1>
+            <p class="lead text-white opacity-75">With the power of Falcon, you can now focus only on functionaries for your digital products, while leaving the UI design on us!</p><a class="btn btn-outline-light border-2 rounded-pill btn-lg mt-4 fs-9 py-2" href="#!">Start building with the falcon<span class="fas fa-play ms-2" data-fa-transform="shrink-6 down-1"></span></a>
           </div>
           <div class="col-xl-7 offset-xl-1 align-self-end mt-4 mt-xl-0"><a class="img-landing-banner rounded" href="../index.html"><img class="img-fluid d-dark-none" src="../assets/img/generic/dashboard-alt.jpg" alt="" /><img class="img-fluid d-light-none" src="../assets/img/generic/dashboard-alt-dark.png" alt="" /></a></div>
         </div>

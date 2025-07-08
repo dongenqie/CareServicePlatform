@@ -31,6 +31,10 @@ const RELOADABLE_SCRIPTS = [
   '/js/vendors/dropzone-min.js',
   '/js/vendors/swiper-bundle.min.js',
   '/js/vendors/typed.umd.js'
+
+      <script data-reloadable src="/js/vendors/swiper-bundle.min.js"></script>
+    <script data-reloadable src="/js/vendors/typed.umd.js"></script>
+
 ]
 
 /**
