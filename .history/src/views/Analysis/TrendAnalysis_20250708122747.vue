@@ -3,10 +3,11 @@ import { onMounted, ref, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineOptions } from 'vue'
 import Dropzone from 'dropzone';
-import { getDescriptiveStatistics } from '@/api/analysis.js';
+import { getTrendAnalysis } from '@/api/analysis.js'; // 导入趋势分析 API
+import { trendChartInit } from '@/js/echart-analysis.js';  // 引入你的图表初始化代码
 
 // 声明组件名
-defineOptions({ name: 'DescriptiveStatistics' })
+defineOptions({ name: 'TrendAnalysis' })
 
 // 从 localStorage 取得当前用户角色
 const role = ref(localStorage.getItem('userRole') || '')
@@ -41,86 +42,64 @@ function goToComparativeAnalysis()     { router.push({ name: 'ComparativeAnalysi
 function goToCorrelationAnalysis()     { router.push({ name: 'CorrelationAnalysis' }) }
 function goToTrendAnalysis()           { router.push({ name: 'TrendAnalysis' }) }
 function goToDataProcess()             { router.push({ name: 'DataProcess' }) }
-function goToPersonalCenter()          { router.push({ name: 'PersonalCenter' }) }
-
-// 禁用 Dropzone 的自动发现
-Dropzone.autoDiscover = false;
 
 // 存储 Dropzone 实例
 let myDropzone = null;
 
+// 表单字段
+const attributeName1 = ref('');
+const attributeName2 = ref('');
+const directTime = ref(null);
 const file = ref(null);
-const average = ref(null);
-const median = ref(null);
-const stdDev = ref(null);
-const histogramData = ref({});
-const curveData = ref({});
 
+
+// 定义响应式数据
+const scatterData = ref([]);  // 用 ref 定义 scatterData，确保它是响应式的
+const trendData = ref(null);
 
 // 文件改变处理
 const handleFileChange = (event) => {
   file.value = event.target.files[0];
 };
 
-/**
- * 提交按钮触发
- */
-async function submitFile() {
+// 提交文件处理
+const submitFile = async () => {
   if (!myDropzone || myDropzone.files.length === 0) {
     return alert('请先上传文件！');
   }
 
   console.log("File:", file.value);  // 调试信息
+  console.log("attributeName1:", attributeName1.value);  // 调试信息
+  console.log("attributeName2:", attributeName2.value);  // 调试信息
+  console.log("directTime:", directTime.value);  // 调试信息
 
   try {
     const fileToUpload = myDropzone.files[0];  // 获取上传的文件
-    const data = await getDescriptiveStatistics(fileToUpload);
+    const formData = new FormData();
+    formData.append('file', fileToUpload);  // 添加文件到 FormData，确保字段名为 'file'
+    formData.append('attributeName1', attributeName1.value);
+    formData.append('attributeName2', attributeName2.value);
+    formData.append('directTime', directTime.value);
 
-    average.value = data.平均数;
-    median.value  = data.中位数;
-    stdDev.value  = data.标准差;
+    const data = await getTrendAnalysis(formData);  // 获取趋势分析数据
+    console.log(data);
 
-    histogramData.value = data.histogram;
-    curveData.value     = data.curve;
+    trendData.value = data.trendVO;  // 将返回的趋势分析数据存储
 
-    // 更新 ECharts
-    updateChart();
-  } catch (err) {
-    console.error(err);
-    alert('分析失败，请重试！');
+    if (data && data.scatterVO && data.scatterVO.data && data.trendVO) {
+      scatterData.value = data.scatterVO.data;  // 获取散点图数据
+      trendData.value = data.trendVO.data;  // 获取趋势图数据
+
+      // 调用图表初始化函数
+      trendChartInit(scatterData.value, trendData.value);  
+    } else {
+      alert('返回的数据格式不正确');
+    }
+  } catch (error) {
+    console.error('趋势分析失败:', error);
+    alert('分析失败，请重试');
   }
-}
-
-
-/**
- * 绘图
- */
-function updateChart() {
-  const el = document.querySelector('.echart-analysis-descriptive')
-  if (!el) return
-  const chart = window.echarts.init(el)
-  chart.setOption({
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    xAxis: { type: 'category', data: histogramData.value.xaxis },
-    yAxis: { type: 'value' },
-    series: [
-      {
-        name: histogramData.value.name,
-        type: 'bar',
-        data: histogramData.value.yaxis
-      },
-      {
-        name: curveData.value.name,
-        type: 'line',
-        data: curveData.value.curveY,
-        smooth: true,
-        symbol: 'circle',
-        symbolSize: 6,
-        lineStyle: { width: 2 }
-      }
-    ]
-  })
-}
+};
 
 // 组件销毁时清理 Dropzone 实例
 onUnmounted(() => {
@@ -131,7 +110,7 @@ onUnmounted(() => {
 });
 
 onMounted(() => {
-  if (!myDropzone) {
+    if (!myDropzone) {
      // 1) 找到页面上写好的 .dz-preview 区域，把它的 innerHTML 当模板读出来
      const previewNode = document.querySelector('#my-awesome-dropzone .dz-preview');
      const templateHTML = previewNode ? previewNode.innerHTML : '';
@@ -237,13 +216,13 @@ onMounted(() => {
       <nav class="navbar navbar-light navbar-vertical navbar-expand-xl" style="display: none;">
         <!--侧边栏上部-->
         <div class="d-flex align-items-center">
-          <div class="toggle-icon-wrapper">
+            <div class="toggle-icon-wrapper">
             <button class="btn navbar-toggler-humburger-icon navbar-vertical-toggle" data-bs-toggle="tooltip" data-bs-placement="left" title="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
-          </div><a class="navbar-brand" href="">
+            </div><a class="navbar-brand" href="">
             <div class="d-flex align-items-center py-3">
-              <img class="me-2" src="../../assets/img/logo.png" alt="" width="40" />
-              <span class="font-sans-serif text-primary">数据中心</span></div>
-          </a>
+                <img class="me-2" src="../../assets/img/logo.png" alt="" width="40" />
+                <span class="font-sans-serif text-primary">数据中心</span></div>
+            </a>
         </div>
         <!--侧边导航栏-->
         <div class="collapse navbar-collapse" id="navbarVerticalCollapse">
@@ -256,27 +235,27 @@ onMounted(() => {
                       <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-chart-pie"></span></span><span class="nav-link-text ps-1">数据展示</span></div>
                   </a>
                   <ul class="nav collapse show" id="dashboard">
-                    <li class="nav-item">
+                  <li class="nav-item">
                       <a class="nav-link active" @click="goToDashboard" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">默认首页</span></div>
                       </a><!-- more inner pages-->
-                    </li>
-                    <li class="nav-item"><a class="nav-link" @click="goToUserDefined" href="">
+                  </li>
+                  <li class="nav-item"><a class="nav-link" @click="goToUserDefined" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">用户自定义仪表盘</span></div>
                       </a><!-- more inner pages-->
-                    </li>
-                    <li class="nav-item">
+                  </li>
+                  <li class="nav-item">
                       <a class="nav-link" @click="goToDrap" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">组件拖拽演示</span></div>
                       </a><!-- more inner pages-->
-                    </li>
-                    <li class="nav-item">
+                  </li>
+                  <li class="nav-item">
                       <a class="nav-link" @click="goToInstitution" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">全国医疗卫生机构</span></div>
                       </a><!-- more inner pages-->
-                    </li>
+                  </li>
                       <li class="nav-item"><a class="nav-link" @click="goToHospitalType" href="">
-                          <div class="d-flex align-items-center"><span class="nav-link-text ps-1">医院类型</span></div>
+                          <div class="d-flex align-items-center"><span class="nav-link-text ps-1">医院类型</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
                       </a><!-- more inner pages--></li>
                       <li class="nav-item"><a class="nav-link" @click="goToHospitalGrade" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">医院等级</span></div>
@@ -287,119 +266,116 @@ onMounted(() => {
                       <li class="nav-item"><a class="nav-link" @click="goToHospitalNumber" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">各省医院总数量</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
                       </a><!-- more inner pages--></li>
-                      <li class="nav-item"><a class="nav-link" @click="goToPersonalCenter" href="">
-                          <div class="d-flex align-items-center"><span class="nav-link-text ps-1">个人中心</span></div>
-                      </a><!-- more inner pages--></li>
                   </ul>
               </li>
               <!--管理员功能-->
               <li v-if="isAdmin" class="nav-item"><!-- label-->
-                <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
+              <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
                   <div class="col-auto navbar-vertical-label">管理员</div>
                   <div class="col ps-0">
-                    <hr class="mb-0 navbar-vertical-divider" />
+                  <hr class="mb-0 navbar-vertical-divider" />
                   </div>
-                </div>
-                <!-- parent pages:Calendar-->
-                <a class="nav-link dropdown-indicator" href="#calendar" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="calendar">
+              </div>
+              <!-- parent pages:Calendar-->
+              <a class="nav-link dropdown-indicator" href="#calendar" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="calendar">
                   <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-calendar-alt"></span></span><span class="nav-link-text ps-1">Calendar</span></div>
-                </a>
-                <ul class="nav collapse" id="calendar">
+              </a>
+              <ul class="nav collapse" id="calendar">
                   <li class="nav-item">
-                    <a class="nav-link " @click="goToCalendar" href="">
+                  <a class="nav-link " @click="goToCalendar" href="">
                       <div class="d-flex align-items-center"><span class="nav-link-text ps-1">工作日历</span></div>
-                    </a><!-- more inner pages-->
+                  </a><!-- more inner pages-->
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" @click="goToCreateAnEvent" href="">
+                  <a class="nav-link" @click="goToCreateAnEvent" href="">
                       <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Create an event</span></div>
-                    </a><!-- more inner pages-->
+                  </a><!-- more inner pages-->
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" @click="goToEventDetail" href="">
+                  <a class="nav-link" @click="goToEventDetail" href="">
                       <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Event detail</span></div>
-                    </a><!-- more inner pages-->
+                  </a><!-- more inner pages-->
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" @click="goToEventList" href="">
+                  <a class="nav-link" @click="goToEventList" href="">
                       <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Event list</span></div>
-                    </a><!-- more inner pages-->
+                  </a><!-- more inner pages-->
                   </li>
-                </ul>
-                <!-- parent pages:日志与监控-->
-                  <a class="nav-link dropdown-indicator" href="#LogsAndMonitor" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="logsAndMonitor">
+              </ul>
+              <!-- parent pages:日志与监控-->
+              <a class="nav-link dropdown-indicator" href="#LogsAndMonitor" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="logsAndMonitor">
                   <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-wrench"></span></span><span class="nav-link-text ps-1">日志与监控</span></div>
-                </a>
-                <ul class="nav collapse" id="LogsAndMonitor">
+              </a>
+              <ul class="nav collapse" id="LogsAndMonitor">
                   <li class="nav-item">
-                    <a class="nav-link" @click="goToLogs" href="">
+                  <a class="nav-link" @click="goToLogs" href="">
                       <div class="d-flex align-items-center"><span class="nav-link-text ps-1">操作日志记录</span></div>
-                    </a><!-- more inner pages-->
+                  </a><!-- more inner pages-->
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" @click="goToMonitor" href="">
+                  <a class="nav-link" @click="goToMonitor" href="">
                       <div class="d-flex align-items-center"><span class="nav-link-text ps-1">系统日志监控</span><span class="badge rounded-pill ms-2 badge-subtle-success">Updated</span></div>
-                    </a><!-- more inner pages-->
+                  </a><!-- more inner pages-->
                   </li>
-                </ul>
-                <!-- parent pages:用户反馈留言-->
-                <a class="nav-link" @click="goToChat" href="" role="button">
+              </ul>
+              <!-- parent pages:用户反馈留言-->
+              <a class="nav-link" @click="goToChat" href="" role="button">
                   <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-comments"></span></span><span class="nav-link-text ps-1">用户反馈留言</span></div>
-                </a>
+              </a>
               </li>
               <!--审核员功能-->
               <li v-if="isAuditor" class="nav-item"><!-- label-->
-                <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
+              <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
                   <div class="col-auto navbar-vertical-label">审核员</div>
                   <div class="col ps-0">
-                    <hr class="mb-0 navbar-vertical-divider" />
+                  <hr class="mb-0 navbar-vertical-divider" />
                   </div>
-                </div>
-                <!-- parent pages:操作审核-->
-                <a class="nav-link" @click="goToOperationReview" href="" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="pricing">
+              </div>
+              <!-- parent pages:操作审核-->
+              <a class="nav-link" @click="goToOperationReview" href="" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="pricing">
                   <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-tags"></span></span><span class="nav-link-text ps-1">操作审核</span></div>
-                </a>
-                <!-- parent pages:用户审核-->
-                <a class="nav-link" @click="goToUserReview" href="" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="user">
+              </a>
+              <!-- parent pages:用户审核-->
+              <a class="nav-link" @click="goToUserReview" href="" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="user">
                   <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-user"></span></span><span class="nav-link-text ps-1">用户审核</span></div>
-                </a>
+              </a>
               </li>
               <!--研究员功能-->
               <li v-if="isResearcher" class="nav-item"><!-- label-->
-                <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
+              <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
                   <div class="col-auto navbar-vertical-label">研究员</div>
                   <div class="col ps-0">
-                    <hr class="mb-0 navbar-vertical-divider" />
+                  <hr class="mb-0 navbar-vertical-divider" />
                   </div>
-                </div>
-                <!-- parent pages:统计分析-->
-                <a class="nav-link dropdown-indicator" href="#Analysis" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="Analysis">
+              </div>
+              <!-- parent pages:统计分析-->
+              <a class="nav-link dropdown-indicator show" href="#Analysis" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="Analysis">
                   <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-chart-line"></span></span><span class="nav-link-text ps-1">统计分析</span></div>
-                </a>
-                <ul class="nav collapse show" id="Analysis">
-                  <li class="nav-item"><a class="nav-link active" @click="goToDescriptiveStatistics" href="">
+              </a>
+              <ul class="nav collapse " id="Analysis">
+                  <li class="nav-item"><a class="nav-link" @click="goToDescriptiveStatistics" href="">
                       <div class="d-flex align-items-center"><span class="nav-link-text ps-1">描述性统计</span></div>
-                    </a><!-- more inner pages--></li>
+                  </a><!-- more inner pages--></li>
                   <li class="nav-item">
-                    <a class="nav-link" @click="goToCorrelationAnalysis" href="">
-                      <div class="d-flex align-items-center"><span class="nav-link-text ps-1">相关性分析</span></div>
-                    </a><!-- more inner pages-->
+                  <a class="nav-link" @click="goToCorrelationAnalysis" href="">
+                      <div class="d-flex align-items-center"><span class="nav-link-text ps-1">相关性分析</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
+                  </a><!-- more inner pages-->
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" @click="goToTrendAnalysis" href="" data-bs-toggle="collapse" aria-expanded="false" aria-controls="charts">
+                  <a class="nav-link active" @click="goToTrendAnalysis" href="" data-bs-toggle="collapse" aria-expanded="false" aria-controls="charts">
                       <div class="d-flex align-items-center"><span class="nav-link-text ps-1">趋势分析</span></div>
-                    </a><!-- more inner pages-->
+                  </a><!-- more inner pages-->
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" @click="goToComparativeAnalysis" href="">
-                      <div class="d-flex align-items-center"><span class="nav-link-text ps-1">对比分析</span></div>
-                    </a><!-- more inner pages-->
+                  <a class="nav-link" @click="goToComparativeAnalysis" href="">
+                      <div class="d-flex align-items-center"><span class="nav-link-text ps-1">对比分析</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
+                  </a><!-- more inner pages-->
                   </li>
-                </ul>
-                <!-- parent pages:数据处理-->
-                <a class="nav-link" @click="goToDataProcess" href="" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tables">
+              </ul>
+              <!-- parent pages:数据处理-->
+              <a class="nav-link" @click="goToDataProcess" href="" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tables">
                   <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-table"></span></span><span class="nav-link-text ps-1">数据处理</span></div>
-                </a>
+              </a>
               </li>
             </ul>
           </div>
@@ -890,7 +866,7 @@ onMounted(() => {
                     <img src="../../assets/img/illustrations/crm-bar-chart.png" alt="" width="96" />
                     <div class="ms-n3">
                       <h6 class="mb-1 text-primary">欢迎来到</h6>
-                      <h4 class="mb-0 text-primary fw-bold">健康大数据中心<span class="text-info fw-medium">描述性分析实验室</span></h4>
+                      <h4 class="mb-0 text-primary fw-bold">健康大数据中心<span class="text-info fw-medium">趋势分析实验室</span></h4>
                     </div>
                     <img src="../../assets/img/illustrations/crm-line-chart.png" alt="" width="96" />
                   </div>
@@ -899,45 +875,31 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <div class="row mb-3 g-3">
-          <!--展示图表在此显示-->
+        <div class="row g-3">
           <div class="col-lg-8">
-            <div class="card">
-              <div class="card-header d-flex flex-between-center ps-0 py-0 border-bottom">
-                <ul class="nav nav-tabs border-0 flex-nowrap tab-active-caret" id="analysis-descriptive-chart-tab" role="tablist" data-tab-has-echarts="data-tab-has-echarts">
-                  <li class="nav-item" role="presentation"><a class="nav-link py-3 mb-0 active" id="analysis-descriptive-tab" data-bs-toggle="tab" href="#analysis-descriptive" role="tab" aria-controls="analysis-descriptive" aria-selected="true">描述性分析图表展示</a></li>
-                </ul>
-                <div class="dropdown font-sans-serif btn-reveal-trigger"><button class="btn btn-link text-600 btn-sm dropdown-toggle dropdown-caret-none btn-reveal" type="button" id="dropdown-session-by-country" data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs-11"></span></button>
-                  <div class="dropdown-menu dropdown-menu-end border py-2" aria-labelledby="dropdown-session-by-country"><a class="dropdown-item" href="#!">View</a><a class="dropdown-item" href="#!">Export</a>
-                    <div class="dropdown-divider"></div><a class="dropdown-item text-danger" href="#!">Remove</a>
+            <div class="card h-100">
+              <div class="card-header">
+                <div class="row flex-between-end">
+                  <div class="col-auto align-self-center">
+                    <h5 class="mb-0" data-anchor="data-anchor">Quartet scatter chart</h5>
+                  </div>
+                  <div class="col-auto ms-auto">
+                    <div class="nav nav-pills nav-pills-falcon flex-grow-1" role="tablist">
+                      <button class="btn btn-sm active" data-bs-toggle="pill" data-bs-target="#dom-1909abd0-ff88-40e6-bbb7-500c49b602a0" type="button" role="tab" aria-controls="dom-1909abd0-ff88-40e6-bbb7-500c49b602a0" aria-selected="true" id="tab-dom-1909abd0-ff88-40e6-bbb7-500c49b602a0">Preview</button>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="card-body">
-                <div class="row g-1">
-                  <div class="col-xxl-3">
-                    <div class="row g-0 my-2">
-                      <div class="col-md-6 col-xxl-12">
-                        <div class="border-bottom-xxl border-200 mb-2">
-                          <p class="fs-11 text-500 fw-semi-bold mb-0"><span class="fas fa-circle text-primary me-2"></span>histogram数据</p>
-                          <p class="fs-11 text-500 fw-semi-bold"><span class="fas fa-circle text-warning me-2"></span>curve数据</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-xxl-9">
-                    <div class="tab-content">
-                      <div class="tab-pane active" id="analysis-descriptive" role="tabpanel" aria-labelledby="analysis-descriptive-tab">
-                        <div class="echart-analysis-descriptive" data-echart-responsive="true" data-echart-tab="data-echart-tab" style="height:300px;"></div>
-                      </div>
-                    </div>
+              <div class="card-body bg-body-tertiary">
+                <div class="tab-content">
+                  <div class="tab-pane preview-tab-pane active" role="tabpanel" aria-labelledby="tab-dom-1909abd0-ff88-40e6-bbb7-500c49b602a0" id="dom-1909abd0-ff88-40e6-bbb7-500c49b602a0">
+                    <div class="echart-analysis-trend" style="min-height: 450px;" data-echart-responsive="true"></div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <!--文件在此输入-->
-          <div class="col-lg-4" style="height:300px;">
+          <div class="col-lg-4">
             <div class="row g-3">
               <div class="card mb-3">
                 <div class="card-header">
@@ -947,7 +909,7 @@ onMounted(() => {
                     </span>
                   </h6>
                 </div>
-                <div class="card-body bg-body-tertiary" style="height: 385px;">
+                <div class="card-body bg-body-tertiary">
                   <form 
                     class="dropzone dropzone-multiple p-0" 
                     id="my-awesome-dropzone" 
@@ -971,7 +933,7 @@ onMounted(() => {
                           </div>
                           <div class="dropdown font-sans-serif">
                             <button class="btn btn-link text-600 btn-sm dropdown-toggle btn-reveal dropdown-caret-none" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                              <span class="fas fa-ellipsis-h"></span>
+                              <span>删除</span>
                             </button>
                             <div class="dropdown-menu dropdown-menu-end border py-2">
                               <a class="dropdown-item" href="#!" data-dz-remove="data-dz-remove">Remove File</a>
@@ -980,6 +942,23 @@ onMounted(() => {
                         </div>
                       </div>
                     </div>
+                    <div class="row g-3">
+                      <div class="col-sm-6">
+                        <label class="form-label" for="attribute-Name1">自变量</label>
+                        <input class="form-control" id="attribute-Name1" v-model="attributeName1" type="text" placeholder="自变量">
+                      </div>
+                      <div class="col-sm-6">
+                        <label class="form-label" for="attribute-Name2">因变量</label>
+                        <input class="form-control" id="attribute-Name2" v-model="attributeName2" type="text" placeholder="因变量">
+                      </div>
+                    </div>
+                    <div class="row g-3">
+                      <div class="col-sm-12">
+                        <label class="form-label" for="attribute-Name1">预测时间</label>
+                        <input class="form-control" id="directTime" v-model="directTime" type="number" placeholder="预测年份">
+                      </div>
+                    </div>
+
                   </form>
                 </div>
                 <div class="card-bottom mt-2 mb-3">
@@ -988,40 +967,17 @@ onMounted(() => {
               </div>
             </div>
           </div>
+          <!-- 显示趋势分析结果 -->
+          <div v-if="trendData">
+            <h4>预测值: {{ trendData.prediction }}</h4>
+            <h4>趋势: {{ trendData.trend }}</h4>
+            <h4>强度: {{ trendData.strength }}</h4>
+            <div class="echart-analysis-trend" style="min-height: 400px;" data-echart-responsive="true"></div>
+          </div>
         </div>
-        <!--平均值、中位数、标准差在此明示-->
-        <div class="row g-3">
-          <div class="col-sm-6 col-md-4">
-            <div class="card overflow-hidden" style="min-width: 12rem">
-              <div class="bg-holder bg-card" style="background-image:url(https://prium.github.io/falcon/v3.24.0/assets/img/icons/spot-illustrations/corner-1.png);"></div><!--/.bg-holder-->
-              <div class="card-body position-relative">
-                <h6>平均值<span class="badge badge-subtle-warning rounded-pill ms-2"> </span></h6>
-                <div class="display-4 fs-5 mb-2 fw-normal font-sans-serif text-warning" data-countup="{&quot;endValue&quot;:58.386,&quot;decimalPlaces&quot;:2,&quot;suffix&quot;:&quot;k&quot;}">{{ average }}</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-6 col-md-4">
-            <div class="card overflow-hidden" style="min-width: 12rem">
-              <div class="bg-holder bg-card" style="background-image:url(https://prium.github.io/falcon/v3.24.0/assets/img/icons/spot-illustrations/corner-2.png);"></div><!--/.bg-holder-->
-              <div class="card-body position-relative">
-                <h6>中位数<span class="badge badge-subtle-info rounded-pill ms-2"> </span></h6>
-                <div class="display-4 fs-5 mb-2 fw-normal font-sans-serif text-info" data-countup="{&quot;endValue&quot;:23.434,&quot;decimalPlaces&quot;:2,&quot;suffix&quot;:&quot;k&quot;}">{{ median }}</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card overflow-hidden" style="min-width: 12rem">
-              <div class="bg-holder bg-card" style="background-image:url(https://prium.github.io/falcon/v3.24.0/assets/img/icons/spot-illustrations/corner-3.png);"></div><!--/.bg-holder-->
-              <div class="card-body position-relative">
-                <h6>标准差<span class="badge badge-subtle-success rounded-pill ms-2"> </span></h6>
-                <div class="display-4 fs-5 mb-2 fw-normal font-sans-serif" data-countup="{&quot;endValue&quot;:43594,&quot;prefix&quot;:&quot;$&quot;}">{{ stdDev }}</div>
-              </div>
-            </div>
-          </div>
-        </div>  
         <!--尾栏-->
         <footer class="footer">
-          <div class="row g-0 justify-content-between fs-10 mt-4 mb-3">
+          <div class="row g-0 justify-content-between fs-10 mt-0 mb-4">
             <div class="col-12 col-sm-auto text-center">
               <p class="mb-0 text-600">感谢您对我们健康大数据研究中心的支持<span class="d-none d-sm-inline-block">| </span><br class="d-sm-none" /> 2025 &copy; <a href="https://themewagon.com">网页模板来源bootstrap-falcon</a></p>
             </div>
@@ -1083,33 +1039,33 @@ onMounted(() => {
       <p class="fs-10">Choose the perfect color mode for your app.</p>
       <div class="btn-group d-block w-100 btn-group-navbar-style">
         <div class="row gx-2">
-          <div class="col-4"><input class="btn-check" id="themeSwitcherLight" name="theme-color" type="radio" value="light" data-theme-control="theme" /><label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherLight"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="../assets/img/generic/falcon-mode-default.jpg" alt=""/></span><span class="label-text">Light</span></label></div>
-          <div class="col-4"><input class="btn-check" id="themeSwitcherDark" name="theme-color" type="radio" value="dark" data-theme-control="theme" /><label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherDark"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="../assets/img/generic/falcon-mode-dark.jpg" alt=""/></span><span class="label-text"> Dark</span></label></div>
-          <div class="col-4"><input class="btn-check" id="themeSwitcherAuto" name="theme-color" type="radio" value="auto" data-theme-control="theme" /><label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherAuto"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="../assets/img/generic/falcon-mode-auto.jpg" alt=""/></span><span class="label-text"> Auto</span></label></div>
+          <div class="col-4"><input class="btn-check" id="themeSwitcherLight" name="theme-color" type="radio" value="light" data-theme-control="theme" /><label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherLight"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="../../../assets/img/generic/falcon-mode-default.jpg" alt=""/></span><span class="label-text">Light</span></label></div>
+          <div class="col-4"><input class="btn-check" id="themeSwitcherDark" name="theme-color" type="radio" value="dark" data-theme-control="theme" /><label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherDark"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="../../../assets/img/generic/falcon-mode-dark.jpg" alt=""/></span><span class="label-text"> Dark</span></label></div>
+          <div class="col-4"><input class="btn-check" id="themeSwitcherAuto" name="theme-color" type="radio" value="auto" data-theme-control="theme" /><label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherAuto"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="../../../assets/img/generic/falcon-mode-auto.jpg" alt=""/></span><span class="label-text"> Auto</span></label></div>
         </div>
       </div>
       <hr />
       <div class="d-flex justify-content-between">
-        <div class="d-flex align-items-start"><img class="me-2" src="../assets/img/icons/left-arrow-from-left.svg" width="20" alt="" />
+        <div class="d-flex align-items-start"><img class="me-2" src="../../../assets/img/icons/left-arrow-from-left.svg" width="20" alt="" />
           <div class="flex-1">
             <h5 class="fs-9">RTL Mode</h5>
-            <p class="fs-10 mb-0">Switch your language direction </p><a class="fs-10" href="../documentation/customization/configuration.html">RTL Documentation</a>
+            <p class="fs-10 mb-0">Switch your language direction </p><a class="fs-10" href="../../../documentation/customization/configuration.html">RTL Documentation</a>
           </div>
         </div>
         <div class="form-check form-switch"><input class="form-check-input ms-0" id="mode-rtl" type="checkbox" data-theme-control="isRTL" /></div>
       </div>
       <hr />
       <div class="d-flex justify-content-between">
-        <div class="d-flex align-items-start"><img class="me-2" src="../assets/img/icons/arrows-h.svg" width="20" alt="" />
+        <div class="d-flex align-items-start"><img class="me-2" src="../../../assets/img/icons/arrows-h.svg" width="20" alt="" />
           <div class="flex-1">
             <h5 class="fs-9">Fluid Layout</h5>
-            <p class="fs-10 mb-0">Toggle container layout system </p><a class="fs-10" href="../documentation/customization/configuration.html">Fluid Documentation</a>
+            <p class="fs-10 mb-0">Toggle container layout system </p><a class="fs-10" href="../../../documentation/customization/configuration.html">Fluid Documentation</a>
           </div>
         </div>
         <div class="form-check form-switch"><input class="form-check-input ms-0" id="mode-fluid" type="checkbox" data-theme-control="isFluid" /></div>
       </div>
       <hr />
-      <div class="d-flex align-items-start"><img class="me-2" src="../assets/img/icons/paragraph.svg" width="20" alt="" />
+      <div class="d-flex align-items-start"><img class="me-2" src="../../../assets/img/icons/paragraph.svg" width="20" alt="" />
         <div class="flex-1">
           <h5 class="fs-9 d-flex align-items-center">Navigation Position</h5>
           <p class="fs-10 mb-2">Select a suitable navigation system for your web application </p>
@@ -1124,16 +1080,16 @@ onMounted(() => {
       <hr />
       <h5 class="fs-9 d-flex align-items-center">Vertical Navbar Style</h5>
       <p class="fs-10 mb-0">Switch between styles for your vertical navbar </p>
-      <p> <a class="fs-10" href="../modules/components/navs-and-tabs/vertical-navbar.html#navbar-styles">See Documentation</a></p>
+      <p> <a class="fs-10" href="../../../modules/components/navs-and-tabs/vertical-navbar.html#navbar-styles">See Documentation</a></p>
       <div class="btn-group d-block w-100 btn-group-navbar-style">
         <div class="row gx-2">
-          <div class="col-6"><input class="btn-check" id="navbar-style-transparent" type="radio" name="navbarStyle" value="transparent" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-transparent"> <img class="img-fluid img-prototype" src="../assets/img/generic/default.png" alt="" /><span class="label-text"> Transparent</span></label></div>
-          <div class="col-6"><input class="btn-check" id="navbar-style-inverted" type="radio" name="navbarStyle" value="inverted" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-inverted"> <img class="img-fluid img-prototype" src="../assets/img/generic/inverted.png" alt="" /><span class="label-text"> Inverted</span></label></div>
-          <div class="col-6"><input class="btn-check" id="navbar-style-card" type="radio" name="navbarStyle" value="card" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-card"> <img class="img-fluid img-prototype" src="../assets/img/generic/card.png" alt="" /><span class="label-text"> Card</span></label></div>
-          <div class="col-6"><input class="btn-check" id="navbar-style-vibrant" type="radio" name="navbarStyle" value="vibrant" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-vibrant"> <img class="img-fluid img-prototype" src="../assets/img/generic/vibrant.png" alt="" /><span class="label-text"> Vibrant</span></label></div>
+          <div class="col-6"><input class="btn-check" id="navbar-style-transparent" type="radio" name="navbarStyle" value="transparent" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-transparent"> <img class="img-fluid img-prototype" src="../../../assets/img/generic/default.png" alt="" /><span class="label-text"> Transparent</span></label></div>
+          <div class="col-6"><input class="btn-check" id="navbar-style-inverted" type="radio" name="navbarStyle" value="inverted" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-inverted"> <img class="img-fluid img-prototype" src="../../../assets/img/generic/inverted.png" alt="" /><span class="label-text"> Inverted</span></label></div>
+          <div class="col-6"><input class="btn-check" id="navbar-style-card" type="radio" name="navbarStyle" value="card" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-card"> <img class="img-fluid img-prototype" src="../../../assets/img/generic/card.png" alt="" /><span class="label-text"> Card</span></label></div>
+          <div class="col-6"><input class="btn-check" id="navbar-style-vibrant" type="radio" name="navbarStyle" value="vibrant" data-theme-control="navbarStyle" /><label class="btn d-block w-100 btn-navbar-style fs-10" for="navbar-style-vibrant"> <img class="img-fluid img-prototype" src="../../../assets/img/generic/vibrant.png" alt="" /><span class="label-text"> Vibrant</span></label></div>
         </div>
       </div>
-      <div class="text-center mt-5"><img class="mb-4" src="../assets/img/icons/spot-illustrations/47.png" alt="" width="120" />
+      <div class="text-center mt-5"><img class="mb-4" src="../../../assets/img/icons/spot-illustrations/47.png" alt="" width="120" />
         <h5>Like What You See?</h5>
         <p class="fs-10">Get Falcon now and create beautiful dashboards with hundreds of widgets.</p><a class="mb-3 btn btn-primary" href="https://themes.getbootstrap.com/product/falcon-admin-dashboard-webapp-template/" target="_blank">Purchase</a>
       </div>

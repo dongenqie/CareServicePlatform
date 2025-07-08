@@ -42,7 +42,6 @@ function goToComparativeAnalysis()     { router.push({ name: 'ComparativeAnalysi
 function goToCorrelationAnalysis()     { router.push({ name: 'CorrelationAnalysis' }) }
 function goToTrendAnalysis()           { router.push({ name: 'TrendAnalysis' }) }
 function goToDataProcess()             { router.push({ name: 'DataProcess' }) }
-function goToPersonalCenter()          { router.push({ name: 'PersonalCenter' }) }
 
 // 禁用 Dropzone 的自动发现
 Dropzone.autoDiscover = false;
@@ -243,7 +242,7 @@ onMounted(() => {
                         </a><!-- more inner pages-->
                       </li>
                         <li class="nav-item"><a class="nav-link" @click="goToHospitalType" href="">
-                            <div class="d-flex align-items-center"><span class="nav-link-text ps-1">医院类型</span></div>
+                            <div class="d-flex align-items-center"><span class="nav-link-text ps-1">医院类型</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
                         </a><!-- more inner pages--></li>
                         <li class="nav-item"><a class="nav-link" @click="goToHospitalGrade" href="">
                             <div class="d-flex align-items-center"><span class="nav-link-text ps-1">医院等级</span></div>
@@ -255,7 +254,7 @@ onMounted(() => {
                             <div class="d-flex align-items-center"><span class="nav-link-text ps-1">各省医院总数量</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
                         </a><!-- more inner pages--></li>
                         <li class="nav-item"><a class="nav-link" @click="goToPersonalCenter" href="">
-                            <div class="d-flex align-items-center"><span class="nav-link-text ps-1">个人中心</span></div>
+                            <div class="d-flex align-items-center"><span class="nav-link-text ps-1">个人中心</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
                         </a><!-- more inner pages--></li>
                     </ul>
                 </li>
@@ -349,7 +348,7 @@ onMounted(() => {
                       </a><!-- more inner pages--></li>
                     <li class="nav-item">
                       <a class="nav-link active" @click="goToCorrelationAnalysis" href="">
-                        <div class="d-flex align-items-center"><span class="nav-link-text ps-1">相关性分析</span></div>
+                        <div class="d-flex align-items-center"><span class="nav-link-text ps-1">相关性分析</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
                       </a><!-- more inner pages-->
                     </li>
                     <li class="nav-item">
@@ -359,7 +358,7 @@ onMounted(() => {
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" @click="goToComparativeAnalysis" href="">
-                        <div class="d-flex align-items-center"><span class="nav-link-text ps-1">对比分析</span></div>
+                        <div class="d-flex align-items-center"><span class="nav-link-text ps-1">对比分析</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
                       </a><!-- more inner pages-->
                     </li>
                   </ul>
@@ -958,7 +957,7 @@ onMounted(() => {
             </div>
 
             <!-- 相关性分析结果 -->
-            <!-- <div v-if="correlationData" class="col-lg-12">
+            <div v-if="correlationData" class="col-lg-12">
               <div class="card mb-3">
                 <div class="card-header">
                   <h6 class="mb-0">相关性分析结果</h6>
@@ -970,7 +969,7 @@ onMounted(() => {
                   <p><strong>是否线性相关:</strong> {{ correlationData.conform ? '是' : '否' }}</p>
                 </div>
               </div>
-            </div> -->
+            </div>
           </div>
           <!--尾栏-->
           <footer class="footer">

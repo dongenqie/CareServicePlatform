@@ -1,13 +1,11 @@
 <script setup>
-import { onMounted, ref, onUnmounted, computed } from 'vue'
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineOptions } from 'vue'
 import Dropzone from 'dropzone';
-import { getDescriptiveStatistics } from '@/api/analysis.js';
 
 // 声明组件名
-defineOptions({ name: 'DescriptiveStatistics' })
-
+defineOptions({ name: 'ComparativeAnalysis' })
 // 从 localStorage 取得当前用户角色
 const role = ref(localStorage.getItem('userRole') || '')
 
@@ -41,7 +39,6 @@ function goToComparativeAnalysis()     { router.push({ name: 'ComparativeAnalysi
 function goToCorrelationAnalysis()     { router.push({ name: 'CorrelationAnalysis' }) }
 function goToTrendAnalysis()           { router.push({ name: 'TrendAnalysis' }) }
 function goToDataProcess()             { router.push({ name: 'DataProcess' }) }
-function goToPersonalCenter()          { router.push({ name: 'PersonalCenter' }) }
 
 // 禁用 Dropzone 的自动发现
 Dropzone.autoDiscover = false;
@@ -50,12 +47,6 @@ Dropzone.autoDiscover = false;
 let myDropzone = null;
 
 const file = ref(null);
-const average = ref(null);
-const median = ref(null);
-const stdDev = ref(null);
-const histogramData = ref({});
-const curveData = ref({});
-
 
 // 文件改变处理
 const handleFileChange = (event) => {
@@ -74,14 +65,6 @@ async function submitFile() {
 
   try {
     const fileToUpload = myDropzone.files[0];  // 获取上传的文件
-    const data = await getDescriptiveStatistics(fileToUpload);
-
-    average.value = data.平均数;
-    median.value  = data.中位数;
-    stdDev.value  = data.标准差;
-
-    histogramData.value = data.histogram;
-    curveData.value     = data.curve;
 
     // 更新 ECharts
     updateChart();
@@ -89,37 +72,6 @@ async function submitFile() {
     console.error(err);
     alert('分析失败，请重试！');
   }
-}
-
-
-/**
- * 绘图
- */
-function updateChart() {
-  const el = document.querySelector('.echart-analysis-descriptive')
-  if (!el) return
-  const chart = window.echarts.init(el)
-  chart.setOption({
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    xAxis: { type: 'category', data: histogramData.value.xaxis },
-    yAxis: { type: 'value' },
-    series: [
-      {
-        name: histogramData.value.name,
-        type: 'bar',
-        data: histogramData.value.yaxis
-      },
-      {
-        name: curveData.value.name,
-        type: 'line',
-        data: curveData.value.curveY,
-        smooth: true,
-        symbol: 'circle',
-        symbolSize: 6,
-        lineStyle: { width: 2 }
-      }
-    ]
-  })
 }
 
 // 组件销毁时清理 Dropzone 实例
@@ -237,13 +189,13 @@ onMounted(() => {
       <nav class="navbar navbar-light navbar-vertical navbar-expand-xl" style="display: none;">
         <!--侧边栏上部-->
         <div class="d-flex align-items-center">
-          <div class="toggle-icon-wrapper">
+            <div class="toggle-icon-wrapper">
             <button class="btn navbar-toggler-humburger-icon navbar-vertical-toggle" data-bs-toggle="tooltip" data-bs-placement="left" title="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
-          </div><a class="navbar-brand" href="">
+            </div><a class="navbar-brand" href="">
             <div class="d-flex align-items-center py-3">
-              <img class="me-2" src="../../assets/img/logo.png" alt="" width="40" />
-              <span class="font-sans-serif text-primary">数据中心</span></div>
-          </a>
+                <img class="me-2" src="../../assets/img/logo.png" alt="" width="40" />
+                <span class="font-sans-serif text-primary">数据中心</span></div>
+            </a>
         </div>
         <!--侧边导航栏-->
         <div class="collapse navbar-collapse" id="navbarVerticalCollapse">
@@ -256,27 +208,27 @@ onMounted(() => {
                       <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-chart-pie"></span></span><span class="nav-link-text ps-1">数据展示</span></div>
                   </a>
                   <ul class="nav collapse show" id="dashboard">
-                    <li class="nav-item">
+                  <li class="nav-item">
                       <a class="nav-link active" @click="goToDashboard" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">默认首页</span></div>
                       </a><!-- more inner pages-->
-                    </li>
-                    <li class="nav-item"><a class="nav-link" @click="goToUserDefined" href="">
+                  </li>
+                  <li class="nav-item"><a class="nav-link" @click="goToUserDefined" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">用户自定义仪表盘</span></div>
                       </a><!-- more inner pages-->
-                    </li>
-                    <li class="nav-item">
+                  </li>
+                  <li class="nav-item">
                       <a class="nav-link" @click="goToDrap" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">组件拖拽演示</span></div>
                       </a><!-- more inner pages-->
-                    </li>
-                    <li class="nav-item">
+                  </li>
+                  <li class="nav-item">
                       <a class="nav-link" @click="goToInstitution" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">全国医疗卫生机构</span></div>
                       </a><!-- more inner pages-->
-                    </li>
+                  </li>
                       <li class="nav-item"><a class="nav-link" @click="goToHospitalType" href="">
-                          <div class="d-flex align-items-center"><span class="nav-link-text ps-1">医院类型</span></div>
+                          <div class="d-flex align-items-center"><span class="nav-link-text ps-1">医院类型</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
                       </a><!-- more inner pages--></li>
                       <li class="nav-item"><a class="nav-link" @click="goToHospitalGrade" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">医院等级</span></div>
@@ -287,119 +239,116 @@ onMounted(() => {
                       <li class="nav-item"><a class="nav-link" @click="goToHospitalNumber" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">各省医院总数量</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
                       </a><!-- more inner pages--></li>
-                      <li class="nav-item"><a class="nav-link" @click="goToPersonalCenter" href="">
-                          <div class="d-flex align-items-center"><span class="nav-link-text ps-1">个人中心</span></div>
-                      </a><!-- more inner pages--></li>
                   </ul>
               </li>
               <!--管理员功能-->
               <li v-if="isAdmin" class="nav-item"><!-- label-->
-                <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
+              <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
                   <div class="col-auto navbar-vertical-label">管理员</div>
                   <div class="col ps-0">
-                    <hr class="mb-0 navbar-vertical-divider" />
+                  <hr class="mb-0 navbar-vertical-divider" />
                   </div>
-                </div>
-                <!-- parent pages:Calendar-->
-                <a class="nav-link dropdown-indicator" href="#calendar" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="calendar">
+              </div>
+              <!-- parent pages:Calendar-->
+              <a class="nav-link dropdown-indicator" href="#calendar" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="calendar">
                   <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-calendar-alt"></span></span><span class="nav-link-text ps-1">Calendar</span></div>
-                </a>
-                <ul class="nav collapse" id="calendar">
+              </a>
+              <ul class="nav collapse" id="calendar">
                   <li class="nav-item">
-                    <a class="nav-link " @click="goToCalendar" href="">
+                  <a class="nav-link " @click="goToCalendar" href="">
                       <div class="d-flex align-items-center"><span class="nav-link-text ps-1">工作日历</span></div>
-                    </a><!-- more inner pages-->
+                  </a><!-- more inner pages-->
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" @click="goToCreateAnEvent" href="">
+                  <a class="nav-link" @click="goToCreateAnEvent" href="">
                       <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Create an event</span></div>
-                    </a><!-- more inner pages-->
+                  </a><!-- more inner pages-->
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" @click="goToEventDetail" href="">
+                  <a class="nav-link" @click="goToEventDetail" href="">
                       <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Event detail</span></div>
-                    </a><!-- more inner pages-->
+                  </a><!-- more inner pages-->
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" @click="goToEventList" href="">
+                  <a class="nav-link" @click="goToEventList" href="">
                       <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Event list</span></div>
-                    </a><!-- more inner pages-->
+                  </a><!-- more inner pages-->
                   </li>
-                </ul>
-                <!-- parent pages:日志与监控-->
-                  <a class="nav-link dropdown-indicator" href="#LogsAndMonitor" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="logsAndMonitor">
+              </ul>
+              <!-- parent pages:日志与监控-->
+              <a class="nav-link dropdown-indicator" href="#LogsAndMonitor" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="logsAndMonitor">
                   <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-wrench"></span></span><span class="nav-link-text ps-1">日志与监控</span></div>
-                </a>
-                <ul class="nav collapse" id="LogsAndMonitor">
+              </a>
+              <ul class="nav collapse" id="LogsAndMonitor">
                   <li class="nav-item">
-                    <a class="nav-link" @click="goToLogs" href="">
+                  <a class="nav-link" @click="goToLogs" href="">
                       <div class="d-flex align-items-center"><span class="nav-link-text ps-1">操作日志记录</span></div>
-                    </a><!-- more inner pages-->
+                  </a><!-- more inner pages-->
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" @click="goToMonitor" href="">
+                  <a class="nav-link" @click="goToMonitor" href="">
                       <div class="d-flex align-items-center"><span class="nav-link-text ps-1">系统日志监控</span><span class="badge rounded-pill ms-2 badge-subtle-success">Updated</span></div>
-                    </a><!-- more inner pages-->
+                  </a><!-- more inner pages-->
                   </li>
-                </ul>
-                <!-- parent pages:用户反馈留言-->
-                <a class="nav-link" @click="goToChat" href="" role="button">
+              </ul>
+              <!-- parent pages:用户反馈留言-->
+              <a class="nav-link" @click="goToChat" href="" role="button">
                   <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-comments"></span></span><span class="nav-link-text ps-1">用户反馈留言</span></div>
-                </a>
+              </a>
               </li>
               <!--审核员功能-->
               <li v-if="isAuditor" class="nav-item"><!-- label-->
-                <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
+              <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
                   <div class="col-auto navbar-vertical-label">审核员</div>
                   <div class="col ps-0">
-                    <hr class="mb-0 navbar-vertical-divider" />
+                  <hr class="mb-0 navbar-vertical-divider" />
                   </div>
-                </div>
-                <!-- parent pages:操作审核-->
-                <a class="nav-link" @click="goToOperationReview" href="" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="pricing">
+              </div>
+              <!-- parent pages:操作审核-->
+              <a class="nav-link" @click="goToOperationReview" href="" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="pricing">
                   <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-tags"></span></span><span class="nav-link-text ps-1">操作审核</span></div>
-                </a>
-                <!-- parent pages:用户审核-->
-                <a class="nav-link" @click="goToUserReview" href="" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="user">
+              </a>
+              <!-- parent pages:用户审核-->
+              <a class="nav-link" @click="goToUserReview" href="" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="user">
                   <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-user"></span></span><span class="nav-link-text ps-1">用户审核</span></div>
-                </a>
+              </a>
               </li>
               <!--研究员功能-->
               <li v-if="isResearcher" class="nav-item"><!-- label-->
-                <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
+              <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
                   <div class="col-auto navbar-vertical-label">研究员</div>
                   <div class="col ps-0">
-                    <hr class="mb-0 navbar-vertical-divider" />
+                  <hr class="mb-0 navbar-vertical-divider" />
                   </div>
-                </div>
-                <!-- parent pages:统计分析-->
-                <a class="nav-link dropdown-indicator" href="#Analysis" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="Analysis">
+              </div>
+              <!-- parent pages:统计分析-->
+              <a class="nav-link dropdown-indicator show" href="#Analysis" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="Analysis">
                   <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-chart-line"></span></span><span class="nav-link-text ps-1">统计分析</span></div>
-                </a>
-                <ul class="nav collapse show" id="Analysis">
-                  <li class="nav-item"><a class="nav-link active" @click="goToDescriptiveStatistics" href="">
+              </a>
+              <ul class="nav collapse " id="Analysis">
+                  <li class="nav-item"><a class="nav-link" @click="goToDescriptiveStatistics" href="">
                       <div class="d-flex align-items-center"><span class="nav-link-text ps-1">描述性统计</span></div>
-                    </a><!-- more inner pages--></li>
+                  </a><!-- more inner pages--></li>
                   <li class="nav-item">
-                    <a class="nav-link" @click="goToCorrelationAnalysis" href="">
-                      <div class="d-flex align-items-center"><span class="nav-link-text ps-1">相关性分析</span></div>
-                    </a><!-- more inner pages-->
+                  <a class="nav-link" @click="goToCorrelationAnalysis" href="">
+                      <div class="d-flex align-items-center"><span class="nav-link-text ps-1">相关性分析</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
+                  </a><!-- more inner pages-->
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" @click="goToTrendAnalysis" href="" data-bs-toggle="collapse" aria-expanded="false" aria-controls="charts">
+                  <a class="nav-link active" @click="goToTrendAnalysis" href="" data-bs-toggle="collapse" aria-expanded="false" aria-controls="charts">
                       <div class="d-flex align-items-center"><span class="nav-link-text ps-1">趋势分析</span></div>
-                    </a><!-- more inner pages-->
+                  </a><!-- more inner pages-->
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" @click="goToComparativeAnalysis" href="">
-                      <div class="d-flex align-items-center"><span class="nav-link-text ps-1">对比分析</span></div>
-                    </a><!-- more inner pages-->
+                  <a class="nav-link" @click="goToComparativeAnalysis" href="">
+                      <div class="d-flex align-items-center"><span class="nav-link-text ps-1">对比分析</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
+                  </a><!-- more inner pages-->
                   </li>
-                </ul>
-                <!-- parent pages:数据处理-->
-                <a class="nav-link" @click="goToDataProcess" href="" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tables">
+              </ul>
+              <!-- parent pages:数据处理-->
+              <a class="nav-link" @click="goToDataProcess" href="" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tables">
                   <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-table"></span></span><span class="nav-link-text ps-1">数据处理</span></div>
-                </a>
+              </a>
               </li>
             </ul>
           </div>

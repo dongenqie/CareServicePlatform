@@ -375,62 +375,9 @@ export const trendChartInit = function trendChartInit(scatterData, trendData) {
 /*                      研究员-数据统计与分析-对比分析                           */
 /* -------------------------------------------------------------------------- */
 
-export const comparativeChartInit = function comparativeChartInit(boxPlotVO1, boxPlotVO2) {
-  var $comparativeChartEl = document.querySelector('.echart-analysis-comparative');
-  if ($comparativeChartEl) {
-    var chart = window.echarts.init($comparativeChartEl);
-
-    if (!boxPlotVO1 || !boxPlotVO2) {
-      console.error('缺少对比分析数据', { boxPlotVO1, boxPlotVO2 });
-      return; // 如果数据无效，不渲染图表
-    }
-
-    var option = {
-      tooltip: {
-        trigger: 'item',
-        axisPointer: { type: 'shadow' }
-      },
-      grid: {
-        left: '5%',
-        right: '5%',
-        bottom: '5%',
-        top: '15%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'category',
-        data: ['Group 1', 'Group 2']
-      },
-      yAxis: {
-        type: 'value',
-        name: 'Value'
-      },
-      series: [
-        {
-          name: boxPlotVO1?.name || 'Group 1',
-          type: 'boxplot',
-          data: [
-            [boxPlotVO1.min, boxPlotVO1.q1, boxPlotVO1.median, boxPlotVO1.q3, boxPlotVO1.max]
-          ],
-          itemStyle: { color: utils.getColor('primary') },
-        },
-        {
-          name: boxPlotVO2?.name || 'Group 2',
-          type: 'boxplot',
-          data: [
-            [boxPlotVO2.min, boxPlotVO2.q1, boxPlotVO2.median, boxPlotVO2.q3, boxPlotVO2.max]
-          ],
-          itemStyle: { color: utils.getColor('success') },
-        }
-      ]
-    };
-
-    chart.setOption(option);
-  } else {
-    console.error('找不到图表容器 .echart-analysis-comparative');
-  }
-};
-
+export const comparativeChartInit = function comparativeChartInit() {
+  var $scatterQuartetChartEl = document.querySelector('.echart-analysis-comparative');
+}
 
 /* -------------------------------------------------------------------------- */
 /*                            Theme Initialization                            */

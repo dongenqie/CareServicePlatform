@@ -52,12 +52,12 @@ export async function getTrendAnalysis(formData) {
 export async function getComparativeAnalysis(formData) {
   try {
     const response = await apiClient.post(
-      '/api/calculate/horizontalComparison', // 这里使用了对比分析的接口
+      '/api/calculate/horizontalComparison', // 对比分析接口
       formData
     );
-    return response.data; // 返回后端响应数据
+    return response.data;
   } catch (error) {
-    console.error('获取对比分析数据失败:', error);
-    throw error;
+    console.error('对比分析请求失败:', error);
+    throw error; // 重新抛出错误，便于上层捕获
   }
 }

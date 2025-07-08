@@ -377,7 +377,7 @@ onMounted(() => {
                   <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-chart-line"></span></span><span class="nav-link-text ps-1">统计分析</span></div>
                 </a>
                 <ul class="nav collapse show" id="Analysis">
-                  <li class="nav-item"><a class="nav-link active" @click="goToDescriptiveStatistics" href="">
+                  <li class="nav-item active"><a class="nav-link" @click="goToDescriptiveStatistics" href="">
                       <div class="d-flex align-items-center"><span class="nav-link-text ps-1">描述性统计</span></div>
                     </a><!-- more inner pages--></li>
                   <li class="nav-item">

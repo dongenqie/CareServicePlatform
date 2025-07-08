@@ -412,7 +412,7 @@ export const comparativeChartInit = function comparativeChartInit(boxPlotVO1, bo
           data: [
             [boxPlotVO1.min, boxPlotVO1.q1, boxPlotVO1.median, boxPlotVO1.q3, boxPlotVO1.max]
           ],
-          itemStyle: { color: utils.getColor('primary') },
+          itemStyle: { color: '#c23531' },
         },
         {
           name: boxPlotVO2?.name || 'Group 2',
@@ -420,7 +420,7 @@ export const comparativeChartInit = function comparativeChartInit(boxPlotVO1, bo
           data: [
             [boxPlotVO2.min, boxPlotVO2.q1, boxPlotVO2.median, boxPlotVO2.q3, boxPlotVO2.max]
           ],
-          itemStyle: { color: utils.getColor('success') },
+          itemStyle: { color: '#2f4554' },
         }
       ]
     };

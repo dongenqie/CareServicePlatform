@@ -1,5 +1,5 @@
 // src/api/analysis.js
-import apiClient from '@/utils/request';  // 引入已经配置的 apiClient
+import apiClient from './request';  // 引入已经配置的 apiClient
 import axios from 'axios';
 
 
@@ -45,19 +45,5 @@ export async function getTrendAnalysis(formData) {
   } catch (error) {
     console.error('Error getting trend analysis data:', error);
     throw error; // 重新抛出错误，便于上层捕获
-  }
-}
-
-// 获取对比分析数据
-export async function getComparativeAnalysis(formData) {
-  try {
-    const response = await apiClient.post(
-      '/api/calculate/horizontalComparison', // 这里使用了对比分析的接口
-      formData
-    );
-    return response.data; // 返回后端响应数据
-  } catch (error) {
-    console.error('获取对比分析数据失败:', error);
-    throw error;
   }
 }

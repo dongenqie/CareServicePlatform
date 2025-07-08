@@ -380,11 +380,6 @@ export const comparativeChartInit = function comparativeChartInit(boxPlotVO1, bo
   if ($comparativeChartEl) {
     var chart = window.echarts.init($comparativeChartEl);
 
-    if (!boxPlotVO1 || !boxPlotVO2) {
-      console.error('缺少对比分析数据', { boxPlotVO1, boxPlotVO2 });
-      return; // 如果数据无效，不渲染图表
-    }
-
     var option = {
       tooltip: {
         trigger: 'item',
@@ -407,27 +402,25 @@ export const comparativeChartInit = function comparativeChartInit(boxPlotVO1, bo
       },
       series: [
         {
-          name: boxPlotVO1?.name || 'Group 1',
+          name: boxPlotVO1.name,
           type: 'boxplot',
           data: [
             [boxPlotVO1.min, boxPlotVO1.q1, boxPlotVO1.median, boxPlotVO1.q3, boxPlotVO1.max]
           ],
-          itemStyle: { color: utils.getColor('primary') },
+          itemStyle: { color: '#c23531' },
         },
         {
-          name: boxPlotVO2?.name || 'Group 2',
+          name: boxPlotVO2.name,
           type: 'boxplot',
           data: [
             [boxPlotVO2.min, boxPlotVO2.q1, boxPlotVO2.median, boxPlotVO2.q3, boxPlotVO2.max]
           ],
-          itemStyle: { color: utils.getColor('success') },
+          itemStyle: { color: '#2f4554' },
         }
       ]
     };
 
     chart.setOption(option);
-  } else {
-    console.error('找不到图表容器 .echart-analysis-comparative');
   }
 };
 

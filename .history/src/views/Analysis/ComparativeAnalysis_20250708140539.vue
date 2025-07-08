@@ -1,13 +1,13 @@
 <script setup>
-import { onMounted, ref, onUnmounted, computed } from 'vue'
+import { onMounted, ref, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineOptions } from 'vue'
 import Dropzone from 'dropzone';
-import { getDescriptiveStatistics } from '@/api/analysis.js';
+import { getComparativeAnalysis } from '@/api/analysis.js'; // 引入对比分析的API
+import { comparativeChartInit } from '@/js/echart-analysis.js';  // 引入对比分析的图表初始化函数
 
 // 声明组件名
-defineOptions({ name: 'DescriptiveStatistics' })
-
+defineOptions({ name: 'ComparativeAnalysis' })
 // 从 localStorage 取得当前用户角色
 const role = ref(localStorage.getItem('userRole') || '')
 
@@ -49,13 +49,13 @@ Dropzone.autoDiscover = false;
 // 存储 Dropzone 实例
 let myDropzone = null;
 
+// 表单字段
+const attributeName1 = ref('');
+const attributeName2 = ref('');
 const file = ref(null);
-const average = ref(null);
-const median = ref(null);
-const stdDev = ref(null);
-const histogramData = ref({});
-const curveData = ref({});
 
+// 存储数据
+const comparativeData = ref(null);  // 存储从后端返回的比较数据
 
 // 文件改变处理
 const handleFileChange = (event) => {
@@ -70,56 +70,29 @@ async function submitFile() {
     return alert('请先上传文件！');
   }
 
-  console.log("File:", file.value);  // 调试信息
-
   try {
     const fileToUpload = myDropzone.files[0];  // 获取上传的文件
-    const data = await getDescriptiveStatistics(fileToUpload);
 
-    average.value = data.平均数;
-    median.value  = data.中位数;
-    stdDev.value  = data.标准差;
+    // 提交表单数据并获取比较分析数据
+    const formData = new FormData();
+    formData.append('file', fileToUpload);  // 添加文件到 FormData
+    formData.append('attributeName1', attributeName1.value);
+    formData.append('attributeName2', attributeName2.value);
 
-    histogramData.value = data.histogram;
-    curveData.value     = data.curve;
+    const data = await getComparativeAnalysis(formData);  // 获取对比分析数据
 
-    // 更新 ECharts
-    updateChart();
+    console.log(data);
+
+    if (data && data.boxPlotVO1 && data.boxPlotVO2) {
+      comparativeData.value = data;  // 存储数据
+      comparativeChartInit(data.boxPlotVO1, data.boxPlotVO2);  // 传递数据初始化图表
+    } else {
+      alert('返回的数据格式不正确');
+    }
   } catch (err) {
     console.error(err);
     alert('分析失败，请重试！');
   }
-}
-
-
-/**
- * 绘图
- */
-function updateChart() {
-  const el = document.querySelector('.echart-analysis-descriptive')
-  if (!el) return
-  const chart = window.echarts.init(el)
-  chart.setOption({
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    xAxis: { type: 'category', data: histogramData.value.xaxis },
-    yAxis: { type: 'value' },
-    series: [
-      {
-        name: histogramData.value.name,
-        type: 'bar',
-        data: histogramData.value.yaxis
-      },
-      {
-        name: curveData.value.name,
-        type: 'line',
-        data: curveData.value.curveY,
-        smooth: true,
-        symbol: 'circle',
-        symbolSize: 6,
-        lineStyle: { width: 2 }
-      }
-    ]
-  })
 }
 
 // 组件销毁时清理 Dropzone 实例
@@ -276,7 +249,7 @@ onMounted(() => {
                       </a><!-- more inner pages-->
                     </li>
                       <li class="nav-item"><a class="nav-link" @click="goToHospitalType" href="">
-                          <div class="d-flex align-items-center"><span class="nav-link-text ps-1">医院类型</span></div>
+                          <div class="d-flex align-items-center"><span class="nav-link-text ps-1">医院类型</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
                       </a><!-- more inner pages--></li>
                       <li class="nav-item"><a class="nav-link" @click="goToHospitalGrade" href="">
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">医院等级</span></div>
@@ -288,7 +261,7 @@ onMounted(() => {
                           <div class="d-flex align-items-center"><span class="nav-link-text ps-1">各省医院总数量</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
                       </a><!-- more inner pages--></li>
                       <li class="nav-item"><a class="nav-link" @click="goToPersonalCenter" href="">
-                          <div class="d-flex align-items-center"><span class="nav-link-text ps-1">个人中心</span></div>
+                          <div class="d-flex align-items-center"><span class="nav-link-text ps-1">个人中心</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
                       </a><!-- more inner pages--></li>
                   </ul>
               </li>
@@ -377,12 +350,12 @@ onMounted(() => {
                   <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-chart-line"></span></span><span class="nav-link-text ps-1">统计分析</span></div>
                 </a>
                 <ul class="nav collapse show" id="Analysis">
-                  <li class="nav-item"><a class="nav-link active" @click="goToDescriptiveStatistics" href="">
+                  <li class="nav-item"><a class="nav-link" @click="goToDescriptiveStatistics" href="">
                       <div class="d-flex align-items-center"><span class="nav-link-text ps-1">描述性统计</span></div>
                     </a><!-- more inner pages--></li>
                   <li class="nav-item">
                     <a class="nav-link" @click="goToCorrelationAnalysis" href="">
-                      <div class="d-flex align-items-center"><span class="nav-link-text ps-1">相关性分析</span></div>
+                      <div class="d-flex align-items-center"><span class="nav-link-text ps-1">相关性分析</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
                     </a><!-- more inner pages-->
                   </li>
                   <li class="nav-item">
@@ -391,8 +364,8 @@ onMounted(() => {
                     </a><!-- more inner pages-->
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" @click="goToComparativeAnalysis" href="">
-                      <div class="d-flex align-items-center"><span class="nav-link-text ps-1">对比分析</span></div>
+                    <a class="nav-link active" @click="goToComparativeAnalysis" href="">
+                      <div class="d-flex align-items-center"><span class="nav-link-text ps-1">对比分析</span><span class="badge rounded-pill ms-2 badge-subtle-success">New</span></div>
                     </a><!-- more inner pages-->
                   </li>
                 </ul>
@@ -890,7 +863,7 @@ onMounted(() => {
                     <img src="../../assets/img/illustrations/crm-bar-chart.png" alt="" width="96" />
                     <div class="ms-n3">
                       <h6 class="mb-1 text-primary">欢迎来到</h6>
-                      <h4 class="mb-0 text-primary fw-bold">健康大数据中心<span class="text-info fw-medium">描述性分析实验室</span></h4>
+                      <h4 class="mb-0 text-primary fw-bold">健康大数据中心<span class="text-info fw-medium">对比分析实验室</span></h4>
                     </div>
                     <img src="../../assets/img/illustrations/crm-line-chart.png" alt="" width="96" />
                   </div>
@@ -905,7 +878,7 @@ onMounted(() => {
             <div class="card">
               <div class="card-header d-flex flex-between-center ps-0 py-0 border-bottom">
                 <ul class="nav nav-tabs border-0 flex-nowrap tab-active-caret" id="analysis-descriptive-chart-tab" role="tablist" data-tab-has-echarts="data-tab-has-echarts">
-                  <li class="nav-item" role="presentation"><a class="nav-link py-3 mb-0 active" id="analysis-descriptive-tab" data-bs-toggle="tab" href="#analysis-descriptive" role="tab" aria-controls="analysis-descriptive" aria-selected="true">描述性分析图表展示</a></li>
+                  <li class="nav-item" role="presentation"><a class="nav-link py-3 mb-0 active" id="analysis-descriptive-tab" data-bs-toggle="tab" href="#analysis-descriptive" role="tab" aria-controls="analysis-descriptive" aria-selected="true">对比分析图表展示</a></li>
                 </ul>
                 <div class="dropdown font-sans-serif btn-reveal-trigger"><button class="btn btn-link text-600 btn-sm dropdown-toggle dropdown-caret-none btn-reveal" type="button" id="dropdown-session-by-country" data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs-11"></span></button>
                   <div class="dropdown-menu dropdown-menu-end border py-2" aria-labelledby="dropdown-session-by-country"><a class="dropdown-item" href="#!">View</a><a class="dropdown-item" href="#!">Export</a>
@@ -915,20 +888,10 @@ onMounted(() => {
               </div>
               <div class="card-body">
                 <div class="row g-1">
-                  <div class="col-xxl-3">
-                    <div class="row g-0 my-2">
-                      <div class="col-md-6 col-xxl-12">
-                        <div class="border-bottom-xxl border-200 mb-2">
-                          <p class="fs-11 text-500 fw-semi-bold mb-0"><span class="fas fa-circle text-primary me-2"></span>histogram数据</p>
-                          <p class="fs-11 text-500 fw-semi-bold"><span class="fas fa-circle text-warning me-2"></span>curve数据</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                   <div class="col-xxl-9">
                     <div class="tab-content">
                       <div class="tab-pane active" id="analysis-descriptive" role="tabpanel" aria-labelledby="analysis-descriptive-tab">
-                        <div class="echart-analysis-descriptive" data-echart-responsive="true" data-echart-tab="data-echart-tab" style="height:300px;"></div>
+                        <div class="echart-analysis-comparative" data-echart-responsive="true" data-echart-tab="data-echart-tab" style="height:410px;"></div>
                       </div>
                     </div>
                   </div>
@@ -936,89 +899,71 @@ onMounted(() => {
               </div>
             </div>
           </div>
-          <!--文件在此输入-->
-          <div class="col-lg-4" style="height:300px;">
-            <div class="row g-3">
-              <div class="card mb-3">
-                <div class="card-header">
-                  <h6 class="mb-0">文件上传
-                      <span class="ms-1 text-400" data-bs-toggle="tooltip" data-bs-placement="top" title="用户您好，当前系统仅支持csv、json、xlsx文件哟~">
-                      <span class="far fa-question-circle" data-fa-transform="shrink-1"></span>
-                    </span>
-                  </h6>
-                </div>
-                <div class="card-body bg-body-tertiary" style="height: 385px;">
-                  <form 
-                    class="dropzone dropzone-multiple p-0" 
-                    id="my-awesome-dropzone" 
-                    data-dropzone="data-dropzone" 
-                    data-no-init ="data-no-init"
-                    action="#!">
-                    <div class="fallback">
-                      <input name="file" type="file" multiple="multiple" @change="handleFileChange" />
-                    </div>
-                    <div class="dz-message" data-dz-message="data-dz-message"> 
-                      <img class="me-2" src="../../assets/img/icons/cloud-upload.svg" width="25" alt="" />请在此上传你需要描述性分析的文件</div>
-                    <div class="dz-preview dz-preview-multiple m-0 d-flex flex-column">
-                      <div class="d-flex media align-items-center mb-3 pb-3 border-bottom btn-reveal-trigger">
-                        <img class="dz-image" src="../../assets/img/generic/image-file-2.png" alt="..." data-dz-thumbnail="data-dz-thumbnail" />
-                        <div class="flex-1 d-flex flex-between-center">
-                          <div>
-                            <h6 data-dz-name="data-dz-name"></h6>
-                            <div class="d-flex align-items-center">
-                              <p class="mb-0 fs-10 text-400 lh-1" data-dz-size="data-dz-size"></p>                              
+            <!--文件在此输入-->
+            <div class="col-lg-4">
+              <div class="row g-3">
+                <div class="card mb-3">
+                  <div class="card-header">
+                    <h6 class="mb-0">文件上传
+                        <span class="ms-1 text-400" data-bs-toggle="tooltip" data-bs-placement="top" title="用户您好，当前系统仅支持csv、json、xlsx文件哟~">
+                        <span class="far fa-question-circle" data-fa-transform="shrink-1"></span>
+                      </span>
+                    </h6>
+                  </div>
+                  <div class="card-body bg-body-tertiary">
+                    <form 
+                      class="dropzone dropzone-multiple p-0" 
+                      id="my-awesome-dropzone" 
+                      data-dropzone="data-dropzone" 
+                      data-no-init ="data-no-init"
+                      action="#!">
+                      <div class="fallback">
+                        <input name="file" type="file" multiple="multiple" @change="handleFileChange" />
+                      </div>
+                      <div class="dz-message" data-dz-message="data-dz-message"> 
+                        <img class="me-2" src="../../assets/img/icons/cloud-upload.svg" width="25" alt="" />请在此上传你需要描述性分析的文件</div>
+                      <div class="dz-preview dz-preview-multiple m-0 d-flex flex-column">
+                        <div class="d-flex media align-items-center mb-3 pb-3 border-bottom btn-reveal-trigger">
+                          <img class="dz-image" src="../../assets/img/generic/image-file-2.png" alt="..." data-dz-thumbnail="data-dz-thumbnail" />
+                          <div class="flex-1 d-flex flex-between-center">
+                            <div>
+                              <h6 data-dz-name="data-dz-name"></h6>
+                              <div class="d-flex align-items-center">
+                                <p class="mb-0 fs-10 text-400 lh-1" data-dz-size="data-dz-size"></p>                              
+                              </div>
                             </div>
-                          </div>
-                          <div class="dropdown font-sans-serif">
-                            <button class="btn btn-link text-600 btn-sm dropdown-toggle btn-reveal dropdown-caret-none" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                              <span class="fas fa-ellipsis-h"></span>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-end border py-2">
-                              <a class="dropdown-item" href="#!" data-dz-remove="data-dz-remove">Remove File</a>
+                            <div class="dropdown font-sans-serif">
+                              <button class="btn btn-link text-600 btn-sm dropdown-toggle btn-reveal dropdown-caret-none" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="fas fa-ellipsis-h"></span>
+                              </button>
+                              <div class="dropdown-menu dropdown-menu-end border py-2">
+                                <a class="dropdown-item" href="#!" data-dz-remove="data-dz-remove">Remove File</a>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </form>
-                </div>
-                <div class="card-bottom mt-2 mb-3">
-                  <button class="btn btn-falcon-default btn-sm me-2 float-end" type="button" @click="submitFile">提交</button>
+                      <div class="row g-3">
+                        <div class="col-sm-6">
+                          <label class="form-label" for="attribute-Name1">自变量</label>
+                          <input class="form-control" id="attribute-Name1" v-model="attributeName1" type="text" placeholder="attriName1">
+                        </div>
+                        <div class="col-sm-6">
+                          <label class="form-label" for="attribute-Name2">因变量</label>
+                          <input class="form-control" id="attribute-Name2" v-model="attributeName2" type="text" placeholder="attriName2">
+                        </div>
+                      </div>
+
+
+                    </form>
+                  </div>
+                  <div class="card-bottom mt-2 mb-3">
+                    <button class="btn btn-falcon-default btn-sm me-2 float-end" type="button" @click="submitFile">提交</button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
         </div>
-        <!--平均值、中位数、标准差在此明示-->
-        <div class="row g-3">
-          <div class="col-sm-6 col-md-4">
-            <div class="card overflow-hidden" style="min-width: 12rem">
-              <div class="bg-holder bg-card" style="background-image:url(https://prium.github.io/falcon/v3.24.0/assets/img/icons/spot-illustrations/corner-1.png);"></div><!--/.bg-holder-->
-              <div class="card-body position-relative">
-                <h6>平均值<span class="badge badge-subtle-warning rounded-pill ms-2"> </span></h6>
-                <div class="display-4 fs-5 mb-2 fw-normal font-sans-serif text-warning" data-countup="{&quot;endValue&quot;:58.386,&quot;decimalPlaces&quot;:2,&quot;suffix&quot;:&quot;k&quot;}">{{ average }}</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-6 col-md-4">
-            <div class="card overflow-hidden" style="min-width: 12rem">
-              <div class="bg-holder bg-card" style="background-image:url(https://prium.github.io/falcon/v3.24.0/assets/img/icons/spot-illustrations/corner-2.png);"></div><!--/.bg-holder-->
-              <div class="card-body position-relative">
-                <h6>中位数<span class="badge badge-subtle-info rounded-pill ms-2"> </span></h6>
-                <div class="display-4 fs-5 mb-2 fw-normal font-sans-serif text-info" data-countup="{&quot;endValue&quot;:23.434,&quot;decimalPlaces&quot;:2,&quot;suffix&quot;:&quot;k&quot;}">{{ median }}</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card overflow-hidden" style="min-width: 12rem">
-              <div class="bg-holder bg-card" style="background-image:url(https://prium.github.io/falcon/v3.24.0/assets/img/icons/spot-illustrations/corner-3.png);"></div><!--/.bg-holder-->
-              <div class="card-body position-relative">
-                <h6>标准差<span class="badge badge-subtle-success rounded-pill ms-2"> </span></h6>
-                <div class="display-4 fs-5 mb-2 fw-normal font-sans-serif" data-countup="{&quot;endValue&quot;:43594,&quot;prefix&quot;:&quot;$&quot;}">{{ stdDev }}</div>
-              </div>
-            </div>
-          </div>
-        </div>  
         <!--尾栏-->
         <footer class="footer">
           <div class="row g-0 justify-content-between fs-10 mt-4 mb-3">

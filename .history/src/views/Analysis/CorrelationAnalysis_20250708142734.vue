@@ -958,7 +958,7 @@ onMounted(() => {
             </div>
 
             <!-- 相关性分析结果 -->
-            <!-- <div v-if="correlationData" class="col-lg-12">
+            <div v-if="correlationData" class="col-lg-12">
               <div class="card mb-3">
                 <div class="card-header">
                   <h6 class="mb-0">相关性分析结果</h6>
@@ -970,7 +970,7 @@ onMounted(() => {
                   <p><strong>是否线性相关:</strong> {{ correlationData.conform ? '是' : '否' }}</p>
                 </div>
               </div>
-            </div> -->
+            </div>
           </div>
           <!--尾栏-->
           <footer class="footer">
