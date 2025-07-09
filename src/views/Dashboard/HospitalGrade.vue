@@ -1,10 +1,15 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineOptions } from 'vue'
+import { fetchHospitalData } from '../../api/level.js'
+import { echartsNumberOfTicketsInit } from '../../js/echart-level.js'
+import { fetchAllData } from '../../api/levelAll.js'
 
 // 声明组件名
 defineOptions({ name: 'HospitalGrade' })
+
+const allDataRef = ref([]);
 
 // 路由跳转方法
 const router = useRouter()
@@ -105,6 +110,31 @@ onMounted(() => {
     safeRemove(navDoubleTop)
     safeRemove(navTopCombo)
   }
+
+  //const allData = ref(null);
+
+  const fetchDataAndRender = async () => {
+  try {
+    // 并行获取医院数据和所有数据
+    // const hospitalData = await fetchHospitalData();
+    // console.log(hospitalData);
+
+    const [hospitalData, allData] = await Promise.all([fetchHospitalData(), fetchAllData()]);
+    console.log('医院数据:', hospitalData);
+    console.log('所有数据:', allData);
+
+    allDataRef.value = allData.data.try;
+
+    // 调用图表初始化函数
+    echartsNumberOfTicketsInit(hospitalData);
+  } catch (error) {
+    console.error('发生错误:', error);
+  }
+};
+
+fetchDataAndRender();
+
+
 })
 </script>
 <template>
@@ -888,7 +918,7 @@ onMounted(() => {
             </div>
           </div>
           <div class="col-xxl-9">
-            <div class="card" id="ticketsTable">
+            <div class="card" id="ticketsTable" data-list='{"valueNames":["year","client","name","email","status"],"page":8,"pagination":true}>
               <div class="card-header border-bottom border-200 px-0">
                 <div class="d-lg-flex justify-content-between">
                   <div class="row flex-between-center gy-2 px-x1">
@@ -934,6 +964,7 @@ onMounted(() => {
                 <div class="fade tab-pane active show" id="table-view" role="tabpanel" aria-labelledby="tableView" data-list='{"valueNames":["client","subject","status","priority","agent"],"page":6,"pagination":true}'>
                   <div class="card-body p-0">
                     <div class="table-responsive scrollbar">
+
                       <table class="table table-sm mb-0 fs-10 table-view-tickets">
                         <thead class="bg-body-tertiary">
                           <tr>
@@ -942,33 +973,33 @@ onMounted(() => {
                                 <input class="form-check-input" id="checkbox-bulk-table-tickets-select" type="checkbox" data-bulk-select='{"body":"table-ticket-body","actions":"table-ticket-actions","replacedElement":"table-ticket-replace-element"}' />
                               </div>
                             </th>
-                            <th class="text-800 sort align-middle ps-2" data-sort="client">年份</th>
+                            <th class="text-800 sort align-middle ps-2" data-sort="year">年份</th>
                             <th class="text-800 sort align-middle ps-2" data-sort="client" style="min-width:8.625rem">省份</th>
                             <th class="text-800 sort align-middle" data-sort="subject" style="min-width:5.625rem">医院总数</th>
                             <th class="text-800 sort align-middle" data-sort="status">1级医院</th>
                             <th class="text-800 sort align-middle" data-sort="priority">2级医院</th>
                             <th class="text-800 sort align-middle" data-sort="agent">3级医院</th>
-                            <th class="text-800 sort align-middle" data-sort="agent">未评级医院</th>
+                            <th class="text-800 sort align-middle" data-sort="unlevel">未评级医院</th>
                             <th class="text-800 sort align-middle" data-sort="status">状态</th>
                           </tr>
                         </thead>
-                        <tbody class="list" id="table-ticket-body">
-                          <tr>
+                        <tbody class="list" id="table-ticket-body" v-if="allDataRef.length > 0">
+                          <tr v-for="(item, index) in allDataRef" :key="index">
                             <td class="align-middle fs-9 py-3">
                               <div class="form-check mb-0"><input class="form-check-input" type="checkbox" id="table-view-tickets-1" data-bulk-select-row="data-bulk-select-row" /></div>
                             </td>
-                            <td class="align-middle status fs-9 pe-4">2011</td>
+                            <td class="align-middle status fs-9 pe-4">{{ item.year }}</td>
                             <td class="align-middle client white-space-nowrap pe-3 pe-xxl-4 ps-2">
                               <div class="d-flex align-items-center gap-2 position-relative">
-                                <h6 class="mb-0"><a class="stretched-link text-900" href="">安徽省</a></h6>
+                                <h6 class="mb-0"><a class="stretched-link text-900" href="">{{ item.region }}</a></h6>
                               </div>
                             </td>
                             <td class="align-middle subject py-2 pe-4">
-                              <a class="fw-semi-bold" href="">1234567</a></td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
-                            <td class="align-middle status fs-9 pe-4">123</td>
+                              <a class="fw-semi-bold" href="">{{ item.total }}</a></td>
+                            <td class="align-middle status fs-9 pe-4">{{ item.level4Count }}</td>
+                            <td class="align-middle status fs-9 pe-4">{{ item.level1Count }}</td>
+                            <td class="align-middle status fs-9 pe-4">{{ item.level2Count }}</td>
+                            <td class="align-middle status fs-9 pe-4">{{ item.level3Count }}</td>
                             <td class="align-middle priority pe-4">
                               <div class="d-flex align-items-center gap-2">
                                 <div style="--falcon-circle-progress-bar:75"><svg class="circle-progress-svg" width="26" height="26" viewBox="0 0 120 120">
@@ -979,7 +1010,7 @@ onMounted(() => {
                               </div>
                             </td>
                           </tr>
-                          <tr>
+                          <!-- <tr>
                             <td class="align-middle fs-9 py-3">
                               <div class="form-check mb-0"><input class="form-check-input" type="checkbox" id="table-view-tickets-2" data-bulk-select-row="data-bulk-select-row" /></div>
                             </td>
@@ -1005,8 +1036,8 @@ onMounted(() => {
                                 <h6 class="mb-0 text-700">Medium</h6>
                               </div>
                             </td>
-                          </tr>
-                          <tr>
+                          </tr> -->
+                          <!-- <tr>
                             <td class="align-middle fs-9 py-3">
                               <div class="form-check mb-0"><input class="form-check-input" type="checkbox" id="table-view-tickets-2" data-bulk-select-row="data-bulk-select-row" /></div>
                             </td>
@@ -1032,8 +1063,8 @@ onMounted(() => {
                                 <h6 class="mb-0 text-700">Low</h6>
                               </div>
                             </td>
-                          </tr>
-                          <tr>
+                          </tr> -->
+                          <!-- <tr>
                             <td class="align-middle fs-9 py-3">
                               <div class="form-check mb-0"><input class="form-check-input" type="checkbox" id="table-view-tickets-2" data-bulk-select-row="data-bulk-select-row" /></div>
                             </td>
@@ -1059,7 +1090,7 @@ onMounted(() => {
                                 <h6 class="mb-0 text-700">Urgent</h6>
                               </div>
                             </td>
-                          </tr>
+                          </tr> -->
                         </tbody>
                       </table>
                       <div class="text-center d-none" id="tickets-table-fallback">
@@ -1071,7 +1102,8 @@ onMounted(() => {
                     <div class="row align-items-center">
                       <div class="pagination d-none"></div>
                       <div class="col"><span class="d-none d-sm-inline-block me-2 fs-10" data-list-info="data-list-info"></span></div>
-                      <div class="col-auto d-flex"><button class="btn btn-sm btn-primary" type="button" data-list-pagination="prev"><span>Previous</span></button><button class="btn btn-sm btn-primary px-4 ms-2" type="button" data-list-pagination="next"><span>Next</span></button></div>
+                      <div class="col-auto d-flex"><button class="btn btn-sm btn-primary" type="button" data-list-pagination="prev"><span>Previous</span></button>
+                        <button class="btn btn-sm btn-primary px-4 ms-2" type="button" data-list-pagination="next"><span>Next</span></button></div>
                     </div>
                   </div>
                 </div>

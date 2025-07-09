@@ -2,6 +2,10 @@
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineOptions } from 'vue'
+import axios from 'axios';
+import { fetchHospitalData } from '../../api/kind.js';
+import {echartsLineShareDatasetChartInit} from '../../js/echart-kind.js';
+
 
 // 声明组件名
 defineOptions({ name: 'HospitalType' })
@@ -105,6 +109,22 @@ onMounted(() => {
     safeRemove(navDoubleTop)
     safeRemove(navTopCombo)
   }
+
+
+ const fetchDataAndRender = async () => {
+  try {
+    // 调用 fetchHospitalData 函数获取医院数据
+    const hospitalData = await fetchHospitalData();
+    console.log('医院数据:', hospitalData);
+
+    // 调用图表初始化函数
+    echartsLineShareDatasetChartInit(hospitalData);
+  } catch (error) {
+    console.error('发生错误:', error);
+  }
+};
+fetchDataAndRender()
+
 })
 </script>
 <template>
@@ -793,10 +813,10 @@ onMounted(() => {
                 <div class="card-body bg-body-tertiary">
                   <div class="tab-content">
                     <div class="tab-pane preview-tab-pane active" role="tabpanel" aria-labelledby="tab-dom-03f4fedc-6ba1-465a-883f-0c342a8e1fe6" id="dom-03f4fedc-6ba1-465a-883f-0c342a8e1fe6">
-                      <div class="echart-line-share-dataset-chart-example" style="min-height: 500px;" data-echart-responsive="true"></div>
+                      <div id="echart-line-share-dataset-chart-example" class="echart-line-share-dataset-chart-example" style="min-height: 500px;" data-echart-responsive="true"></div>
                     </div>
                     <div class="tab-pane preview-tab-pane" role="tabpanel" aria-labelledby="tab-dom-4e94b468-5183-4389-be8c-5612d43b02cd" id="dom-4e94b468-5183-4389-be8c-5612d43b02cd">
-                      <div class="echart-line-share-dataset-chart-example01" style="min-height: 500px;" data-echart-responsive="true"></div>
+                      <div id="echart-line-share-dataset-chart-example01" class="echart-line-share-dataset-chart-example01" style="min-height: 500px;" data-echart-responsive="true"></div>
                     </div>
                   </div>
                 </div>
