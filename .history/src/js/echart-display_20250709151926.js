@@ -220,28 +220,29 @@ export const revenueChartInit = function revenueChartInit(dynamicData) {
   // };
 
   // 1. 把 dynamicData 转成原来静态代码期望的格式：
-  const data = {
-    dates: dynamicData.labels,
+  var data = {
+    dates: dynamicData.labels, // ['2015年', ...]
     dataset: {
+      // revenue ↔ 委属； users ↔ 省属； deals ↔ 地级市属； profit ↔ 县级市属； county ↔ 县属
       revenue: [
-        dynamicData.details.revenue.total,
-        dynamicData.details.revenue.medicine,
-        dynamicData.details.revenue.inspection
+        dynamicData.details.committee.total,
+        dynamicData.details.committee.medicine,
+        dynamicData.details.committee.inspection
       ],
       users: [
-        dynamicData.details.users.total,
-        dynamicData.details.users.medicine,
-        dynamicData.details.users.inspection
+        dynamicData.details.province.total,
+        dynamicData.details.province.medicine,
+        dynamicData.details.province.inspection
       ],
       deals: [
-        dynamicData.details.deals.total,
-        dynamicData.details.deals.medicine,
-        dynamicData.details.deals.inspection
+        dynamicData.details.prefectureLevel.total,
+        dynamicData.details.prefectureLevel.medicine,
+        dynamicData.details.prefectureLevel.inspection
       ],
       profit: [
-        dynamicData.details.profit.total,
-        dynamicData.details.profit.medicine,
-        dynamicData.details.profit.inspection
+        dynamicData.details.countyLevel.total,
+        dynamicData.details.countyLevel.medicine,
+        dynamicData.details.countyLevel.inspection
       ],
       county: [
         dynamicData.details.county.total,
@@ -249,7 +250,7 @@ export const revenueChartInit = function revenueChartInit(dynamicData) {
         dynamicData.details.county.inspection
       ]
     }
-  }
+  };
 
   var tooltipFormatter = function tooltipFormatter(params) {
     return "\n    <div class=\"card\">\n      <div class=\"card-header bg-body-tertiary py-2\">\n        <h6 class=\"text-600 mb-0\">".concat(params[0].axisValue, "</h6>\n      </div>\n      <div class=\"card-body py-2\">\n        <h6 class=\"text-600 fw-normal\">\n          <span class=\"fas fa-circle text-primary me-2\"></span>总成本: \n          <span class=\"fw-medium\">$").concat(params[0].data, "</span></h6>\n        <h6 class=\"text-600 mb-0 fw-normal\"> \n          <span class=\"fas fa-circle text-warning me-2\"></span>医药费: \n          <span class=\"fw-medium\">$").concat(params[1].data, "</span></h6>\n        <h6 class=\"text-600 mb-0 fw-normal\"> \n          <span class=\"fas fa-circle text-success me-2\"></span>检查费: \n          <span class=\"fw-medium\">$").concat(params[2].data, "</span></h6>\n      </div>\n    </div>\n  ");

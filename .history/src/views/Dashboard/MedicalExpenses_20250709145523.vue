@@ -1,9 +1,9 @@
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineOptions } from 'vue'
-import { getAllCostData,} from '@/api/display'  // 引入API方法
-import { linePaymentChartInit, revenueChartInit } from '@/js/echart-display'  // 引入图表初始化方法
+import { getAllCostData } from '@/api/display'  // 引入API方法
+import { linePaymentChartInit } from '@/js/echart-display'  // 引入图表初始化方法
 
 // 声明组件名
 defineOptions({ name: 'MedicalExpenses' })
@@ -33,7 +33,6 @@ function goToComparativeAnalysis()     { router.push({ name: 'ComparativeAnalysi
 function goToCorrelationAnalysis()     { router.push({ name: 'CorrelationAnalysis' }) }
 function goToTrendAnalysis()           { router.push({ name: 'TrendAnalysis' }) }
 
-// ---------- 第一个图 ----------
 const medicalCostData = ref({});  // 用于存储从后端获取的医疗费用数据
 const selectedLevel = ref('total');  // 默认选择医院合计
 
@@ -105,100 +104,8 @@ const handleLevelChange = (event) => {
   linePaymentChartInit(medicalCostData.value, selectedLevel.value);  // 根据选择的类别重新渲染图表
 };
 
-// ---------- 第二个图 ----------
-async function fetchDetailedData() {
-  try {
-    const response = await getAllCostData()
-    const raw = response.data
-    const years = [2015,2016,2017,2018,2019,2020,2021,2022]
-    const tabMap = {
-      revenue: '委属',
-      users:   '省属',
-      deals:   '地级市属',
-      profit:  '县级市属',
-      county:  '县属'
-    }
-    // 初始化
-    const details = {}
-    Object.keys(tabMap).forEach(key => {
-      details[key] = {
-        total:      new Array(years.length).fill(0),
-        medicine:   new Array(years.length).fill(0),
-        inspection: new Array(years.length).fill(0)
-      }
-    })
-    // 填值
-    raw.forEach(item => {
-      const chartKey = Object.keys(tabMap).find(k => tabMap[k] === item.level)
-      if (!chartKey) return
-      const idx = years.indexOf(item.year)
-      if (idx < 0) return
-      details[chartKey].total[idx]      = item.hospitalTotalCost
-      details[chartKey].medicine[idx]   = item.medicineFee
-      details[chartKey].inspection[idx] = item.inspectionFee
-    })
-    const labels = years.map(y => `${y}年`)
-    // 渲染
-    revenueChartInit({ labels, details })
-  } catch (e) {
-    console.error('获取详细医疗费用数据失败:', e)
-  }
-}
-
- // --------- 新增：表格数据用同一个接口拉一次全量数据 ---------
- const rawAllCosts = ref([])                  // 存原始 36 条
- const selectedTableYear = ref(2022)          // 表格默认展示 2022 年
-
- // 只负责把 resp.data 装到 rawAllCosts
- async function fetchTableData() {
-   try {
-     const { data } = await getAllCostData()
-     rawAllCosts.value = data
-   } catch (e) {
-     console.error('获取表格数据失败:', e)
-   }
- }
-
- // 表格行：5 类别
- const tableRows = computed(() => {
-   const levels = ['委属','省属','地级市属','县级市属','县属']
-   return levels.map(lev => {
-     const item = rawAllCosts.value.find(r => r.level === lev && r.year === selectedTableYear.value) || {}
-     const total = item.hospitalTotalCost || 0
-     const med   = item.medicineFee      || 0
-     const ins   = item.inspectionFee     || 0
-     return {
-       levelZh:         lev,
-       totalCost:       total,
-       hospitalization: total - med - ins,
-       medicineFee:     med,
-       inspectionFee:   ins,
-       medicineRatio:   item.medicineRatio   ?? 0,
-       inspectionRatio: item.inspectionRatio ?? 0
-     }
-   })
- })
-
- // 合计行
- const totalRow = computed(() => {
-   const item = rawAllCosts.value.find(r => r.level === '医院合计' && r.year === selectedTableYear.value) || {}
-   const total = item.hospitalTotalCost || 0
-   const med   = item.medicineFee      || 0
-   const ins   = item.inspectionFee     || 0
-   return {
-     totalCost:       total,
-     hospitalization: total - med - ins,
-     medicineFee:     med,
-     inspectionFee:   ins,
-     medicineRatio:   item.medicineRatio   ?? 0,
-     inspectionRatio: item.inspectionRatio ?? 0
-   }
- })
-
 onMounted(() => {
   fetchMedicalCosts();  // 获取医疗费用数据并初始化图表
-  fetchDetailedData();    // —— 新增：第二张图的数据拉取并渲染
-  fetchTableData();
 
   // 1. RTL
   const isRTL = JSON.parse(localStorage.getItem('isRTL'))
@@ -1053,7 +960,7 @@ onMounted(() => {
                 </div>
               </div>
             </div>
-            <!--各类型医疗卫生机构医院总成本、医药费、检查费折线+柱状图-->
+            <!--各类型医疗卫生机构医院总成本、医药费、检查费折线图-->
             <div class="card">
               <div class="card-header d-flex flex-between-center ps-0 py-0 border-bottom">
                 <ul class="nav nav-tabs border-0 flex-nowrap tab-active-caret" id="crm-revenue-chart-tab" role="tablist" data-tab-has-echarts="data-tab-has-echarts">
@@ -1105,6 +1012,8 @@ onMounted(() => {
                   </div>
                   <div class="col-xxl-9">
                     <div class="tab-content">
+                      <!-- Find the JS file for the following chart at: src/js/charts/echarts/crm-revenue.js-->
+                      <!-- If you are not using gulp based workflow, you can find the transpiled code at: public/assets/js/theme.js-->
                       <div class="tab-pane active" id="crm-revenue" role="tabpanel" aria-labelledby="crm-revenue-tab">
                         <div class="echart-crm-revenue" data-echart-responsive="true" data-echart-tab="data-echart-tab" style="height:320px;"></div>
                       </div>
@@ -1173,10 +1082,15 @@ onMounted(() => {
                 <h6 class="mb-0">医疗费用表</h6>
                 <div class="dropdown font-sans-serif btn-reveal-trigger">
                   <div class="col-auto">
-                    <select class="form-select form-select-sm audience-select-menu" v-model="selectedTableYear">
-                      <option v-for="y in [2022,2021,2020,2019,2018,2017,2016,2015]" :key="y" :value="y">
-                        {{ y }}年
-                      </option>
+                    <select class="form-select form-select-sm audience-select-menu">
+                      <option value="week" selected="selected">2022年</option>
+                      <option value="year">2021年</option>
+                      <option value="year">2020年</option>
+                      <option value="year">2019年</option>
+                      <option value="year">2018年</option>                      
+                      <option value="year">2017年</option>
+                      <option value="year">2016年</option>
+                      <option value="year">2015年</option>
                     </select>
                   </div>
                 </div>
@@ -1196,25 +1110,61 @@ onMounted(() => {
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="row in tableRows" :key="row.levelZh" class="border-bottom border-200">
-                        <td class="align-middle font-sans-serif fw-medium text-nowrap"><a href="">{{ row.levelZh }}</a></td>
-                        <td class="align-middle text-center">￥{{ row.totalCost.toFixed(1) }}</td>
-                        <td class="align-middle text-center">￥{{ row.hospitalization.toFixed(1) }}</td>
-                        <td class="align-middle text-center">￥{{ row.medicineFee.toFixed(1) }}</td>
-                        <td class="align-middle text-center">￥{{ row.inspectionFee.toFixed(1) }}</td>
-                        <td class="align-middle text-center">{{ row.medicineRatio.toFixed(1) }}%</td>
-                        <td class="align-middle text-center">{{ row.inspectionRatio.toFixed(1) }}%</td>
+                      <tr class="border-bottom border-200">
+                        <td class="align-middle font-sans-serif fw-medium text-nowrap"><a href="">委属</a></td>
+                        <td class="align-middle text-center">1000</td>
+                        <td class="align-middle text-center">2600</td>
+                        <td class="align-middle text-center">3523</td>
+                        <td class="align-middle text-center">1311</td>
+                        <td class="align-middle text-center">36.50%</td>
+                        <td class="align-middle text-center">8.70%</td>
+                      </tr>
+                      <tr class="border-bottom border-200">
+                        <td class="align-middle font-sans-serif fw-medium text-nowrap"><a href="">省属</a></td>
+                        <td class="align-middle text-center">1000</td>
+                        <td class="align-middle text-center">2600</td>
+                        <td class="align-middle text-center">3523</td>
+                        <td class="align-middle text-center">1311</td>
+                        <td class="align-middle text-center">36.50%</td>
+                        <td class="align-middle text-center">8.70%</td>
+                      </tr>
+                      <tr class="border-bottom border-200">
+                        <td class="align-middle font-sans-serif fw-medium text-nowrap"><a href="">地级市属</a></td>
+                        <td class="align-middle text-center">1000</td>
+                        <td class="align-middle text-center">2600</td>
+                        <td class="align-middle text-center">3523</td>
+                        <td class="align-middle text-center">1311</td>
+                        <td class="align-middle text-center">36.50%</td>
+                        <td class="align-middle text-center">8.70%</td>
+                      </tr>
+                      <tr class="border-bottom border-200">
+                        <td class="align-middle font-sans-serif fw-medium text-nowrap"><a href="">县级市属</a></td>
+                        <td class="align-middle text-center">1000</td>
+                        <td class="align-middle text-center">2600</td>
+                        <td class="align-middle text-center">3523</td>
+                        <td class="align-middle text-center">1311</td>
+                        <td class="align-middle text-center">36.50%</td>
+                        <td class="align-middle text-center">8.70%</td>
+                      </tr>
+                      <tr class="border-bottom border-200">
+                        <td class="align-middle font-sans-serif fw-medium text-nowrap"><a href="">县属</a></td>
+                        <td class="align-middle text-center">1000</td>
+                        <td class="align-middle text-center">2600</td>
+                        <td class="align-middle text-center">3523</td>
+                        <td class="align-middle text-center">1311</td>
+                        <td class="align-middle text-center">36.50%</td>
+                        <td class="align-middle text-center">8.70%</td>
                       </tr>
                     </tbody>
                     <tfoot class="bg-light">
                       <tr class="text-700 fw-bold">
                         <td>医院合计</td>
-                        <td class="text-center">￥{{ totalRow.totalCost.toFixed(1) }}</td>
-                        <td class="text-center">￥{{ totalRow.hospitalization.toFixed(1) }}</td>
-                        <td class="text-center">￥{{ totalRow.medicineFee.toFixed(1) }}</td>
-                        <td class="text-center">￥{{ totalRow.inspectionFee.toFixed(1) }}</td>
-                        <td class="text-center">{{ totalRow.medicineRatio.toFixed(1) }}%</td>
-                        <td class="text-center">{{ totalRow.inspectionRatio.toFixed(1) }}%</td>
+                        <td class="text-center">￥6359</td>
+                        <td class="text-center">￥8151</td>
+                        <td class="text-center">￥9174</td>
+                        <td class="text-center">￥12587</td>
+                        <td class="text-center">12587</td>
+                        <td class="text-center">12587</td>
                       </tr>
                     </tfoot>
                   </table>

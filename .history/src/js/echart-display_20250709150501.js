@@ -189,68 +189,35 @@ export const linePaymentChartInit = function linePaymentChartInit(data, selected
 };
 
 /* -------------------------------------------------------------------------- */
-/*                各类型医疗卫生机构医院总成本、医药费、检查费折线图               */               
+/*                                Audience Chart                              */
 /* -------------------------------------------------------------------------- */
 //各类型医疗卫生机构医院总成本、医药费、检查费折线图
-export const revenueChartInit = function revenueChartInit(dynamicData) {
-  // var data = {
-  //   dates: utils.getDates(new Date('5-6-2019'), new Date('5-6-2021'), 1000 * 60 * 60 * 24 * 30),
-  //   dataset: {
-  //     //委属的八年总成本、医药费、检查费数据，每个小数组第一个数据就是2015年的，第二个就是2016年的，以此类推，第八个就是2022年的
-  //     revenue: [[645, 500, 550, 550, 473, 405, 286, 601], //第一行是总成本hospitalTotalCost
-  //     [440, 250, 270, 400, 175, 180, 200, 400],           //第二行是医药费medicineFee
-  //     [340, 360, 230, 250, 410, 430, 450, 200]],          //第三行是检查费inspectionFee
-  //     //省属的八年总成本、医药费、检查费数据
-  //     users: [[545, 500, 650, 727, 773, 705, 686, 501], 
-  //     [340, 360, 230, 250, 410, 430, 450, 200],
-  //     [440, 250, 270, 400, 175, 180, 200, 400]],
-  //     //地级市属的八年总成本、医药费、检查费数据
-  //     deals: [[545, 400, 450, 627, 473, 450, 460, 780], 
-  //     [245, 300, 450, 427, 273, 250, 260, 580],
-  //     [340, 360, 330, 300, 410, 380, 450, 400]],
-  //     //县级市属的八年总成本、医药费、检查费数据
-  //     profit: [[545, 400, 450, 627, 673, 605, 686, 501], 
-  //     [340, 360, 330, 300, 410, 380, 450, 400],
-  //     [350, 370, 230, 250, 410, 430, 450, 200]],
-  //     //县属的八年总成本、医药费、检查费数据
-  //     county: [[545, 400, 450, 627, 673, 605, 686, 501], 
-  //     [340, 360, 330, 300, 410, 380, 450, 400],
-  //     [440, 250, 270, 400, 175, 180, 200, 400]],
-  //   }
-  // };
-
-  // 1. 把 dynamicData 转成原来静态代码期望的格式：
-  const data = {
-    dates: dynamicData.labels,
+var revenueChartInit = function revenueChartInit() {
+  var data = {
+    dates: utils.getDates(new Date('5-6-2019'), new Date('5-6-2021'), 1000 * 60 * 60 * 24 * 30),
     dataset: {
-      revenue: [
-        dynamicData.details.revenue.total,
-        dynamicData.details.revenue.medicine,
-        dynamicData.details.revenue.inspection
-      ],
-      users: [
-        dynamicData.details.users.total,
-        dynamicData.details.users.medicine,
-        dynamicData.details.users.inspection
-      ],
-      deals: [
-        dynamicData.details.deals.total,
-        dynamicData.details.deals.medicine,
-        dynamicData.details.deals.inspection
-      ],
-      profit: [
-        dynamicData.details.profit.total,
-        dynamicData.details.profit.medicine,
-        dynamicData.details.profit.inspection
-      ],
-      county: [
-        dynamicData.details.county.total,
-        dynamicData.details.county.medicine,
-        dynamicData.details.county.inspection
-      ]
+      //委属的八年总成本、医药费、检查费数据，每个小数组第一个数据就是2015年的，第二个就是2016年的，以此类推，第八个就是2022年的
+      revenue: [[645, 500, 550, 550, 473, 405, 286, 601], //第一行是总成本hospitalTotalCost
+      [440, 250, 270, 400, 175, 180, 200, 400],           //第二行是医药费medicineFee
+      [340, 360, 230, 250, 410, 430, 450, 200]],          //第三行是检查费inspectionFee
+      //省属的八年总成本、医药费、检查费数据
+      users: [[545, 500, 650, 727, 773, 705, 686, 501], 
+      [340, 360, 230, 250, 410, 430, 450, 200],
+      [440, 250, 270, 400, 175, 180, 200, 400]],
+      //地级市属的八年总成本、医药费、检查费数据
+      deals: [[545, 400, 450, 627, 473, 450, 460, 780], 
+      [245, 300, 450, 427, 273, 250, 260, 580],
+      [340, 360, 330, 300, 410, 380, 450, 400]],
+      //县级市属的八年总成本、医药费、检查费数据
+      profit: [[545, 400, 450, 627, 673, 605, 686, 501], 
+      [340, 360, 330, 300, 410, 380, 450, 400],
+      [350, 370, 230, 250, 410, 430, 450, 200]],
+      //县属的八年总成本、医药费、检查费数据
+      county: [[545, 400, 450, 627, 673, 605, 686, 501], 
+      [340, 360, 330, 300, 410, 380, 450, 400],
+      [440, 250, 270, 400, 175, 180, 200, 400]],
     }
-  }
-
+  };
   var tooltipFormatter = function tooltipFormatter(params) {
     return "\n    <div class=\"card\">\n      <div class=\"card-header bg-body-tertiary py-2\">\n        <h6 class=\"text-600 mb-0\">".concat(params[0].axisValue, "</h6>\n      </div>\n      <div class=\"card-body py-2\">\n        <h6 class=\"text-600 fw-normal\">\n          <span class=\"fas fa-circle text-primary me-2\"></span>总成本: \n          <span class=\"fw-medium\">$").concat(params[0].data, "</span></h6>\n        <h6 class=\"text-600 mb-0 fw-normal\"> \n          <span class=\"fas fa-circle text-warning me-2\"></span>医药费: \n          <span class=\"fw-medium\">$").concat(params[1].data, "</span></h6>\n        <h6 class=\"text-600 mb-0 fw-normal\"> \n          <span class=\"fas fa-circle text-success me-2\"></span>检查费: \n          <span class=\"fw-medium\">$").concat(params[2].data, "</span></h6>\n      </div>\n    </div>\n  ");
   };
@@ -274,8 +241,7 @@ export const revenueChartInit = function revenueChartInit(dynamicData) {
         },
         xAxis: {
           type: 'category',
-          // data: ['2015年', '2016年', '2017年', '2018年', '2019年', '2020年', '2021年', '2022年'], 
-          data: data.dates,
+          data: ['2015年', '2016年', '2017年', '2018年', '2019年', '2020年', '2021年', '2022年'], 
           axisLine: {
             show: false
           },
@@ -364,17 +330,9 @@ export const revenueChartInit = function revenueChartInit(dynamicData) {
     echartSetOption(chart, userOptions, options);
   };
   var chartKeys = ['revenue', 'users', 'deals', 'profit', 'county'];
-  // chartKeys.forEach(function (key) {
-  //   var el = document.querySelector(".echart-crm-".concat(key));
-  //   el && initChart(el, getDefaultOptions(data.dataset[key][0], data.dataset[key][1], data.dataset[key][2]));
-  // });
   chartKeys.forEach(function (key) {
-    var el = document.querySelector(`.echart-crm-${key}`);
-    el && initChart(el, getDefaultOptions(
-      data.dataset[key][0],
-      data.dataset[key][1],
-      data.dataset[key][2]
-    ));
+    var el = document.querySelector(".echart-crm-".concat(key));
+    el && initChart(el, getDefaultOptions(data.dataset[key][0], data.dataset[key][1], data.dataset[key][2]));
   });
 };
 

@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineOptions } from 'vue'
 import { getAllCostData,} from '@/api/display'  // 引入API方法
@@ -145,60 +145,9 @@ async function fetchDetailedData() {
   }
 }
 
- // --------- 新增：表格数据用同一个接口拉一次全量数据 ---------
- const rawAllCosts = ref([])                  // 存原始 36 条
- const selectedTableYear = ref(2022)          // 表格默认展示 2022 年
-
- // 只负责把 resp.data 装到 rawAllCosts
- async function fetchTableData() {
-   try {
-     const { data } = await getAllCostData()
-     rawAllCosts.value = data
-   } catch (e) {
-     console.error('获取表格数据失败:', e)
-   }
- }
-
- // 表格行：5 类别
- const tableRows = computed(() => {
-   const levels = ['委属','省属','地级市属','县级市属','县属']
-   return levels.map(lev => {
-     const item = rawAllCosts.value.find(r => r.level === lev && r.year === selectedTableYear.value) || {}
-     const total = item.hospitalTotalCost || 0
-     const med   = item.medicineFee      || 0
-     const ins   = item.inspectionFee     || 0
-     return {
-       levelZh:         lev,
-       totalCost:       total,
-       hospitalization: total - med - ins,
-       medicineFee:     med,
-       inspectionFee:   ins,
-       medicineRatio:   item.medicineRatio   ?? 0,
-       inspectionRatio: item.inspectionRatio ?? 0
-     }
-   })
- })
-
- // 合计行
- const totalRow = computed(() => {
-   const item = rawAllCosts.value.find(r => r.level === '医院合计' && r.year === selectedTableYear.value) || {}
-   const total = item.hospitalTotalCost || 0
-   const med   = item.medicineFee      || 0
-   const ins   = item.inspectionFee     || 0
-   return {
-     totalCost:       total,
-     hospitalization: total - med - ins,
-     medicineFee:     med,
-     inspectionFee:   ins,
-     medicineRatio:   item.medicineRatio   ?? 0,
-     inspectionRatio: item.inspectionRatio ?? 0
-   }
- })
-
 onMounted(() => {
   fetchMedicalCosts();  // 获取医疗费用数据并初始化图表
   fetchDetailedData();    // —— 新增：第二张图的数据拉取并渲染
-  fetchTableData();
 
   // 1. RTL
   const isRTL = JSON.parse(localStorage.getItem('isRTL'))
@@ -1173,10 +1122,15 @@ onMounted(() => {
                 <h6 class="mb-0">医疗费用表</h6>
                 <div class="dropdown font-sans-serif btn-reveal-trigger">
                   <div class="col-auto">
-                    <select class="form-select form-select-sm audience-select-menu" v-model="selectedTableYear">
-                      <option v-for="y in [2022,2021,2020,2019,2018,2017,2016,2015]" :key="y" :value="y">
-                        {{ y }}年
-                      </option>
+                    <select class="form-select form-select-sm audience-select-menu">
+                      <option value="week" selected="selected">2022年</option>
+                      <option value="year">2021年</option>
+                      <option value="year">2020年</option>
+                      <option value="year">2019年</option>
+                      <option value="year">2018年</option>                      
+                      <option value="year">2017年</option>
+                      <option value="year">2016年</option>
+                      <option value="year">2015年</option>
                     </select>
                   </div>
                 </div>
@@ -1196,25 +1150,61 @@ onMounted(() => {
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="row in tableRows" :key="row.levelZh" class="border-bottom border-200">
-                        <td class="align-middle font-sans-serif fw-medium text-nowrap"><a href="">{{ row.levelZh }}</a></td>
-                        <td class="align-middle text-center">￥{{ row.totalCost.toFixed(1) }}</td>
-                        <td class="align-middle text-center">￥{{ row.hospitalization.toFixed(1) }}</td>
-                        <td class="align-middle text-center">￥{{ row.medicineFee.toFixed(1) }}</td>
-                        <td class="align-middle text-center">￥{{ row.inspectionFee.toFixed(1) }}</td>
-                        <td class="align-middle text-center">{{ row.medicineRatio.toFixed(1) }}%</td>
-                        <td class="align-middle text-center">{{ row.inspectionRatio.toFixed(1) }}%</td>
+                      <tr class="border-bottom border-200">
+                        <td class="align-middle font-sans-serif fw-medium text-nowrap"><a href="">委属</a></td>
+                        <td class="align-middle text-center">1000</td>
+                        <td class="align-middle text-center">2600</td>
+                        <td class="align-middle text-center">3523</td>
+                        <td class="align-middle text-center">1311</td>
+                        <td class="align-middle text-center">36.50%</td>
+                        <td class="align-middle text-center">8.70%</td>
+                      </tr>
+                      <tr class="border-bottom border-200">
+                        <td class="align-middle font-sans-serif fw-medium text-nowrap"><a href="">省属</a></td>
+                        <td class="align-middle text-center">1000</td>
+                        <td class="align-middle text-center">2600</td>
+                        <td class="align-middle text-center">3523</td>
+                        <td class="align-middle text-center">1311</td>
+                        <td class="align-middle text-center">36.50%</td>
+                        <td class="align-middle text-center">8.70%</td>
+                      </tr>
+                      <tr class="border-bottom border-200">
+                        <td class="align-middle font-sans-serif fw-medium text-nowrap"><a href="">地级市属</a></td>
+                        <td class="align-middle text-center">1000</td>
+                        <td class="align-middle text-center">2600</td>
+                        <td class="align-middle text-center">3523</td>
+                        <td class="align-middle text-center">1311</td>
+                        <td class="align-middle text-center">36.50%</td>
+                        <td class="align-middle text-center">8.70%</td>
+                      </tr>
+                      <tr class="border-bottom border-200">
+                        <td class="align-middle font-sans-serif fw-medium text-nowrap"><a href="">县级市属</a></td>
+                        <td class="align-middle text-center">1000</td>
+                        <td class="align-middle text-center">2600</td>
+                        <td class="align-middle text-center">3523</td>
+                        <td class="align-middle text-center">1311</td>
+                        <td class="align-middle text-center">36.50%</td>
+                        <td class="align-middle text-center">8.70%</td>
+                      </tr>
+                      <tr class="border-bottom border-200">
+                        <td class="align-middle font-sans-serif fw-medium text-nowrap"><a href="">县属</a></td>
+                        <td class="align-middle text-center">1000</td>
+                        <td class="align-middle text-center">2600</td>
+                        <td class="align-middle text-center">3523</td>
+                        <td class="align-middle text-center">1311</td>
+                        <td class="align-middle text-center">36.50%</td>
+                        <td class="align-middle text-center">8.70%</td>
                       </tr>
                     </tbody>
                     <tfoot class="bg-light">
                       <tr class="text-700 fw-bold">
                         <td>医院合计</td>
-                        <td class="text-center">￥{{ totalRow.totalCost.toFixed(1) }}</td>
-                        <td class="text-center">￥{{ totalRow.hospitalization.toFixed(1) }}</td>
-                        <td class="text-center">￥{{ totalRow.medicineFee.toFixed(1) }}</td>
-                        <td class="text-center">￥{{ totalRow.inspectionFee.toFixed(1) }}</td>
-                        <td class="text-center">{{ totalRow.medicineRatio.toFixed(1) }}%</td>
-                        <td class="text-center">{{ totalRow.inspectionRatio.toFixed(1) }}%</td>
+                        <td class="text-center">￥6359</td>
+                        <td class="text-center">￥8151</td>
+                        <td class="text-center">￥9174</td>
+                        <td class="text-center">￥12587</td>
+                        <td class="text-center">12587</td>
+                        <td class="text-center">12587</td>
                       </tr>
                     </tfoot>
                   </table>
