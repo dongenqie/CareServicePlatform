@@ -4,6 +4,10 @@ import { useRouter } from 'vue-router'
 import { defineOptions } from 'vue'
 import * as echarts from 'echarts';
 import getGuangXiMap from '@/api/getGuangXiMap';
+import { fetchMedicalData } from '../../api/number.js';
+import { echartsChinaMapInit } from '../../js/echart-number.js';
+
+
 
 // 声明组件名
 defineOptions({ name: 'HospitalNumber' })
@@ -187,6 +191,19 @@ onMounted(async () => {
     safeRemove(navDoubleTop)
     safeRemove(navTopCombo)
   }
+
+  const fetchDataAndRender = async () => {
+  try {
+    // 调用 fetchHospitalData 函数获取医院数据
+    const hospitalData = await fetchMedicalData();
+    console.log('医院数据:', hospitalData);
+
+    echartsChinaMapInit(hospitalData);
+  } catch (error) {
+    console.error('发生错误:', error);
+  }
+};
+fetchDataAndRender()
 })
 </script>
 <template>

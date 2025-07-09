@@ -11,7 +11,8 @@ export async function getDescriptiveStatistics(file) {
   try {
     const response = await apiClient.post(
       '/api/calculate/statisticalAnalysisSimple',
-      formData
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } }
     );
     return response.data;
   } catch (error) {

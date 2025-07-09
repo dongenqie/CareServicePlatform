@@ -1,5 +1,6 @@
 "use strict";
 
+
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
@@ -4115,423 +4116,419 @@ var echartsLineRaceChartInit = function echartsLineRaceChartInit() {
 /*                    Echarts Line Share Dataset Chart                        */
 /* -------------------------------------------------------------------------- */
 
-var echartsLineShareDatasetChartInit = function echartsLineShareDatasetChartInit() {
-  var $lineShareChartEl = document.querySelector('.echart-line-share-dataset-chart-example');
-  if ($lineShareChartEl) {
-    // Get options from data attribute
-    var userOptions = utils.getData($lineShareChartEl, 'options');
-    var chart = window.echarts.init($lineShareChartEl);
-    var getDefaultOptions = function getDefaultOptions() {
-      return {
-        color: [utils.getColor('danger'), utils.getColor('info'), utils.getColor('warning'), utils.getColor('secondary'), utils.getColor('success'), utils.getColor('primary')],
-        legend: {
-          top: 0,
-          textStyle: {
-            color: utils.getGrays()['700']
-          }
-        },
-        tooltip: {
-          trigger: 'axis',
-          showContent: false
-        },
-        dataset: {
-          source: [['hospitalType', '2011', '2012', '2013', '2014', '2015', ], 
-          ['综合医院', 56.5, 88.7, 70.1, 53.4, 85.1], 
-          ['中医院', 51.1, 55.1, 53.3, 73.8, 68.7], 
-          ['中西医结合医院', 40.1, 69.5, 36.4, 45.2, 32.5], 
-          ['民族医院', 25.2, 41.2, 11, 36.9, 49.1],
-          ['专科医院', 26.2, 43.2, 18, 33.9, 48.1],
-          ['护理院', 20.2, 50.2, 21, 39.9, 47.1]
-        ]
-        },
-        xAxis: {
-          type: 'category',
-          axisLine: {
-            lineStyle: {
-              color: utils.getGrays()['300']
-            }
-          },
-          axisLabel: {
-            color: utils.getGrays()['600']
-          },
-          axisPointer: {
-            lineStyle: {
-              color: utils.getGrays()['300']
-            }
-          }
-        },
-        yAxis: {
-          gridIndex: 0,
-          axisLabel: {
-            color: utils.getGrays()['600']
-          },
-          splitLine: {
-            lineStyle: {
-              color: utils.getGrays()['200']
-            }
-          }
-        },
-        series: [{
-          type: 'line',
-          smooth: true,
-          seriesLayoutBy: 'row',
-          emphasis: {
-            focus: 'series'
-          },
-          symbolSize: 10,
-          itemStyle: {
-            color: utils.getGrays()['100'],
-            borderColor: utils.getColor('danger'),
-            borderWidth: 2
-          },
-          lineStyle: {
-            color: utils.getColor('danger')
-          },
-          symbol: 'circle'
-        }, {
-          type: 'line',
-          smooth: true,
-          seriesLayoutBy: 'row',
-          emphasis: {
-            focus: 'series'
-          },
-          symbolSize: 10,
-          itemStyle: {
-            color: utils.getGrays()['100'],
-            borderColor: utils.getColor('info'),
-            borderWidth: 2
-          },
-          lineStyle: {
-            color: utils.getColor('info')
-          },
-          symbol: 'circle'
-        }, {
-          type: 'line',
-          smooth: true,
-          seriesLayoutBy: 'row',
-          emphasis: {
-            focus: 'series'
-          },
-          symbolSize: 10,
-          itemStyle: {
-            color: utils.getGrays()['100'],
-            borderColor: utils.getColor('warning'),
-            borderWidth: 2
-          },
-          lineStyle: {
-            color: utils.getColor('warning')
-          },
-          symbol: 'circle'
-        }, {
-          type: 'line',
-          smooth: true,
-          seriesLayoutBy: 'row',
-          emphasis: {
-            focus: 'series'
-          },
-          symbolSize: 10,
-          itemStyle: {
-            color: utils.getGrays()['100'],
-            borderColor: utils.getColor('secondary'),
-            borderWidth: 2
-          },
-          lineStyle: {
-            color: utils.getColor('secondary')
-          },
-          symbol: 'circle'
-        }, {
-          type: 'line',
-          smooth: true,
-          seriesLayoutBy: 'row',
-          emphasis: {
-            focus: 'series'
-          },
-          symbolSize: 10,
-          itemStyle: {
-            color: utils.getGrays()['100'],
-            borderColor: utils.getColor('success'),
-            borderWidth: 2
-          },
-          lineStyle: {
-            color: utils.getColor('success')
-          },
-          symbol: 'circle'
-        }, {
-          type: 'line',
-          smooth: true,
-          seriesLayoutBy: 'row',
-          emphasis: {
-            focus: 'series'
-          },
-          symbolSize: 10,
-          itemStyle: {
-            color: utils.getGrays()['100'],
-            borderColor: utils.getColor('primary'),
-            borderWidth: 2
-          },
-          lineStyle: {
-            color: utils.getColor('primary')
-          },
-          symbol: 'circle'
-        }, {
-          type: 'pie',
-          id: 'pie',
-          radius: '30%',
-          center: ['50%', '28%'],
-          emphasis: {
-            focus: 'data'
-          },
-          label: {
-            formatter: '{b}: {@2011} ({d}%)',
-            color: utils.getGrays()['600']
-          },
-          encode: {
-            itemName: 'hospitalType',
-            value: '2011',
-            tooltip: '2011'
-          }
-        }],
-        grid: {
-          right: 10,
-          left: 5,
-          bottom: 5,
-          top: '55%',
-          containLabel: true
-        }
-      };
-    };
-    echartSetOption(chart, userOptions, getDefaultOptions);
-    chart.on('updateAxisPointer', function (event) {
-      var xAxisInfo = event.axesInfo[0];
-      if (xAxisInfo) {
-        var dimension = xAxisInfo.value + 1;
-        chart.setOption({
-          series: {
-            id: 'pie',
-            label: {
-              formatter: "{b}: {@[".concat(dimension, "]} ({d}%)")
-            },
-            encode: {
-              value: dimension,
-              tooltip: dimension
-            }
-          }
-        });
-      }
-    });
-  }
-};
+//医院类型
+// var echartsLineShareDatasetChartInit = function echartsLineShareDatasetChartInit() {
+//   var $lineShareChartEl = document.querySelector('.echart-line-share-dataset-chart-example');
+//   if ($lineShareChartEl) {
+//     // Get options from data attribute
+//     var userOptions = utils.getData($lineShareChartEl, 'options');
+//     var chart = window.echarts.init($lineShareChartEl);
+    
+//     var getDefaultOptions = function getDefaultOptions() {
+//       return {
+//         color: [utils.getColor('danger'), utils.getColor('info'), utils.getColor('warning'), utils.getColor('secondary'), utils.getColor('success'), utils.getColor('primary')],
+//         legend: {
+//           top: 0,
+//           textStyle: {
+//             color: utils.getGrays()['700']
+//           }
+//         },
+//         tooltip: {
+//           trigger: 'axis',
+//           showContent: false
+//         },
+//         dataset: {
+//           source: apiData
+        
+//         },
+//         xAxis: {
+//           type: 'category',
+//           axisLine: {
+//             lineStyle: {
+//               color: utils.getGrays()['300']
+//             }
+//           },
+//           axisLabel: {
+//             color: utils.getGrays()['600']
+//           },
+//           axisPointer: {
+//             lineStyle: {
+//               color: utils.getGrays()['300']
+//             }
+//           }
+//         },
+//         yAxis: {
+//           gridIndex: 0,
+//           axisLabel: {
+//             color: utils.getGrays()['600']
+//           },
+//           splitLine: {
+//             lineStyle: {
+//               color: utils.getGrays()['200']
+//             }
+//           }
+//         },
+//         series: [{
+//           type: 'line',
+//           smooth: true,
+//           seriesLayoutBy: 'row',
+//           emphasis: {
+//             focus: 'series'
+//           },
+//           symbolSize: 10,
+//           itemStyle: {
+//             color: utils.getGrays()['100'],
+//             borderColor: utils.getColor('danger'),
+//             borderWidth: 2
+//           },
+//           lineStyle: {
+//             color: utils.getColor('danger')
+//           },
+//           symbol: 'circle'
+//         }, {
+//           type: 'line',
+//           smooth: true,
+//           seriesLayoutBy: 'row',
+//           emphasis: {
+//             focus: 'series'
+//           },
+//           symbolSize: 10,
+//           itemStyle: {
+//             color: utils.getGrays()['100'],
+//             borderColor: utils.getColor('info'),
+//             borderWidth: 2
+//           },
+//           lineStyle: {
+//             color: utils.getColor('info')
+//           },
+//           symbol: 'circle'
+//         }, {
+//           type: 'line',
+//           smooth: true,
+//           seriesLayoutBy: 'row',
+//           emphasis: {
+//             focus: 'series'
+//           },
+//           symbolSize: 10,
+//           itemStyle: {
+//             color: utils.getGrays()['100'],
+//             borderColor: utils.getColor('warning'),
+//             borderWidth: 2
+//           },
+//           lineStyle: {
+//             color: utils.getColor('warning')
+//           },
+//           symbol: 'circle'
+//         }, {
+//           type: 'line',
+//           smooth: true,
+//           seriesLayoutBy: 'row',
+//           emphasis: {
+//             focus: 'series'
+//           },
+//           symbolSize: 10,
+//           itemStyle: {
+//             color: utils.getGrays()['100'],
+//             borderColor: utils.getColor('secondary'),
+//             borderWidth: 2
+//           },
+//           lineStyle: {
+//             color: utils.getColor('secondary')
+//           },
+//           symbol: 'circle'
+//         }, {
+//           type: 'line',
+//           smooth: true,
+//           seriesLayoutBy: 'row',
+//           emphasis: {
+//             focus: 'series'
+//           },
+//           symbolSize: 10,
+//           itemStyle: {
+//             color: utils.getGrays()['100'],
+//             borderColor: utils.getColor('success'),
+//             borderWidth: 2
+//           },
+//           lineStyle: {
+//             color: utils.getColor('success')
+//           },
+//           symbol: 'circle'
+//         }, {
+//           type: 'line',
+//           smooth: true,
+//           seriesLayoutBy: 'row',
+//           emphasis: {
+//             focus: 'series'
+//           },
+//           symbolSize: 10,
+//           itemStyle: {
+//             color: utils.getGrays()['100'],
+//             borderColor: utils.getColor('primary'),
+//             borderWidth: 2
+//           },
+//           lineStyle: {
+//             color: utils.getColor('primary')
+//           },
+//           symbol: 'circle'
+//         }, {
+//           type: 'pie',
+//           id: 'pie',
+//           radius: '30%',
+//           center: ['50%', '28%'],
+//           emphasis: {
+//             focus: 'data'
+//           },
+//           label: {
+//             formatter: '{b}: {@2011} ({d}%)',
+//             color: utils.getGrays()['600']
+//           },
+//           encode: {
+//             itemName: 'hospitalType',
+//             value: '2011',
+//             tooltip: '2011'
+//           }
+//         }],
+//         grid: {
+//           right: 10,
+//           left: 5,
+//           bottom: 5,
+//           top: '55%',
+//           containLabel: true
+//         }
+//       };
+//     };
+//     echartSetOption(chart, userOptions, getDefaultOptions);
+//     chart.on('updateAxisPointer', function (event) {
+//       var xAxisInfo = event.axesInfo[0];
+//       if (xAxisInfo) {
+//         var dimension = xAxisInfo.value + 1;
+//         chart.setOption({
+//           series: {
+//             id: 'pie',
+//             label: {
+//               formatter: "{b}: {@[".concat(dimension, "]} ({d}%)")
+//             },
+//             encode: {
+//               value: dimension,
+//               tooltip: dimension
+//             }
+//           }
+//         });
+//       }
+//     });
+//   }
+// };
 
-var echartsLineShareDatasetChartInit01 = function echartsLineShareDatasetChartInit01() {
-  var $lineShareChartEl = document.querySelector('.echart-line-share-dataset-chart-example01');
-  if ($lineShareChartEl) {
-    // Get options from data attribute
-    var userOptions = utils.getData($lineShareChartEl, 'options');
-    var chart = window.echarts.init($lineShareChartEl);
-    var getDefaultOptions = function getDefaultOptions() {
-      return {
-        color: [utils.getColor('danger'), utils.getColor('info'), utils.getColor('warning'), utils.getColor('secondary'), utils.getColor('success'), utils.getColor('primary')],
-        legend: {
-          top: 0,
-          textStyle: {
-            color: utils.getGrays()['700']
-          }
-        },
-        tooltip: {
-          trigger: 'axis',
-          showContent: false
-        },
-        dataset: {
-          source: [['hospitalType', '2016', '2017', '2018', '2019', '2020', ], 
-          ['综合医院', 56.5, 88.7, 70.1, 53.4, 85.1], 
-          ['中医院', 51.1, 55.1, 53.3, 73.8, 68.7], 
-          ['中西医结合医院', 40.1, 69.5, 36.4, 45.2, 32.5], 
-          ['民族医院', 25.2, 41.2, 11, 36.9, 49.1],
-          ['专科医院', 26.2, 43.2, 18, 33.9, 48.1],
-          ['护理院', 20.2, 50.2, 21, 39.9, 47.1]
-        ]
-        },
-        xAxis: {
-          type: 'category',
-          axisLine: {
-            lineStyle: {
-              color: utils.getGrays()['300']
-            }
-          },
-          axisLabel: {
-            color: utils.getGrays()['600']
-          },
-          axisPointer: {
-            lineStyle: {
-              color: utils.getGrays()['300']
-            }
-          }
-        },
-        yAxis: {
-          gridIndex: 0,
-          axisLabel: {
-            color: utils.getGrays()['600']
-          },
-          splitLine: {
-            lineStyle: {
-              color: utils.getGrays()['200']
-            }
-          }
-        },
-        series: [{
-          type: 'line',
-          smooth: true,
-          seriesLayoutBy: 'row',
-          emphasis: {
-            focus: 'series'
-          },
-          symbolSize: 10,
-          itemStyle: {
-            color: utils.getGrays()['100'],
-            borderColor: utils.getColor('danger'),
-            borderWidth: 2
-          },
-          lineStyle: {
-            color: utils.getColor('danger')
-          },
-          symbol: 'circle'
-        }, {
-          type: 'line',
-          smooth: true,
-          seriesLayoutBy: 'row',
-          emphasis: {
-            focus: 'series'
-          },
-          symbolSize: 10,
-          itemStyle: {
-            color: utils.getGrays()['100'],
-            borderColor: utils.getColor('info'),
-            borderWidth: 2
-          },
-          lineStyle: {
-            color: utils.getColor('info')
-          },
-          symbol: 'circle'
-        }, {
-          type: 'line',
-          smooth: true,
-          seriesLayoutBy: 'row',
-          emphasis: {
-            focus: 'series'
-          },
-          symbolSize: 10,
-          itemStyle: {
-            color: utils.getGrays()['100'],
-            borderColor: utils.getColor('warning'),
-            borderWidth: 2
-          },
-          lineStyle: {
-            color: utils.getColor('warning')
-          },
-          symbol: 'circle'
-        }, {
-          type: 'line',
-          smooth: true,
-          seriesLayoutBy: 'row',
-          emphasis: {
-            focus: 'series'
-          },
-          symbolSize: 10,
-          itemStyle: {
-            color: utils.getGrays()['100'],
-            borderColor: utils.getColor('secondary'),
-            borderWidth: 2
-          },
-          lineStyle: {
-            color: utils.getColor('secondary')
-          },
-          symbol: 'circle'
-        }, {
-          type: 'line',
-          smooth: true,
-          seriesLayoutBy: 'row',
-          emphasis: {
-            focus: 'series'
-          },
-          symbolSize: 10,
-          itemStyle: {
-            color: utils.getGrays()['100'],
-            borderColor: utils.getColor('success'),
-            borderWidth: 2
-          },
-          lineStyle: {
-            color: utils.getColor('success')
-          },
-          symbol: 'circle'
-        }, {
-          type: 'line',
-          smooth: true,
-          seriesLayoutBy: 'row',
-          emphasis: {
-            focus: 'series'
-          },
-          symbolSize: 10,
-          itemStyle: {
-            color: utils.getGrays()['100'],
-            borderColor: utils.getColor('primary'),
-            borderWidth: 2
-          },
-          lineStyle: {
-            color: utils.getColor('primary')
-          },
-          symbol: 'circle'
-        }, {
-          type: 'pie',
-          id: 'pie',
-          radius: '30%',
-          center: ['50%', '28%'],
-          emphasis: {
-            focus: 'data'
-          },
-          label: {
-            formatter: '{b}: {@2016} ({d}%)',
-            color: utils.getGrays()['600']
-          },
-          encode: {
-            itemName: 'hospitalType',
-            value: '2016',
-            tooltip: '2016'
-          }
-        }],
-        grid: {
-          right: 10,
-          left: 5,
-          bottom: 5,
-          top: '55%',
-          containLabel: true
-        }
-      };
-    };
-    echartSetOption(chart, userOptions, getDefaultOptions);
-    // 在标签切换后，调用 resize 更新图表
-    setTimeout(function() {
-      chart.resize();
-    }, 300); // 给图表一些时间来正确渲染
-    chart.on('updateAxisPointer', function (event) {
-      var xAxisInfo = event.axesInfo[0];
-      if (xAxisInfo) {
-        var dimension = xAxisInfo.value + 1;
-        chart.setOption({
-          series: {
-            id: 'pie',
-            label: {
-              formatter: "{b}: {@[".concat(dimension, "]} ({d}%)")
-            },
-            encode: {
-              value: dimension,
-              tooltip: dimension
-            }
-          }
-        });
-      }
-    });
-  }
-};
+// var echartsLineShareDatasetChartInit01 = function echartsLineShareDatasetChartInit01() {
+//   var $lineShareChartEl = document.querySelector('.echart-line-share-dataset-chart-example01');
+//   if ($lineShareChartEl) {
+//     // Get options from data attribute
+//     var userOptions = utils.getData($lineShareChartEl, 'options');
+//     var chart = window.echarts.init($lineShareChartEl);
+//     var getDefaultOptions = function getDefaultOptions() {
+//       return {
+//         color: [utils.getColor('danger'), utils.getColor('info'), utils.getColor('warning'), utils.getColor('secondary'), utils.getColor('success'), utils.getColor('primary')],
+//         legend: {
+//           top: 0,
+//           textStyle: {
+//             color: utils.getGrays()['700']
+//           }
+//         },
+//         tooltip: {
+//           trigger: 'axis',
+//           showContent: false
+//         },
+//         dataset: {
+//           source: [['hospitalType', '2016', '2017', '2018', '2019', '2020', ], 
+//           ['综合医院', 56.5, 88.7, 70.1, 53.4, 85.1], 
+//           ['中医院', 51.1, 55.1, 53.3, 73.8, 68.7], 
+//           ['中西医结合医院', 40.1, 69.5, 36.4, 45.2, 32.5], 
+//           ['民族医院', 25.2, 41.2, 11, 36.9, 49.1],
+//           ['专科医院', 26.2, 43.2, 18, 33.9, 48.1],
+//           ['护理院', 20.2, 50.2, 21, 39.9, 47.1]
+//         ]
+//         },
+//         xAxis: {
+//           type: 'category',
+//           axisLine: {
+//             lineStyle: {
+//               color: utils.getGrays()['300']
+//             }
+//           },
+//           axisLabel: {
+//             color: utils.getGrays()['600']
+//           },
+//           axisPointer: {
+//             lineStyle: {
+//               color: utils.getGrays()['300']
+//             }
+//           }
+//         },
+//         yAxis: {
+//           gridIndex: 0,
+//           axisLabel: {
+//             color: utils.getGrays()['600']
+//           },
+//           splitLine: {
+//             lineStyle: {
+//               color: utils.getGrays()['200']
+//             }
+//           }
+//         },
+//         series: [{
+//           type: 'line',
+//           smooth: true,
+//           seriesLayoutBy: 'row',
+//           emphasis: {
+//             focus: 'series'
+//           },
+//           symbolSize: 10,
+//           itemStyle: {
+//             color: utils.getGrays()['100'],
+//             borderColor: utils.getColor('danger'),
+//             borderWidth: 2
+//           },
+//           lineStyle: {
+//             color: utils.getColor('danger')
+//           },
+//           symbol: 'circle'
+//         }, {
+//           type: 'line',
+//           smooth: true,
+//           seriesLayoutBy: 'row',
+//           emphasis: {
+//             focus: 'series'
+//           },
+//           symbolSize: 10,
+//           itemStyle: {
+//             color: utils.getGrays()['100'],
+//             borderColor: utils.getColor('info'),
+//             borderWidth: 2
+//           },
+//           lineStyle: {
+//             color: utils.getColor('info')
+//           },
+//           symbol: 'circle'
+//         }, {
+//           type: 'line',
+//           smooth: true,
+//           seriesLayoutBy: 'row',
+//           emphasis: {
+//             focus: 'series'
+//           },
+//           symbolSize: 10,
+//           itemStyle: {
+//             color: utils.getGrays()['100'],
+//             borderColor: utils.getColor('warning'),
+//             borderWidth: 2
+//           },
+//           lineStyle: {
+//             color: utils.getColor('warning')
+//           },
+//           symbol: 'circle'
+//         }, {
+//           type: 'line',
+//           smooth: true,
+//           seriesLayoutBy: 'row',
+//           emphasis: {
+//             focus: 'series'
+//           },
+//           symbolSize: 10,
+//           itemStyle: {
+//             color: utils.getGrays()['100'],
+//             borderColor: utils.getColor('secondary'),
+//             borderWidth: 2
+//           },
+//           lineStyle: {
+//             color: utils.getColor('secondary')
+//           },
+//           symbol: 'circle'
+//         }, {
+//           type: 'line',
+//           smooth: true,
+//           seriesLayoutBy: 'row',
+//           emphasis: {
+//             focus: 'series'
+//           },
+//           symbolSize: 10,
+//           itemStyle: {
+//             color: utils.getGrays()['100'],
+//             borderColor: utils.getColor('success'),
+//             borderWidth: 2
+//           },
+//           lineStyle: {
+//             color: utils.getColor('success')
+//           },
+//           symbol: 'circle'
+//         }, {
+//           type: 'line',
+//           smooth: true,
+//           seriesLayoutBy: 'row',
+//           emphasis: {
+//             focus: 'series'
+//           },
+//           symbolSize: 10,
+//           itemStyle: {
+//             color: utils.getGrays()['100'],
+//             borderColor: utils.getColor('primary'),
+//             borderWidth: 2
+//           },
+//           lineStyle: {
+//             color: utils.getColor('primary')
+//           },
+//           symbol: 'circle'
+//         }, {
+//           type: 'pie',
+//           id: 'pie',
+//           radius: '30%',
+//           center: ['50%', '28%'],
+//           emphasis: {
+//             focus: 'data'
+//           },
+//           label: {
+//             formatter: '{b}: {@2016} ({d}%)',
+//             color: utils.getGrays()['600']
+//           },
+//           encode: {
+//             itemName: 'hospitalType',
+//             value: '2016',
+//             tooltip: '2016'
+//           }
+//         }],
+//         grid: {
+//           right: 10,
+//           left: 5,
+//           bottom: 5,
+//           top: '55%',
+//           containLabel: true
+//         }
+//       };
+//     };
+//     echartSetOption(chart, userOptions, getDefaultOptions);
+//     // 在标签切换后，调用 resize 更新图表
+//     setTimeout(function() {
+//       chart.resize();
+//     }, 300); // 给图表一些时间来正确渲染
+//     chart.on('updateAxisPointer', function (event) {
+//       var xAxisInfo = event.axesInfo[0];
+//       if (xAxisInfo) {
+//         var dimension = xAxisInfo.value + 1;
+//         chart.setOption({
+//           series: {
+//             id: 'pie',
+//             label: {
+//               formatter: "{b}: {@[".concat(dimension, "]} ({d}%)")
+//             },
+//             encode: {
+//               value: dimension,
+//               tooltip: dimension
+//             }
+//           }
+//         });
+//       }
+//     });
+//   }
+// };
 
 /* -------------------------------------------------------------------------- */
 /*                                Session By Country Map                      */
@@ -7138,7 +7135,7 @@ docReady(echartsBarLineChartInit);
 docReady(echartsBasicCandlestickChartInit);
 docReady(echartsCandlestickMixedChartInit);
 docReady(echartsUsaMapInit);
-docReady(echartsChinaMapInit);
+// docReady(echartsChinaMapInit);
 docReady(echartsScatterBasicChartInit);
 docReady(echartsBubbleChartInit);
 docReady(echartsScatterQuartetChartInit);
@@ -7150,8 +7147,8 @@ docReady(echartsGaugeMultiRingChartInit);
 docReady(echartsGaugeMultiTitleChartInit);
 docReady(echartsGaugeGradeChartInit);
 docReady(echartsLineLogChartInit);
-docReady(echartsLineShareDatasetChartInit);
-docReady(echartsLineShareDatasetChartInit01);
+//docReady(echartsLineShareDatasetChartInit);
+//docReady(echartsLineShareDatasetChartInit01);
 docReady(echartsBarTimelineChartInit);
 docReady(echartsDoughnutRoundedChartInit);
 docReady(echartsPieLabelAlignChartInit);
