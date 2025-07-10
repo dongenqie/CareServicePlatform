@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted,computed } from 'vue'
+import { onMounted,computed,ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineOptions } from 'vue'
 
@@ -355,7 +355,7 @@ onMounted(() => {
                     <img src="../../assets/img/illustrations/crm-bar-chart.png" alt="" width="96" />
                     <div class="ms-n3">
                       <h6 class="mb-1 text-primary">欢迎来到</h6>
-                      <h4 class="mb-0 text-primary fw-bold">健康大数据中心<span class="text-info fw-medium">   基于3万+健康数据，提供分析与建议</span></h4>
+                      <h4 class="mb-0 text-primary fw-bold">健康大数据中心<span class="text-info fw-medium">基于3万+健康数据，提供分析与建议</span></h4>
                     </div>
                     <img src="../../assets/img/illustrations/crm-line-chart.png" alt="" width="96" />
                   </div>
@@ -367,6 +367,13 @@ onMounted(() => {
         <div class="row g-3 mb-3">
           <div class="col-xxl-8">
             <div class="card overflow-hidden mb-3">
+              <div class="card-header">
+                <div class="row flex-between-end">
+                  <div class="col-auto align-self-center">
+                    <h5 class="mb-0" data-anchor="data-anchor" id="各省不同年份按医院类型分类图">系统监测<a class="anchorjs-link " aria-label="Anchor" data-anchorjs-icon="#" href="#各省不同年份按医院类型分类图" style="margin-left: 0.1875em; padding-right: 0.1875em; padding-left: 0.1875em;"></a></h5>
+                  </div>
+                </div>
+              </div>
               <div class="card-header audience-chart-header p-0 bg-body-tertiary scrollbar-overlay">
                 <ul class="nav nav-tabs border-0 chart-tab flex-nowrap" id="audience-chart-tab" role="tablist">
                   <li class="nav-item" role="presentation"><a class="nav-link mb-0 active" id="users-tab" data-bs-toggle="tab" href="#users" role="tab" aria-controls="users" aria-selected="true">
@@ -391,8 +398,7 @@ onMounted(() => {
               </div>
               <div class="card-body">
                 <div class="tab-content">
-                  <div class="tab-pane active" id="users" role="tabpanel" aria-labelledby="users-tab"><!-- Find the JS file for the following chart at: src/js/charts/echarts/audience.js-->
-                    <!-- If you are not using gulp based workflow, you can find the transpiled code at: public/assets/js/theme.js-->
+                  <div class="tab-pane active" id="users" role="tabpanel" aria-labelledby="users-tab">
                     <div class="echart-audience" data-echart-responsive="true" style="height:320px;"></div>
                   </div>
                   <div class="tab-pane" id="sessions" role="tabpanel" aria-labelledby="sessions-tab">

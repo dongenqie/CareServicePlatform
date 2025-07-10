@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    #map{
+      width: 443px;
+      height: 767px;
+      border:1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script src = "https://fastly.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <script src = "https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
+  <script>
+    var map = document.getElementById("map");
+    var mycharts = echarts.init(map);
+    var createImg = document.createElement("img");
+    createImg.src = "./img/mapbg.png";
+    const CITYAREACOLOR = "rgba(20,71,98,.4)";
+    const CITYBOLORCOLOR = "#FFF";
+    const CITYNAMEOLOR = "#031620";
+    $.ajax({url:"https://geo.datav.aliyun.com/areas_v3/bound/140000_full.json",success:function(result){
+        console.log(result);
+        let name = "shanximap";
+        let geoCoordMap = [];
+        result.features.forEach(item=>{
+          // console.log(item);
+          geoCoordMap.push({
+            name:item.properties.name,
+            value:item.properties.center,
+            num:12
+          })
+        })
+        console.log(geoCoordMap)
+        echarts.registerMap(name,result);
+        
+        let mapOption = {
+            series:[
+              {
+                name: '',
+                type: 'scatter',
+                symbol:"image://./img/titleBg.png",
+                coordinateSystem: 'geo',
+                color: ['#000'],
+                symbolSize:[178,50],
+                symbolOffset:[0,"-50%"],
+                label:{
+                  show:true,
+                  padding:[0,0,0,0],
+                  formatter:function(param){
+                    return "{a|" + param.data.num + "}" + " " + "{b|" + param.data.name + "}";
+                  },
+                  rich:{
+                    a:{
+                      color:"#fff",
+                      fontWeight:"bold",
+                      fontSize:16,
+                      width:89,
+                      align:"center",
+                      padding:[0,0,0,10]
+                    },
+                    b:{
+                        fontSize:20,
+                        color:CITYAREACOLOR,
+                        fontFamily:"PangMenZhengDao",
+                        fontWeight:"bold",
+                        width:89,
+                        align:"center",
+                        padding:[0,0,0,-30]
+                    }
+                  }
+                },
+                data: geoCoordMap,
+              },{
+                name: '',
+                type: 'scatter',
+                symbol:"image://./img/light.png",
+                coordinateSystem: 'geo',
+                symbolSize:[54,47],
+                symbolOffset:[0,10],
+                color: ['#000'],
+                tooltip: {
+                  position: "right",
+                  color: "#000",
+                  formatter(d) {
+                    // console.log(d)
+                    return `<div style="padding: 5px 10px;">【${d.data.name}】</div>`;
+                  },
+                },
+                label:{
+                  show:false
+                },
+              
+                data: geoCoordMap,
+              }
+ 
+            ],
+            geo: {
+              left:0,
+              top:0,
+              right:0,
+              bottom:0,
+              show: true,
+              map: name,
+              type: 'map',
+              mapType: name,
+              roam: false,
+              zoom:0.8,
+              label: {
+                show: false
+              },
+              itemStyle: {
+                areaColor:{
+                  image: createImg, // 支持为 HTMLImageElement, HTMLCanvasElement，不支持路径字符串
+                  repeat: 'no-repeat' 
+                },
+              },
+              emphasis: {
+                disabled:false,
+                itemStyle:{
+                  areaColor:{
+                    image: createImg, // 支持为 HTMLImageElement, HTMLCanvasElement，不支持路径字符串
+                    repeat: 'no-repeat' 
+                  },
+                },
+                label:{
+                  show:false
+                }
+              }
+            }
+          }
+        mycharts.setOption(
+          mapOption
+        )
+    }});
+    
+  </script>
+</body>
+</html>
