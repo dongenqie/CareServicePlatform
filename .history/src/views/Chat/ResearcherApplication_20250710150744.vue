@@ -385,21 +385,31 @@ onMounted(() => {
                     </div>
                     <img src="../../assets/img/illustrations/crm-line-chart.png" alt="" width="96" />
                   </div>
+                  <button 
+                    class="btn btn-primary float-end" 
+                    @click="showApplyModal = true"
+                  >
+                    <i class="fas fa-plus me-1"></i>提交新申请
+                  </button>
                 </div>
               </div>
             </div>
+          </div>
+              <!-- 页面标题 -->
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">申请管理</h1>
+            <button 
+              class="btn btn-primary" 
+              @click="showApplyModal = true"
+            >
+              <i class="fas fa-plus me-1"></i>提交新申请
+            </button>
           </div>
         </div>
         <!-- 申请列表卡片 -->
         <div class="card">
           <div class="card-header">
             <h5 class="card-title mb-0">我的申请记录</h5>
-            <button 
-              class="btn btn-primary float-end" 
-              @click="showApplyModal = true"
-            >
-              <i class="fas fa-plus me-1"></i>提交新申请
-            </button>
           </div>
           
           <div class="card-body">

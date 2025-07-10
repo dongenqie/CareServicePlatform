@@ -432,7 +432,11 @@ onMounted(() => {
                     </tr>
                   </tbody>
                   <tbody v-else>
-                    <tr v-for="app in applications" :key="app.id" >
+                    <tr v-for="app in applications" :key="app.id" :class="{
+                      'table-primary': app.status === '未处理',
+                      'table-success': app.status === '已处理',
+                      'table-danger': app.status === '拒绝'
+                    }">
                       <td>{{ app.id }}</td>
                       <td>{{ app.userId || '-' }}</td> <!-- 显示用户ID -->
                       <td>{{ app.username }}</td>

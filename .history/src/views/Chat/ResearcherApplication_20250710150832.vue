@@ -389,6 +389,16 @@ onMounted(() => {
               </div>
             </div>
           </div>
+              <!-- 页面标题 -->
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">申请管理</h1>
+            <button 
+              class="btn btn-primary" 
+              @click="showApplyModal = true"
+            >
+              <i class="fas fa-plus me-1"></i>提交新申请
+            </button>
+          </div>
         </div>
         <!-- 申请列表卡片 -->
         <div class="card">

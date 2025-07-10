@@ -1,25 +1,32 @@
 <script setup>
-import { onMounted, computed,ref } from 'vue'
+import { onMounted,computed,ref  } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineOptions } from 'vue'
-import { useChat } from '@/api/adminApplications.js'
+import { useSystemLogs } from '@/api/system-logs.js'
 
 // 声明组件名
-defineOptions({ name: 'Chat' })
+defineOptions({ name: 'Monitor' })
 
-// 使用组合式函数
 const {
-  applications,
-  pagination,
+  logs,
   loading,
-  activeApplication,
-  replyContent,
-  isApproved,
-  fetchApplications,
-  handleApplication,
+  error,
+  pagination,
+  searchParams,
+  lines,
+  fetchSystemLogs,
+  searchLogs,
   handlePageChange,
+  getLogLevel,
+  getLogLevelClass,
+  formatLogTime,
   getPaginationButtons
-} = useChat()
+} = useSystemLogs()
+
+// 组件挂载时获取日志
+onMounted(() => {
+  fetchSystemLogs()
+})
 
 // 从 localStorage 取得当前用户角色
 const role = ref(localStorage.getItem('userRole') || '')
@@ -52,23 +59,20 @@ function goToDataProcess()             { router.push({ name: 'DataProcess' }) }
 function goToPersonalCenter()          { router.push({ name: 'PersonalCenter' }) }
 function goToResearcherApplication()   { router.push({ name: 'ResearcherApplication' }) }
 
-// 初始化加载数据
 onMounted(() => {
-  fetchApplications()
-  
-  // 原有布局代码保持不变
+  // 1. RTL
   const isRTL = JSON.parse(localStorage.getItem('isRTL'))
   if (isRTL) {
-    const linkDefault = document.getElementById('style-default')
+    const linkDefault   = document.getElementById('style-default')
     const userLinkDefault = document.getElementById('user-style-default')
-    if (linkDefault) linkDefault.disabled = true
+    if (linkDefault)   linkDefault.disabled = true
     if (userLinkDefault) userLinkDefault.disabled = true
     document.documentElement.setAttribute('dir', 'rtl')
   } else {
-    const linkRTL = document.getElementById('style-rtl')
-    const userLinkRTL = document.getElementById('user-style-rtl')
-    if (linkRTL) linkRTL.disabled = true
-    if (userLinkRTL) userLinkRTL.disabled = true
+    const linkRTL       = document.getElementById('style-rtl')
+    const userLinkRTL   = document.getElementById('user-style-rtl')
+    if (linkRTL)       linkRTL.disabled = true
+    if (userLinkRTL)   userLinkRTL.disabled = true
   }
 
   // 2. Fluid 布局
@@ -90,18 +94,18 @@ onMounted(() => {
 
   // 4. Navbar 位置
   const navbarPosition = localStorage.getItem('navbarPosition') || ''
-  const navVertical = document.querySelector('.navbar-vertical')
+  const navVertical    = document.querySelector('.navbar-vertical')
   const navTopVertical = document.querySelector('.content .navbar-top')
-  const navTop = document.querySelector('[data-layout] .navbar-top:not([data-double-top-nav])')
-  const navDoubleTop = document.querySelector('[data-double-top-nav]')
-  const navTopCombo = document.querySelector('.content [data-navbar-top="combo"]')
+  const navTop         = document.querySelector('[data-layout] .navbar-top:not([data-double-top-nav])')
+  const navDoubleTop   = document.querySelector('[data-double-top-nav]')
+  const navTopCombo    = document.querySelector('.content [data-navbar-top="combo"]')
 
   if (navbarPosition === 'double-top') {
     document.documentElement.classList.add('double-top-nav-layout')
   }
 
   const safeRemove = el => el && el.remove()
-  const safeShow = el => el && el.removeAttribute('style')
+  const safeShow   = el => el && el.removeAttribute('style')
 
   if (navbarPosition === 'top') {
     safeShow(navTop)
@@ -131,13 +135,10 @@ onMounted(() => {
   }
 })
 </script>
-
-
 <template>
-    <!-- ===============================================--><!--    Main Content--><!-- ===============================================-->
-
-    <main class="main" id="top">
-      <div class="container" data-layout="container">
+  <!-- ===============================================--><!--    Main Content--><!-- ===============================================-->
+  <main class="main" id="top">
+    <div class="container" data-layout="container">
         <!--左边侧边栏-->
         <nav class="navbar navbar-light navbar-vertical navbar-expand-xl" style="display: none;">
           <!--侧边栏上部-->
@@ -287,285 +288,312 @@ onMounted(() => {
             <div class="d-flex align-items-center"><img class="me-2" src="" alt="" width="40" /><span class="font-sans-serif text-primary">falcon</span></div>
           </a>
         </nav>
-        <!--右边内容区（右边导航栏在这）-->
-        <div class="content">
-          <nav class="navbar navbar-light navbar-glass navbar-top navbar-expand" style="display: none;">
-            <button class="btn navbar-toggler-humburger-icon navbar-toggler me-1 me-sm-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
-            <a class="navbar-brand me-1 me-sm-3" href="">
-              <div class="d-flex align-items-center"><img class="me-2" src="" alt="" width="40" /><span class="font-sans-serif text-primary">falcon</span></div>
-            </a>
-            <ul class="navbar-nav align-items-center d-none d-lg-block">
-              <li class="nav-item">
-                <div class="search-box" data-list='{"valueNames":["title"]}'>
-                  <form class="position-relative" data-bs-toggle="search" data-bs-display="static"><input class="form-control search-input fuzzy-search" type="search" placeholder="搜索" aria-label="Search" />
-                    <span class="fas fa-search search-box-icon"></span>
-                  </form>
-                  <div class="btn-close-falcon-container position-absolute end-0 top-50 translate-middle shadow-none" data-bs-dismiss="search"><button class="btn btn-link btn-close-falcon p-0" aria-label="Close"></button></div>
-                  <div class="dropdown-menu border font-base start-0 mt-2 py-0 overflow-hidden w-100">
-                    <div class="scrollbar list py-3" style="max-height: 24rem;">
-                      <h6 class="dropdown-header fw-medium text-uppercase px-x1 fs-11 pt-0 pb-2">最近浏览</h6>
-                      <a class="dropdown-item fs-10 px-x1 py-1 hover-primary" @click="goToMedicalExpenses" href="">
-                        <div class="d-flex align-items-center">
-                          <span class="fas fa-circle me-2 text-300 fs-11"></span>
-                          <div class="fw-normal title">数据展示<span class="fas fa-chevron-right mx-1 text-500 fs-11" data-fa-transform="shrink-2"></span>医疗费用</div>
-                        </div>
-                      </a>
-                      <a class="dropdown-item fs-10 px-x1 py-1 hover-primary" @click="goToPersonalCenter" href="">
-                        <div class="d-flex align-items-center">
-                          <span class="fas fa-circle me-2 text-300 fs-11"></span>
-                          <div class="fw-normal title">通用功能<span class="fas fa-chevron-right mx-1 text-500 fs-11" data-fa-transform="shrink-2"></span>个人中心</div>
-                        </div>
-                      </a>
-                    </div>
-                    <div class="text-center mt-n3">
-                      <p class="fallback fw-bold fs-8 d-none">没找到结果</p>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            </ul>
-            <ul class="navbar-nav navbar-nav-icons ms-auto flex-row align-items-center">
-              <li class="nav-item ps-2 pe-0">
-                <div class="dropdown theme-control-dropdown"><a class="nav-link d-flex align-items-center dropdown-toggle fa-icon-wait fs-9 pe-1 py-0" href="#" role="button" id="themeSwitchDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-sun fs-7" data-fa-transform="shrink-2" data-theme-dropdown-toggle-icon="light"></span><span class="fas fa-moon fs-7" data-fa-transform="shrink-3" data-theme-dropdown-toggle-icon="dark"></span><span class="fas fa-adjust fs-7" data-fa-transform="shrink-2" data-theme-dropdown-toggle-icon="auto"></span></a>
-                  <div class="dropdown-menu dropdown-menu-end dropdown-caret border py-0 mt-3" aria-labelledby="themeSwitchDropdown">
-                    <div class="bg-white dark__bg-1000 rounded-2 py-2"><button class="dropdown-item d-flex align-items-center gap-2" type="button" value="light" data-theme-control="theme"><span class="fas fa-sun"></span>浅色<span class="fas fa-check dropdown-check-icon ms-auto text-600"></span></button><button class="dropdown-item d-flex align-items-center gap-2" type="button" value="dark" data-theme-control="theme"><span class="fas fa-moon" data-fa-transform=""></span>深色<span class="fas fa-check dropdown-check-icon ms-auto text-600"></span></button><button class="dropdown-item d-flex align-items-center gap-2" type="button" value="auto" data-theme-control="theme"><span class="fas fa-adjust" data-fa-transform=""></span>自动<span class="fas fa-check dropdown-check-icon ms-auto text-600"></span></button></div>
-                  </div>
-                </div>
-              </li>
-              <!--个人信息-->
-              <li class="nav-item dropdown">
-                <a class="nav-link pe-0 ps-2" id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <div class="avatar avatar-xl">
-                    <img class="rounded-circle" src="../../assets/img/profile/5.jpg" alt="" />
-                  </div>
-                </a>
-                <div class="dropdown-menu border font-base mt-2 py-0 overflow-hidden dropdown-caret dropdown-caret dropdown-menu-end py-0" aria-labelledby="navbarDropdownUser">
+      <!--右边内容区（右边导航栏在这）-->
+      <div class="content">
+        <nav class="navbar navbar-light navbar-glass navbar-top navbar-expand" style="display: none;">
+          <button class="btn navbar-toggler-humburger-icon navbar-toggler me-1 me-sm-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
+          <a class="navbar-brand me-1 me-sm-3" href="">
+            <div class="d-flex align-items-center"><img class="me-2" src="" alt="" width="40" /><span class="font-sans-serif text-primary">falcon</span></div>
+          </a>
+          <ul class="navbar-nav align-items-center d-none d-lg-block">
+            <li class="nav-item">
+              <div class="search-box" data-list='{"valueNames":["title"]}'>
+                <form class="position-relative" data-bs-toggle="search" data-bs-display="static"><input class="form-control search-input fuzzy-search" type="search" placeholder="搜索" aria-label="Search" />
+                  <span class="fas fa-search search-box-icon"></span>
+                </form>
+                <div class="btn-close-falcon-container position-absolute end-0 top-50 translate-middle shadow-none" data-bs-dismiss="search"><button class="btn btn-link btn-close-falcon p-0" aria-label="Close"></button></div>
+                <div class="dropdown-menu border font-base start-0 mt-2 py-0 overflow-hidden w-100">
                   <div class="scrollbar list py-3" style="max-height: 24rem;">
-                    <!--用户个人信息-->
-                    <h6 class="dropdown-header fw-medium text-uppercase px-x1 fs-11 pt-0 pb-2">个人信息</h6>
-                    <a class="dropdown-item px-x1 py-2" href="#!">
+                    <h6 class="dropdown-header fw-medium text-uppercase px-x1 fs-11 pt-0 pb-2">最近浏览</h6>
+                    <a class="dropdown-item fs-10 px-x1 py-1 hover-primary" @click="goToMedicalExpenses" href="">
                       <div class="d-flex align-items-center">
-                        <div class="file-thumbnail me-2"><img class="border h-100 w-100 object-fit-cover rounded-3" src="../../assets/img/profile/5.jpg" alt=""></div>
-                        <div class="flex-1">
-                          <h6 class="mb-0 title">{{username}}</h6>
-                          <p class="fs-11 mb-0 d-flex"><span class="fw-semi-bold">{{ role }}</span></p>
-                        </div>
+                        <span class="fas fa-circle me-2 text-300 fs-11"></span>
+                        <div class="fw-normal title">数据展示<span class="fas fa-chevron-right mx-1 text-500 fs-11" data-fa-transform="shrink-2"></span>医疗费用</div>
                       </div>
                     </a>
-                    <hr class="text-200 dark__text-900">
-                    <a class="dropdown-item px-x1 py-1 fs-9" @click="goToLogout">
+                    <a class="dropdown-item fs-10 px-x1 py-1 hover-primary" @click="goToPersonalCenter" href="">
                       <div class="d-flex align-items-center">
-                        <div class="flex-1 fs-10 title">登出</div>
+                        <span class="fas fa-circle me-2 text-300 fs-11"></span>
+                        <div class="fw-normal title">通用功能<span class="fas fa-chevron-right mx-1 text-500 fs-11" data-fa-transform="shrink-2"></span>个人中心</div>
                       </div>
                     </a>
                   </div>
                   <div class="text-center mt-n3">
-                    <p class="fallback fw-bold fs-8 d-none">No Result Found.</p>
+                    <p class="fallback fw-bold fs-8 d-none">没找到结果</p>
                   </div>
                 </div>
-              </li>
-            </ul>
-          </nav>
-          <!-- 欢迎栏 -->
-          <div class="row g-3 mb-3">
-            <div class="col-xxl-6">
-              <div class="row g-0 h-100">
-                <div class="col-12">
-                  <div class="card bg-body-tertiary dark__bg-opacity-50 shadow-none">
-                    <div class="bg-holder bg-card d-none d-sm-block" style="background-image:url(https://prium.github.io/falcon/v3.24.0/assets/img/illustrations/ticket-bg.png);"></div>
-                    <div class="d-flex align-items-center z-1 p-0">
-                      <img src="../../assets/img/illustrations/crm-bar-chart.png" alt="" width="96" />
-                      <div class="ms-n3">
-                        <h6 class="mb-1 text-primary">欢迎来到</h6>
-                        <h4 class="mb-0 text-primary fw-bold">健康大数据中心<span class="text-info fw-medium">用户反馈管理中心</span></h4>
+              </div>
+            </li>
+          </ul>
+          <ul class="navbar-nav navbar-nav-icons ms-auto flex-row align-items-center">
+            <li class="nav-item ps-2 pe-0">
+              <div class="dropdown theme-control-dropdown"><a class="nav-link d-flex align-items-center dropdown-toggle fa-icon-wait fs-9 pe-1 py-0" href="#" role="button" id="themeSwitchDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-sun fs-7" data-fa-transform="shrink-2" data-theme-dropdown-toggle-icon="light"></span><span class="fas fa-moon fs-7" data-fa-transform="shrink-3" data-theme-dropdown-toggle-icon="dark"></span><span class="fas fa-adjust fs-7" data-fa-transform="shrink-2" data-theme-dropdown-toggle-icon="auto"></span></a>
+                <div class="dropdown-menu dropdown-menu-end dropdown-caret border py-0 mt-3" aria-labelledby="themeSwitchDropdown">
+                  <div class="bg-white dark__bg-1000 rounded-2 py-2"><button class="dropdown-item d-flex align-items-center gap-2" type="button" value="light" data-theme-control="theme"><span class="fas fa-sun"></span>浅色<span class="fas fa-check dropdown-check-icon ms-auto text-600"></span></button><button class="dropdown-item d-flex align-items-center gap-2" type="button" value="dark" data-theme-control="theme"><span class="fas fa-moon" data-fa-transform=""></span>深色<span class="fas fa-check dropdown-check-icon ms-auto text-600"></span></button><button class="dropdown-item d-flex align-items-center gap-2" type="button" value="auto" data-theme-control="theme"><span class="fas fa-adjust" data-fa-transform=""></span>自动<span class="fas fa-check dropdown-check-icon ms-auto text-600"></span></button></div>
+                </div>
+              </div>
+            </li>
+            <!--个人信息-->
+            <li class="nav-item dropdown">
+              <a class="nav-link pe-0 ps-2" id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <div class="avatar avatar-xl">
+                  <img class="rounded-circle" src="../../assets/img/profile/5.jpg" alt="" />
+                </div>
+              </a>
+              <div class="dropdown-menu border font-base mt-2 py-0 overflow-hidden dropdown-caret dropdown-caret dropdown-menu-end py-0" aria-labelledby="navbarDropdownUser">
+                <div class="scrollbar list py-3" style="max-height: 24rem;">
+                  <!--用户个人信息-->
+                  <h6 class="dropdown-header fw-medium text-uppercase px-x1 fs-11 pt-0 pb-2">个人信息</h6>
+                  <a class="dropdown-item px-x1 py-2" href="#!">
+                    <div class="d-flex align-items-center">
+                      <div class="file-thumbnail me-2"><img class="border h-100 w-100 object-fit-cover rounded-3" src="../../assets/img/profile/5.jpg" alt=""></div>
+                      <div class="flex-1">
+                        <h6 class="mb-0 title">{{username}}</h6>
+                        <p class="fs-11 mb-0 d-flex"><span class="fw-semi-bold">{{ role }}</span></p>
                       </div>
-                      <img src="../../assets/img/illustrations/crm-line-chart.png" alt="" width="96" />
                     </div>
+                  </a>
+                  <hr class="text-200 dark__text-900">
+                  <a class="dropdown-item px-x1 py-1 fs-9" @click="goToLogout">
+                    <div class="d-flex align-items-center">
+                      <div class="flex-1 fs-10 title">登出</div>
+                    </div>
+                  </a>
+                </div>
+                <div class="text-center mt-n3">
+                  <p class="fallback fw-bold fs-8 d-none">No Result Found.</p>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </nav>
+        <!--欢迎栏-->
+        <div class="row g-3 mb-3">
+          <div class="col-xxl-6">
+            <div class="row g-0 h-100">
+              <div class="col-12">
+                <div class="card bg-body-tertiary dark__bg-opacity-50 shadow-none">
+                  <div class="bg-holder bg-card d-none d-sm-block" style="background-image:url(https://prium.github.io/falcon/v3.24.0/assets/img/illustrations/ticket-bg.png);"></div><!--/.bg-holder-->
+                  <div class="d-flex align-items-center z-1 p-0">
+                    <img src="../../assets/img/illustrations/crm-bar-chart.png" alt="" width="96" />
+                    <div class="ms-n3">
+                      <h6 class="mb-1 text-primary">欢迎来到</h6>
+                      <h4 class="mb-0 text-primary fw-bold">健康大数据-<span class="text-info fw-medium">系统日志监控中心</span></h4>
+                    </div>
+                    <img src="../../assets/img/illustrations/crm-line-chart.png" alt="" width="96" />
                   </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+        
+<!-- 系统日志 -->
 
-          <!-- 反馈申请管理 -->
-            <div class="card mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-              <h5 class="mb-0">用户反馈申请</h5>
-              <div class="d-flex">
-                <select v-model="pagination.size" @change="fetchApplications" class="form-select form-select-sm me-2" style="width: 80px;">
-                  <option value="5">5条/页</option>
-                  <option value="10">10条/页</option>
-                  <option value="20">20条/页</option>
-                </select>
-              </div>
-            </div>
-            <div class="card-body pb-2">
-              <div class="table-responsive">
-                <table class="table table-hover">
-                  <thead>
-                    <tr>
-                      <th>反馈单ID</th>
-                      <th>用户ID</th> <!-- 添加用户ID列 -->
-                      <th>用户名</th>
-                      <th>申请内容</th>
-                      <th>状态</th>
-                      <th>申请时间</th>
-                      <th>处理时间</th>
-                      <th>管理员回复</th>
-                      <th>操作</th>
-                    </tr>
-                  </thead>
-                  <tbody v-if="loading">
-                    <tr>
-                      <td colspan="9" class="text-center py-4"> <!-- 调整colspan为9 -->
-                        <div class="spinner-border text-primary" role="status">
-                          <span class="visually-hidden">加载中...</span>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                  <tbody v-else-if="applications.length === 0">
-                    <tr>
-                      <td colspan="9" class="text-center py-4"> <!-- 调整colspan为9 -->
-                        暂无反馈申请
-                      </td>
-                    </tr>
-                  </tbody>
-                  <tbody v-else>
-                    <tr v-for="app in applications" :key="app.id" >
-                      <td>{{ app.id }}</td>
-                      <td>{{ app.userId || '-' }}</td> <!-- 显示用户ID -->
-                      <td>{{ app.username }}</td>
-                      <td>{{ app.reason }}</td>
-                      <td>
-                        <span class="badge" :class="{
-                          'bg-warning': app.status === '未处理',
-                          'bg-success': app.status === '已处理',
-                          'bg-danger': app.status === '拒绝'
-                        }">
-                          {{ app.status }}
-                        </span>
-                      </td>
-                      <td>{{ new Date(app.applyTime).toLocaleString() }}</td>
-                      <td>{{ app.handleTime ? new Date(app.handleTime).toLocaleString() : '-' }}</td>
-                      <td>{{ app.adminReply || '-' }}</td>
-                      <td>
-                        <button 
-                          class="btn btn-sm btn-primary me-2" 
-                          @click="activeApplication = app; replyContent = ''"
-                          :disabled="app.status !== '未处理'"
-                        >
-                          处理
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            
-              <!-- 分页 -->
-              <div class="d-flex justify-content-between align-items-center mt-3 mb-4"> <!-- 修改为 mb-4 -->
-                <div class="text-muted">
-                  显示 {{ (pagination.current - 1) * pagination.size + 1 }} 到 
-                  {{ Math.min(pagination.current * pagination.size, pagination.total) }} 条，
-                  共 {{ pagination.total }} 条
-                </div>
-                <nav>
-                  <ul class="pagination pagination-sm mb-0">
-                    <li class="page-item" :class="{ disabled: pagination.current === 1 }">
-                      <button 
-                        class="page-link" 
-                        @click="handlePageChange(pagination.current - 1)"
-                        :disabled="pagination.current === 1"
-                      >
-                        上一页
-                      </button>
-                    </li>
-                    
-                    <li 
-                      v-for="page in getPaginationButtons()" 
-                      :key="page" 
-                      class="page-item"
-                      :class="{ active: pagination.current === page }"
-                    >
-                      <button 
-                        class="page-link" 
-                        @click="handlePageChange(page)"
-                      >
-                        {{ page }}
-                      </button>
-                    </li>
-                    
-                    <li class="page-item" :class="{ disabled: pagination.current === pagination.pages }">
-                      <button 
-                        class="page-link" 
-                        @click="handlePageChange(pagination.current + 1)"
-                        :disabled="pagination.current === pagination.pages"
-                      >
-                        下一页
-                      </button>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
+      <div class="card mb-3">
+    <div class="card-header">
+      <h5 class="mb-0" id="structure" data-anchor="data-anchor">系统日志</h5>
+        <div class="col-md-3 float-end">
+          <select 
+            v-model="searchParams.limit" 
+            @change="handlePageChange(1)" 
+            class="form-select form-select-sm d-inline-block w-auto me-2"
+            v-if="searchParams.keyword || searchParams.date"
+          >
+            <option value="500">限制500条</option>
+            <option value="1000">限制1000条</option>
+            <option value="2000">限制2000条</option>
+            <option value="5000">限制5000条</option>
+            <option value="100000000">不限制</option>
+          </select>
+          
+          <select 
+            v-model="lines" 
+            @change="handlePageChange(1)" 
+            class="form-select form-select-sm d-inline-block w-auto me-2"
+            v-else
+          >
+            <option value="500">读取500行</option>
+            <option value="1000">读取1000行</option>
+            <option value="2000">读取2000行</option>
+            <option value="5000">读取5000行</option>
+            <option value="100000000">读取全部</option>
+          </select>
+          
+          <select 
+            v-model="pagination.size" 
+            @change="handlePageChange(1)" 
+            class="form-select form-select-sm d-inline-block w-auto"
+          >
+            <option value="10">10 条/页</option>
+            <option value="50">50 条/页</option>
+            <option value="100">100 条/页</option>
+            <option value="200">200 条/页</option>
+            <option value="500">500 条/页</option>
+          </select>
+        </div>
+
+    </div>
+    <div class="card-body bg-body-tertiary">
+      <!-- 搜索和过滤区域 -->
+      <div class="row mb-2">
+        <div class="col-md-7">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="input-group">
+              <input 
+                v-model="searchParams.keyword" 
+                type="text" 
+                class="form-control " 
+                placeholder="搜索关键词 (如: ERROR, INFO)"
+              >
             </div>
           </div>
-
-          <!-- 处理申请模态框 -->
-          <div v-if="activeApplication" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5)">
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title">处理用户申请</h5>
-                  <button type="button" class="btn-close" @click="activeApplication = null"></button>
-                </div>
-                <div class="modal-body">
-                  <div class="mb-3">
-                    <label class="form-label">用户名</label>
-                    <input type="text" class="form-control" :value="activeApplication.username" readonly>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">申请内容</label>
-                    <textarea class="form-control" rows="3" :value="activeApplication.reason" readonly></textarea>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">处理结果</label>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" id="approve" v-model="isApproved" :value="true">
-                      <label class="form-check-label" for="approve">解决</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" id="reject" v-model="isApproved" :value="false">
-                      <label class="form-check-label" for="reject">拒绝</label>
-                    </div>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">回复内容</label>
-                    <textarea class="form-control" rows="3" v-model="replyContent" placeholder="请输入回复内容"></textarea>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" @click="activeApplication = null">取消</button>
-                  <button type="button" class="btn btn-primary" @click="handleApplication">提交</button>
-                </div>
-              </div>
-            </div>
           </div>
-
-          <!--尾栏-->
-          <footer class="footer">
-            <div class="row g-0 justify-content-between fs-10 mt-0 mb-4">
-              <div class="col-12 col-sm-auto text-center">
-                <p class="mb-0 text-600">感谢您对我们健康大数据研究中心的支持<span class="d-none d-sm-inline-block">| </span><br class="d-sm-none" /> 2025 &copy; <a href="https://themewagon.com">网页参考bootstrap-falcon</a></p>
-              </div>
-              <div class="col-12 col-sm-auto text-center">
-                <p class="mb-0 text-600">v1.15.3</p>
-              </div>
-            </div>
-          </footer>
+        </div>
+        <div class="col-md-3">
+          <input 
+            v-model="searchParams.date" 
+            type="date" 
+            class="form-control" 
+            placeholder="选择日期"
+          >
+        </div>
+        <div class="col-md-2 float-end">
+          <button 
+            @click="searchLogs" 
+            class="btn btn-primary"
+            :disabled="loading"
+          >
+            <span v-if="loading" class="spinner-border spinner-border-sm me-1"></span>
+            搜索
+          </button>
+          <button 
+            @click="() => {
+              searchParams.keyword = ''
+              searchParams.date = ''
+              fetchSystemLogs()
+            }" 
+            class="btn btn-outline-secondary ms-2"
+            :disabled="loading"
+          >
+            重置
+          </button>
         </div>
       </div>
-    </main><!-- ===============================================--><!--    End of Main Content--><!-- ===============================================-->
+      
+      <!-- 错误提示 -->
+      <div v-if="error" class="alert alert-danger">
+        {{ error }}
+      </div>
+      
+      <!-- 日志列表 -->
+      <div class="table-responsive">
+        <table class="table table-sm table-hover mb-0">
+          <thead>
+            <tr>
+              <th style="min-width:130px;">时间</th>
+              <th style="min-width:80px;">级别</th>
+              <th>内容</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="loading">
+              <td colspan="3" class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">加载中...</span>
+                </div>
+              </td>
+            </tr>
+            <tr v-else-if="logs.length === 0">
+              <td colspan="3" class="text-center py-4">
+                没有找到日志记录
+              </td>
+            </tr>
+            <tr 
+              v-for="(log, index) in logs" 
+              :key="index"
+            >
+              <td class="text-nowrap">{{ formatLogTime(log) }}</td>
+              <td>
+                <span :class="getLogLevelClass(log)">
+                  {{ getLogLevel(log) }}
+                </span>
+              </td>
+              <td class="log-content">
+                <pre class="mb-0">{{ log }}</pre>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- 分页 -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="text-muted">
+          显示 {{ (pagination.current - 1) * pagination.size + 1 }} 到 
+          {{ Math.min(pagination.current * pagination.size, pagination.total) }} 条，
+          共 {{ pagination.total }} 条
+           共 {{ pagination.pages }} 页
+        </div>
+        <nav>
+          <ul class="pagination pagination-sm mb-0">
+            <li class="page-item" :class="{ disabled: pagination.current === 1 }">
+              <button 
+                class="page-link" 
+                @click="handlePageChange(pagination.current - 1)"
+                :disabled="pagination.current === 1"
+              >
+                上一页
+              </button>
+            </li>
+            
+            <li 
+              v-for="page in getPaginationButtons()" 
+              :key="page" 
+              class="page-item"
+              :class="{ active: pagination.current === page }"
+            >
+              <button 
+                class="page-link" 
+                @click="handlePageChange(page)"
+              >
+                {{ page }}
+              </button>
+            </li>
+            
+            <li class="page-item" :class="{ disabled: pagination.current === pagination.pages }">
+              <button 
+                class="page-link" 
+                @click="handlePageChange(pagination.current + 1)"
+                :disabled="pagination.current === pagination.pages"
+              >
+                下一页
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+
+        
+        <!--尾栏-->
+        <footer class="footer">
+          <div class="row g-0 justify-content-between fs-10 mt-0 mb-4">
+            <div class="col-12 col-sm-auto text-center">
+              <p class="mb-0 text-600">感谢您对我们健康大数据研究中心的支持<span class="d-none d-sm-inline-block">| </span><br class="d-sm-none" /> 2025 &copy; <a href="https://themewagon.com">网页参考bootstrap-falcon</a></p>
+            </div>
+            <div class="col-12 col-sm-auto text-center">
+              <p class="mb-0 text-600">v1.15.3</p>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </main><!-- ===============================================--><!--    End of Main Content--><!-- ===============================================-->
+
     <!--右边侧边栏-->
     <div class="offcanvas offcanvas-end settings-panel border-0" id="settings-offcanvas" tabindex="-1" aria-labelledby="settings-offcanvas">
       <div class="offcanvas-header settings-panel-header justify-content-between bg-shape">
@@ -610,38 +638,6 @@ onMounted(() => {
       </div>
     </a>
 </template>
-
 <style>
-/* 自定义样式 */
-/* .table-hover tbody tr:hover {
-  cursor: pointer;
-}
-.modal {
-  z-index: 1050;
-}
-.badge {
-  font-size: 0.85em;
-  padding: 0.35em 0.65em;
-} */
-/* 添加以下样式确保布局正确 */
-/* .content-wrapper {
-  min-height: calc(100vh - 120px); 
-  display: flex;
-  flex-direction: column;
-} */
 
-/* .card {
-  flex: 1;
-} */
-
-/* 调整页脚样式 */
-/* .footer {
-  padding-top: 0.75rem !important; 
-  padding-bottom: 0.75rem !important; 
-  font-size: 0.75rem; 
-}
-
-.footer p {
-  margin-bottom: 0 !important; 
-} */
-</style>    
+</style>

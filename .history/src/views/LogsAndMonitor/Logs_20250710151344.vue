@@ -1,25 +1,31 @@
 <script setup>
-import { onMounted, computed,ref } from 'vue'
+import { ref, onMounted,computed  } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineOptions } from 'vue'
-import { useChat } from '@/api/adminApplications.js'
-
+import { useOperationLogs } from '@/api/operation-logs'
 // 声明组件名
-defineOptions({ name: 'Chat' })
+defineOptions({ name: 'Logs' })
 
-// 使用组合式函数
 const {
-  applications,
-  pagination,
+  logs,
   loading,
-  activeApplication,
-  replyContent,
-  isApproved,
-  fetchApplications,
-  handleApplication,
+  error,
+  pagination,
+  searchParams,
+  fetchOperationLogs,
   handlePageChange,
+  searchLogs,
+  resetSearch,
+  formatDateTime,
+  getStatusText,
+  getStatusClass,
   getPaginationButtons
-} = useChat()
+} = useOperationLogs()
+
+// 组件挂载时获取日志
+onMounted(() => {
+  fetchOperationLogs()
+})
 
 // 从 localStorage 取得当前用户角色
 const role = ref(localStorage.getItem('userRole') || '')
@@ -52,23 +58,20 @@ function goToDataProcess()             { router.push({ name: 'DataProcess' }) }
 function goToPersonalCenter()          { router.push({ name: 'PersonalCenter' }) }
 function goToResearcherApplication()   { router.push({ name: 'ResearcherApplication' }) }
 
-// 初始化加载数据
 onMounted(() => {
-  fetchApplications()
-  
-  // 原有布局代码保持不变
+  // 1. RTL
   const isRTL = JSON.parse(localStorage.getItem('isRTL'))
   if (isRTL) {
-    const linkDefault = document.getElementById('style-default')
+    const linkDefault   = document.getElementById('style-default')
     const userLinkDefault = document.getElementById('user-style-default')
-    if (linkDefault) linkDefault.disabled = true
+    if (linkDefault)   linkDefault.disabled = true
     if (userLinkDefault) userLinkDefault.disabled = true
     document.documentElement.setAttribute('dir', 'rtl')
   } else {
-    const linkRTL = document.getElementById('style-rtl')
-    const userLinkRTL = document.getElementById('user-style-rtl')
-    if (linkRTL) linkRTL.disabled = true
-    if (userLinkRTL) userLinkRTL.disabled = true
+    const linkRTL       = document.getElementById('style-rtl')
+    const userLinkRTL   = document.getElementById('user-style-rtl')
+    if (linkRTL)       linkRTL.disabled = true
+    if (userLinkRTL)   userLinkRTL.disabled = true
   }
 
   // 2. Fluid 布局
@@ -90,18 +93,18 @@ onMounted(() => {
 
   // 4. Navbar 位置
   const navbarPosition = localStorage.getItem('navbarPosition') || ''
-  const navVertical = document.querySelector('.navbar-vertical')
+  const navVertical    = document.querySelector('.navbar-vertical')
   const navTopVertical = document.querySelector('.content .navbar-top')
-  const navTop = document.querySelector('[data-layout] .navbar-top:not([data-double-top-nav])')
-  const navDoubleTop = document.querySelector('[data-double-top-nav]')
-  const navTopCombo = document.querySelector('.content [data-navbar-top="combo"]')
+  const navTop         = document.querySelector('[data-layout] .navbar-top:not([data-double-top-nav])')
+  const navDoubleTop   = document.querySelector('[data-double-top-nav]')
+  const navTopCombo    = document.querySelector('.content [data-navbar-top="combo"]')
 
   if (navbarPosition === 'double-top') {
     document.documentElement.classList.add('double-top-nav-layout')
   }
 
   const safeRemove = el => el && el.remove()
-  const safeShow = el => el && el.removeAttribute('style')
+  const safeShow   = el => el && el.removeAttribute('style')
 
   if (navbarPosition === 'top') {
     safeShow(navTop)
@@ -132,10 +135,8 @@ onMounted(() => {
 })
 </script>
 
-
 <template>
     <!-- ===============================================--><!--    Main Content--><!-- ===============================================-->
-
     <main class="main" id="top">
       <div class="container" data-layout="container">
         <!--左边侧边栏-->
@@ -366,18 +367,18 @@ onMounted(() => {
               </li>
             </ul>
           </nav>
-          <!-- 欢迎栏 -->
+          <!--欢迎栏-->
           <div class="row g-3 mb-3">
             <div class="col-xxl-6">
               <div class="row g-0 h-100">
                 <div class="col-12">
                   <div class="card bg-body-tertiary dark__bg-opacity-50 shadow-none">
-                    <div class="bg-holder bg-card d-none d-sm-block" style="background-image:url(https://prium.github.io/falcon/v3.24.0/assets/img/illustrations/ticket-bg.png);"></div>
+                    <div class="bg-holder bg-card d-none d-sm-block" style="background-image:url(https://prium.github.io/falcon/v3.24.0/assets/img/illustrations/ticket-bg.png);"></div><!--/.bg-holder-->
                     <div class="d-flex align-items-center z-1 p-0">
                       <img src="../../assets/img/illustrations/crm-bar-chart.png" alt="" width="96" />
                       <div class="ms-n3">
                         <h6 class="mb-1 text-primary">欢迎来到</h6>
-                        <h4 class="mb-0 text-primary fw-bold">健康大数据中心<span class="text-info fw-medium">用户反馈管理中心</span></h4>
+                        <h4 class="mb-0 text-primary fw-bold">健康大数据-<span class="text-info fw-medium">操作日志记录中心</span></h4>
                       </div>
                       <img src="../../assets/img/illustrations/crm-line-chart.png" alt="" width="96" />
                     </div>
@@ -386,172 +387,196 @@ onMounted(() => {
               </div>
             </div>
           </div>
+                  <!--操作日志表格-->
+        <div class="card mb-3">
+          <div class="card-header">
+            <h5 class="mb-0">操作日志记录</h5>
+          </div>
+          <div class="card-body bg-body-tertiary">
+            <!-- 搜索和过滤区域 -->
+<div class="row mb-3">
+  <div class="col-md-3">
+    <input 
+      v-model="searchParams.username" 
+      type="text" 
+      class="form-control" 
+      placeholder="用户名"
+    >
+  </div>
+  <div class="col-md-3">
+    <input 
+      v-model="searchParams.operation" 
+      type="text" 
+      class="form-control" 
+      placeholder="操作类型"
+    >
+  </div>
+  <div class="col-md-2">
+    <input 
+      v-model="searchParams.role" 
+      type="text" 
+      class="form-control" 
+      placeholder="用户角色"
+    >
+  </div>
+  <div class="col-md-2">
+    <select 
+      v-model="pagination.size" 
+      @change="fetchOperationLogs" 
+      class="form-select"
+    >
+      <option value="10">10条/页</option>
+      <option value="20">20条/页</option>
+      <option value="50">50条/页</option>
+      <option value="100">100条/页</option>
+    </select>
+  </div>
+  <div class="col-md-2">
+    <button 
+      @click="searchLogs" 
+      class="btn btn-primary"
+      :disabled="loading"
+    >
+      <span v-if="loading" class="spinner-border spinner-border-sm me-1"></span>
+      搜索
+    </button>
+    <button 
+      @click="resetSearch" 
+      class="btn btn-outline-secondary ms-2"
+      :disabled="loading"
+    >
+      重置
+    </button>
+  </div>
+  <div class="col-md-6 mt-2">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text">从</span>
+          <input 
+            v-model="searchParams.startDate" 
+            type="date" 
+            class="form-control" 
+          >
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text">至</span>
+          <input 
+            v-model="searchParams.endDate" 
+            type="date" 
+            class="form-control" 
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-          <!-- 反馈申请管理 -->
-            <div class="card mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-              <h5 class="mb-0">用户反馈申请</h5>
-              <div class="d-flex">
-                <select v-model="pagination.size" @change="fetchApplications" class="form-select form-select-sm me-2" style="width: 80px;">
-                  <option value="5">5条/页</option>
-                  <option value="10">10条/页</option>
-                  <option value="20">20条/页</option>
-                </select>
-              </div>
+            <!-- 错误提示 -->
+            <div v-if="error" class="alert alert-danger">
+              {{ error }}
             </div>
-            <div class="card-body pb-2">
-              <div class="table-responsive">
-                <table class="table table-hover">
-                  <thead>
-                    <tr>
-                      <th>反馈单ID</th>
-                      <th>用户ID</th> <!-- 添加用户ID列 -->
-                      <th>用户名</th>
-                      <th>申请内容</th>
-                      <th>状态</th>
-                      <th>申请时间</th>
-                      <th>处理时间</th>
-                      <th>管理员回复</th>
-                      <th>操作</th>
-                    </tr>
-                  </thead>
-                  <tbody v-if="loading">
-                    <tr>
-                      <td colspan="9" class="text-center py-4"> <!-- 调整colspan为9 -->
-                        <div class="spinner-border text-primary" role="status">
-                          <span class="visually-hidden">加载中...</span>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                  <tbody v-else-if="applications.length === 0">
-                    <tr>
-                      <td colspan="9" class="text-center py-4"> <!-- 调整colspan为9 -->
-                        暂无反馈申请
-                      </td>
-                    </tr>
-                  </tbody>
-                  <tbody v-else>
-                    <tr v-for="app in applications" :key="app.id" >
-                      <td>{{ app.id }}</td>
-                      <td>{{ app.userId || '-' }}</td> <!-- 显示用户ID -->
-                      <td>{{ app.username }}</td>
-                      <td>{{ app.reason }}</td>
-                      <td>
-                        <span class="badge" :class="{
-                          'bg-warning': app.status === '未处理',
-                          'bg-success': app.status === '已处理',
-                          'bg-danger': app.status === '拒绝'
-                        }">
-                          {{ app.status }}
-                        </span>
-                      </td>
-                      <td>{{ new Date(app.applyTime).toLocaleString() }}</td>
-                      <td>{{ app.handleTime ? new Date(app.handleTime).toLocaleString() : '-' }}</td>
-                      <td>{{ app.adminReply || '-' }}</td>
-                      <td>
-                        <button 
-                          class="btn btn-sm btn-primary me-2" 
-                          @click="activeApplication = app; replyContent = ''"
-                          :disabled="app.status !== '未处理'"
-                        >
-                          处理
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+
+            <!-- 日志列表 -->
+            <div class="table-responsive">
+              <table class="table table-sm table-hover mb-0">
+                <thead>
+                  <tr>
+                    <th width="120px">用户名</th>
+                    <th width="120px">操作类型</th>
+                    <th width="120px">方法</th>
+                    <th>参数</th>
+                    <th>结果</th>
+                    <th width="100px">执行时间(ms)</th>
+                    <th width="120px">IP地址</th>
+                    <th width="160px">操作时间</th>
+                    <th width="80px">状态</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-if="loading">
+                    <td colspan="9" class="text-center py-4">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">加载中...</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr v-else-if="logs.length === 0">
+                    <td colspan="9" class="text-center py-4">
+                      没有找到操作日志记录
+                    </td>
+                  </tr>
+                  <tr 
+                    v-for="(log, index) in logs" 
+                    :key="index"
+                  >
+                    <td>{{ log.username }}</td>
+                    <td>{{ log.operation }}</td>
+                    <td>{{ log.method }}</td>
+                    <td class="text-truncate" style="max-width: 200px;" :title="log.params">{{ log.params }}</td>
+                    <td class="text-truncate" style="max-width: 200px;" :title="log.result">{{ log.result }}</td>
+                    <td>{{ log.executionTime }}</td>
+                    <td>{{ log.ip }}</td>
+                    <td>{{ formatDateTime(log.operationTime) }}</td>
+                    <td>
+                      <span class="badge rounded-pill" :class="getStatusClass(log.status)">
+                        {{ getStatusText(log.status) }}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- 分页 -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <div class="text-muted">
+                显示 {{ (pagination.current - 1) * pagination.size + 1 }} 到 
+                {{ Math.min(pagination.current * pagination.size, pagination.total) }} 条，
+                共 {{ pagination.total }} 条
               </div>
-            
-              <!-- 分页 -->
-              <div class="d-flex justify-content-between align-items-center mt-3 mb-4"> <!-- 修改为 mb-4 -->
-                <div class="text-muted">
-                  显示 {{ (pagination.current - 1) * pagination.size + 1 }} 到 
-                  {{ Math.min(pagination.current * pagination.size, pagination.total) }} 条，
-                  共 {{ pagination.total }} 条
-                </div>
-                <nav>
-                  <ul class="pagination pagination-sm mb-0">
-                    <li class="page-item" :class="{ disabled: pagination.current === 1 }">
-                      <button 
-                        class="page-link" 
-                        @click="handlePageChange(pagination.current - 1)"
-                        :disabled="pagination.current === 1"
-                      >
-                        上一页
-                      </button>
-                    </li>
-                    
-                    <li 
-                      v-for="page in getPaginationButtons()" 
-                      :key="page" 
-                      class="page-item"
-                      :class="{ active: pagination.current === page }"
+              <nav>
+                <ul class="pagination pagination-sm mb-0">
+                  <li class="page-item" :class="{ disabled: pagination.current === 1 }">
+                    <button 
+                      class="page-link" 
+                      @click="handlePageChange(pagination.current - 1)"
+                      :disabled="pagination.current === 1"
                     >
-                      <button 
-                        class="page-link" 
-                        @click="handlePageChange(page)"
-                      >
-                        {{ page }}
-                      </button>
-                    </li>
-                    
-                    <li class="page-item" :class="{ disabled: pagination.current === pagination.pages }">
-                      <button 
-                        class="page-link" 
-                        @click="handlePageChange(pagination.current + 1)"
-                        :disabled="pagination.current === pagination.pages"
-                      >
-                        下一页
-                      </button>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
+                      上一页
+                    </button>
+                  </li>
+                  
+                  <li 
+                    v-for="page in getPaginationButtons()" 
+                    :key="page" 
+                    class="page-item"
+                    :class="{ active: pagination.current === page }"
+                  >
+                    <button 
+                      class="page-link" 
+                      @click="handlePageChange(page)"
+                    >
+                      {{ page }}
+                    </button>
+                  </li>
+                  
+                  <li class="page-item" :class="{ disabled: pagination.current === pagination.pages }">
+                    <button 
+                      class="page-link" 
+                      @click="handlePageChange(pagination.current + 1)"
+                      :disabled="pagination.current === pagination.pages"
+                    >
+                      下一页
+                    </button>
+                  </li>
+                </ul>
+              </nav>
             </div>
           </div>
-
-          <!-- 处理申请模态框 -->
-          <div v-if="activeApplication" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5)">
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title">处理用户申请</h5>
-                  <button type="button" class="btn-close" @click="activeApplication = null"></button>
-                </div>
-                <div class="modal-body">
-                  <div class="mb-3">
-                    <label class="form-label">用户名</label>
-                    <input type="text" class="form-control" :value="activeApplication.username" readonly>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">申请内容</label>
-                    <textarea class="form-control" rows="3" :value="activeApplication.reason" readonly></textarea>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">处理结果</label>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" id="approve" v-model="isApproved" :value="true">
-                      <label class="form-check-label" for="approve">解决</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" id="reject" v-model="isApproved" :value="false">
-                      <label class="form-check-label" for="reject">拒绝</label>
-                    </div>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">回复内容</label>
-                    <textarea class="form-control" rows="3" v-model="replyContent" placeholder="请输入回复内容"></textarea>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" @click="activeApplication = null">取消</button>
-                  <button type="button" class="btn btn-primary" @click="handleApplication">提交</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
+        </div>
           <!--尾栏-->
           <footer class="footer">
             <div class="row g-0 justify-content-between fs-10 mt-0 mb-4">
@@ -566,6 +591,29 @@ onMounted(() => {
         </div>
       </div>
     </main><!-- ===============================================--><!--    End of Main Content--><!-- ===============================================-->
+
+    <!-- 操作理由弹窗 -->
+    <div class="modal fade" id="reasonModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">请输入操作理由</h5>
+            <button type="button" class="btn-close" @click="closeModal"></button>
+          </div>
+          <div class="modal-body">
+            <textarea class="form-control"
+                      v-model="operationReason"
+                      rows="4"
+                      placeholder="请输入操作理由..."></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeModal">取消</button>
+            <button type="button" class="btn btn-primary" @click="submitReason">提交</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!--右边侧边栏-->
     <div class="offcanvas offcanvas-end settings-panel border-0" id="settings-offcanvas" tabindex="-1" aria-labelledby="settings-offcanvas">
       <div class="offcanvas-header settings-panel-header justify-content-between bg-shape">
@@ -610,38 +658,6 @@ onMounted(() => {
       </div>
     </a>
 </template>
-
 <style>
-/* 自定义样式 */
-/* .table-hover tbody tr:hover {
-  cursor: pointer;
-}
-.modal {
-  z-index: 1050;
-}
-.badge {
-  font-size: 0.85em;
-  padding: 0.35em 0.65em;
-} */
-/* 添加以下样式确保布局正确 */
-/* .content-wrapper {
-  min-height: calc(100vh - 120px); 
-  display: flex;
-  flex-direction: column;
-} */
 
-/* .card {
-  flex: 1;
-} */
-
-/* 调整页脚样式 */
-/* .footer {
-  padding-top: 0.75rem !important; 
-  padding-bottom: 0.75rem !important; 
-  font-size: 0.75rem; 
-}
-
-.footer p {
-  margin-bottom: 0 !important; 
-} */
-</style>    
+</style>
