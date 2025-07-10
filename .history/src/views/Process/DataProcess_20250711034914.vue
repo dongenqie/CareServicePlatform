@@ -55,10 +55,10 @@ const file = ref(null);
 
 // 新增操作所需的 reactive 变量
 const tableName            = ref('')
-const tableFormat          = ref('Excel')
+const tableFormat          = ref('csv')
 const tableFilename        = ref('')
 
-const cleanFormat          = ref('')
+const cleanFormat          = ref('csv')
 const targetColumn         = ref('')
 const dependentColumnsText = ref('')   // 用户输入逗号分隔
 const duplicatePKText      = ref('')   // 主键列逗号分隔
@@ -714,7 +714,6 @@ onMounted(() => {
             <div class="modal-content border-0">
               <div class="modal-header px-5 position-relative modal-shape-header bg-shape">
                 <h4 class="mb-0 text-white" id="authentication-modal-label">数据预览</h4>
-                <div data-bs-theme="dark"><button class="btn-close position-absolute top-0 end-0 mt-2 me-2" data-bs-dismiss="modal" aria-label="Close"></button></div>
               </div>
               <div class="modal-body py-4 px-5">
                 <div v-if="previewData.length">

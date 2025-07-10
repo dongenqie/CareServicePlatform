@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed, onUnmounted } from 'vue'
+import { onMounted, ref,computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineOptions } from 'vue'
 import Dropzone from 'dropzone';
@@ -55,10 +55,10 @@ const file = ref(null);
 
 // 新增操作所需的 reactive 变量
 const tableName            = ref('')
-const tableFormat          = ref('Excel')
+const tableFormat          = ref('csv')
 const tableFilename        = ref('')
 
-const cleanFormat          = ref('')
+const cleanFormat          = ref('csv')
 const targetColumn         = ref('')
 const dependentColumnsText = ref('')   // 用户输入逗号分隔
 const duplicatePKText      = ref('')   // 主键列逗号分隔
@@ -66,68 +66,6 @@ const duplicateColsText    = ref('')   // 查重列逗号分隔
 
 // 用来保存清洗预览出来的数据
 const previewData = ref([])
-
-// —— 新增分页相关状态 —— 
-const currentPage = ref(1)
-const pageSize = ref(10) // 每页显示条数，可根据需求调整或改为下拉选择
-
-// 总页数
-const totalPages = computed(() => 
-  Math.ceil(previewData.value.length / pageSize.value)
-)
-// 当前页应显示的数据切片
-const pagedData = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value
-  return previewData.value.slice(start, start + pageSize.value)
-})
-// 切换页码
-function goToPage(page) {
-  if (page < 1) page = 1
-  if (page > totalPages.value) page = totalPages.value
-  currentPage.value = page
-}
-
-// 新增：生成带省略号的页码列表
-const pageList = computed(() => {
-  const total = totalPages.value
-  const current = currentPage.value
-  const list = []
-
-  if (total <= 7) {
-    // 总页数不多，直接全部显示
-    for (let i = 1; i <= total; i++) list.push(i)
-  } else {
-    list.push(1) // 第一页
-
-    if (current > 4) {
-      list.push('…')
-    }
-
-    // 当前页左右各显示 1 页
-    const start = Math.max(2, current - 1)
-    const end = Math.min(total - 1, current + 1)
-    for (let i = start; i <= end; i++) {
-      list.push(i)
-    }
-
-    if (current < total - 3) {
-      list.push('…')
-    }
-
-    list.push(total) // 最后一页
-  }
-
-  return list
-})
-
-// 用来渲染表头
-const previewColumns = computed(() => {
-  return previewData.value.length
-    ? Object.keys(previewData.value[0])
-    : []
-})
-
-let previewModal = null
 
 async function handleExportTable() {
   if (!tableName.value) {
@@ -167,7 +105,7 @@ async function handleCleanPreview() {
     file: fileObj,
     format: cleanFormat.value,
     targetColumn: targetColumn.value,
-    dependentColumns: deps.length ? deps : undefined // 如果没有依赖列，不传递该字段
+    dependentColumns: dependentColumns // 确保是数组
   };
 
   try {
@@ -180,7 +118,6 @@ async function handleCleanPreview() {
     alert('清洗预览请求失败，请检查控制台');
   }
 }
-
 
 async function handleRemoveDupPreview() {
   if (!myDropzone || myDropzone.files.length === 0) {
@@ -282,11 +219,6 @@ onMounted(() => {
      myDropzone.removeAllFiles(true);
   }
 
-  // 通过全局 bootstrap.Modal 来实例化（确保你在 index.html 中已引入了 Bootstrap 的 JS）
-  previewModal = new window.bootstrap.Modal(
-    document.getElementById('authentication-modal'),
-    { backdrop: 'static' }
-  )
   // 1. RTL
   const isRTL = JSON.parse(localStorage.getItem('isRTL'))
   if (isRTL) {
@@ -708,74 +640,7 @@ onMounted(() => {
               </footer>
             </div>
         </div>
-        <!-- 预览处理后数据框 -->
-        <div class="modal fade" id="authentication-modal" tabindex="-1" aria-labelledby="authentication-modal-label" aria-hidden="true">
-          <div class="modal-dialog mt-6">
-            <div class="modal-content border-0">
-              <div class="modal-header px-5 position-relative modal-shape-header bg-shape">
-                <h4 class="mb-0 text-white" id="authentication-modal-label">数据预览</h4>
-                <div data-bs-theme="dark"><button class="btn-close position-absolute top-0 end-0 mt-2 me-2" data-bs-dismiss="modal" aria-label="Close"></button></div>
-              </div>
-              <div class="modal-body py-4 px-5">
-                <div v-if="previewData.length">
-                  <div class="table-responsive">
-                    <table class="table table-bordered mb-0">
-                      <thead class="table-light">
-                        <tr>
-                          <th v-for="col in previewColumns" :key="col">{{ col }}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <!-- 改为 pagedData -->
-                        <tr v-for="(row, idx) in pagedData" :key="idx">
-                          <td v-for="col in previewColumns" :key="col">{{ row[col] }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <!-- 分页控件 -->
-                  <nav aria-label="预览分页" class="mt-3">
-                    <ul class="pagination justify-content-center mb-0">
-                      <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                        <a class="page-link" href="#" @click.prevent="goToPage(currentPage - 1)">
-                          上一页
-                        </a>
-                      </li>
-
-                      <li
-                        v-for="item in pageList"
-                        :key="item + ''"
-                        class="page-item"
-                        :class="{ active: item === currentPage, disabled: item === '…' }"
-                      >
-                        <a
-                          v-if="item !== '…'"
-                          class="page-link"
-                          href="#"
-                          @click.prevent="goToPage(item)"
-                        >
-                          {{ item }}
-                        </a>
-                        <span v-else class="page-link">…</span>
-                      </li>
-
-                      <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                        <a class="page-link" href="#" @click.prevent="goToPage(currentPage + 1)">
-                          下一页
-                        </a>
-                      </li>
-                    </ul>
-                  </nav>
-                </div>
-                <div v-else class="text-center text-muted">
-                  暂无数据，请先点击“预览清洗”
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-    </main>
-    <!-- ===============================================--><!--    End of Main Content--><!-- ===============================================-->
+    </main><!-- ===============================================--><!--    End of Main Content--><!-- ===============================================-->
 
     <!--右边侧边栏-->
     <div class="offcanvas offcanvas-end settings-panel border-0" id="settings-offcanvas" tabindex="-1" aria-labelledby="settings-offcanvas">
@@ -822,13 +687,5 @@ onMounted(() => {
     </a>
 </template>
 <style>
-  .modal-backdrop {
-    z-index: 1040 !important;
-  }
-  #authentication-modal {
-    z-index: 1050 !important;
-  }
-  #authentication-modal .modal-dialog {
-    margin-top: 2rem;
-  }
+
 </style>

@@ -920,6 +920,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
+/* 1. 把 offcanvas-body 也改成 flex，让它的唯一孩子 .card-chat-content 能撑满 */
 .settings-panel .offcanvas-body {
   display: flex;
   flex-direction: column;

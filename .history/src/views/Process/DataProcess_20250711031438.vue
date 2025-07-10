@@ -55,10 +55,10 @@ const file = ref(null);
 
 // 新增操作所需的 reactive 变量
 const tableName            = ref('')
-const tableFormat          = ref('Excel')
+const tableFormat          = ref('csv')
 const tableFilename        = ref('')
 
-const cleanFormat          = ref('')
+const cleanFormat          = ref('csv')
 const targetColumn         = ref('')
 const dependentColumnsText = ref('')   // 用户输入逗号分隔
 const duplicatePKText      = ref('')   // 主键列逗号分隔
@@ -66,67 +66,11 @@ const duplicateColsText    = ref('')   // 查重列逗号分隔
 
 // 用来保存清洗预览出来的数据
 const previewData = ref([])
-
-// —— 新增分页相关状态 —— 
-const currentPage = ref(1)
-const pageSize = ref(10) // 每页显示条数，可根据需求调整或改为下拉选择
-
-// 总页数
-const totalPages = computed(() => 
-  Math.ceil(previewData.value.length / pageSize.value)
-)
-// 当前页应显示的数据切片
-const pagedData = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value
-  return previewData.value.slice(start, start + pageSize.value)
-})
-// 切换页码
-function goToPage(page) {
-  if (page < 1) page = 1
-  if (page > totalPages.value) page = totalPages.value
-  currentPage.value = page
-}
-
-// 新增：生成带省略号的页码列表
-const pageList = computed(() => {
-  const total = totalPages.value
-  const current = currentPage.value
-  const list = []
-
-  if (total <= 7) {
-    // 总页数不多，直接全部显示
-    for (let i = 1; i <= total; i++) list.push(i)
-  } else {
-    list.push(1) // 第一页
-
-    if (current > 4) {
-      list.push('…')
-    }
-
-    // 当前页左右各显示 1 页
-    const start = Math.max(2, current - 1)
-    const end = Math.min(total - 1, current + 1)
-    for (let i = start; i <= end; i++) {
-      list.push(i)
-    }
-
-    if (current < total - 3) {
-      list.push('…')
-    }
-
-    list.push(total) // 最后一页
-  }
-
-  return list
-})
-
-// 用来渲染表头
 const previewColumns = computed(() => {
   return previewData.value.length
     ? Object.keys(previewData.value[0])
     : []
 })
-
 let previewModal = null
 
 async function handleExportTable() {
@@ -145,41 +89,36 @@ const handleFileChange = (event) => {
   file.value = event.target.files[0];
 };
 
-async function handleCleanPreview() {
-  if (!myDropzone || myDropzone.files.length === 0) {
-    return alert('请先上传文件');
-  }
-  if (!targetColumn.value) {
-    return alert('请填写目标清洗列');
-  }
+ async function handleCleanPreview() {
+   if (!myDropzone || myDropzone.files.length === 0) {
+     return alert('请先上传文件');
+   }
+   if (!targetColumn.value) {
+     return alert('请填写目标清洗列');
+   }
 
-  const fileObj = myDropzone.files[0];
-  // 只有在 user 输入了依赖列时才传递 dependentColumns，否则不传递
-  const deps = dependentColumnsText.value
-    .split(',')
-    .map(s => s.trim())
-    .filter(Boolean);
+   const fileObj = myDropzone.files[0];
+   const deps = dependentColumnsText.value
+     .split(',')
+     .map(s => s.trim())
+     .filter(Boolean);
+   const dependentColumns = deps.length ? deps : [];
 
-  const dependentColumns = deps.length ? deps : []; // 如果没有依赖列，传递空数组
-
-  // 如果没有依赖列，则不传递 dependentColumns 或传递空数组
-  const requestData = {
-    file: fileObj,
-    format: cleanFormat.value,
-    targetColumn: targetColumn.value,
-    dependentColumns: deps.length ? deps : undefined // 如果没有依赖列，不传递该字段
-  };
-
-  try {
-    const response = await cleanData(requestData);
-
-    console.log('清洗预览数据：', response.data);
-    // 渲染返回的数据，假设 response.data 是清洗后的数据
-  } catch (err) {
-    console.error(err);
-    alert('清洗预览请求失败，请检查控制台');
-  }
-}
+   try {
+     const response = await cleanData({
+       file: fileObj,
+       format: cleanFormat.value,
+       targetColumn: targetColumn.value,
+       dependentColumns
+     });
+    // 把 data 数组放到 previewData，然后弹出 Modal
+    previewData.value = response.data.data || []
+    previewModal.show()
+   } catch (err) {
+     console.error(err);
+     alert('清洗预览请求失败，请检查控制台');
+   }
+ }
 
 
 async function handleRemoveDupPreview() {
@@ -681,7 +620,7 @@ onMounted(() => {
                                     <h6>数据清洗</h6>
                                     <input v-model="targetColumn" placeholder="目标清洗列" class="form-control mb-2"/>
                                     <input v-model="dependentColumnsText" placeholder="依赖列（逗号分隔）" class="form-control mb-2"/>
-                                    <button class="btn btn-outline-primary me-2" @click="handleCleanPreview">预览清洗</button>
+                                    <button class="btn btn-outline-primary me-2" @click="handleCleanPreview" data-bs-toggle="modal">预览清洗</button>
                                     <button class="btn btn-primary mb-2" @click="handleCleanExport">清洗并导出</button>
                                     <div class="border-bottom border-dashed my-3"></div>
                                     <h6>数据去重</h6>
@@ -708,13 +647,14 @@ onMounted(() => {
               </footer>
             </div>
         </div>
-        <!-- 预览处理后数据框 -->
-        <div class="modal fade" id="authentication-modal" tabindex="-1" aria-labelledby="authentication-modal-label" aria-hidden="true">
-          <div class="modal-dialog mt-6">
+        <!--预览处理后数据框-->
+        <div class="modal fade" id="authentication-modal" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true" style="z-index: 1024;">
+          <div class="modal-dialog mt-6" role="document">
             <div class="modal-content border-0">
               <div class="modal-header px-5 position-relative modal-shape-header bg-shape">
-                <h4 class="mb-0 text-white" id="authentication-modal-label">数据预览</h4>
-                <div data-bs-theme="dark"><button class="btn-close position-absolute top-0 end-0 mt-2 me-2" data-bs-dismiss="modal" aria-label="Close"></button></div>
+                <div class="position-relative z-1">
+                  <h4 class="mb-0 text-white" id="authentication-modal-label">数据预览</h4>
+                </div>
               </div>
               <div class="modal-body py-4 px-5">
                 <div v-if="previewData.length">
@@ -726,46 +666,12 @@ onMounted(() => {
                         </tr>
                       </thead>
                       <tbody>
-                        <!-- 改为 pagedData -->
-                        <tr v-for="(row, idx) in pagedData" :key="idx">
+                        <tr v-for="(row, idx) in previewData" :key="idx">
                           <td v-for="col in previewColumns" :key="col">{{ row[col] }}</td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
-                  <!-- 分页控件 -->
-                  <nav aria-label="预览分页" class="mt-3">
-                    <ul class="pagination justify-content-center mb-0">
-                      <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                        <a class="page-link" href="#" @click.prevent="goToPage(currentPage - 1)">
-                          上一页
-                        </a>
-                      </li>
-
-                      <li
-                        v-for="item in pageList"
-                        :key="item + ''"
-                        class="page-item"
-                        :class="{ active: item === currentPage, disabled: item === '…' }"
-                      >
-                        <a
-                          v-if="item !== '…'"
-                          class="page-link"
-                          href="#"
-                          @click.prevent="goToPage(item)"
-                        >
-                          {{ item }}
-                        </a>
-                        <span v-else class="page-link">…</span>
-                      </li>
-
-                      <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                        <a class="page-link" href="#" @click.prevent="goToPage(currentPage + 1)">
-                          下一页
-                        </a>
-                      </li>
-                    </ul>
-                  </nav>
                 </div>
                 <div v-else class="text-center text-muted">
                   暂无数据，请先点击“预览清洗”
@@ -822,13 +728,5 @@ onMounted(() => {
     </a>
 </template>
 <style>
-  .modal-backdrop {
-    z-index: 1040 !important;
-  }
-  #authentication-modal {
-    z-index: 1050 !important;
-  }
-  #authentication-modal .modal-dialog {
-    margin-top: 2rem;
-  }
+
 </style>

@@ -29172,9 +29172,9 @@ option:disabled {
 /* -------------------------------------------------------------------------- */
 /*                               Settings Panel                               */
 /* -------------------------------------------------------------------------- */
-/* .settings-panel {
+.settings-panel {
   max-width: 22rem;
-} */
+}
 
 .settings-panel-header {
   -webkit-box-align: start;

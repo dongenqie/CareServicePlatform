@@ -837,6 +837,21 @@ onMounted(() => {
           </footer>
         </div>
       </div>
+      <!--预览处理后数据框-->
+      <div class="modal fade" id="authentication-modal" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+        <div class="modal-dialog mt-6" role="document">
+          <div class="modal-content border-0">
+            <div class="modal-header px-5 position-relative modal-shape-header bg-shape">
+              <div class="position-relative z-1">
+                <h4 class="mb-0 text-white" id="authentication-modal-label">数据预览</h4>
+              </div>
+            </div>
+            <div class="modal-body py-4 px-5">
+              <!--表格形式展示-->
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
     
     <!-- ===============================================--><!--    End of Main Content--><!-- ===============================================-->

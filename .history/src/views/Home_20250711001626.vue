@@ -50,10 +50,7 @@
     },
     methods: {
         goToLogin() {
-          this.$router.push({ name: 'Login' }) 
-        },
-        goToRegister() {
-          this.$router.push({ name: 'Register' })  
+          this.$router.push({ name: 'Login' })  // 跳转到 Login 页
         },
         progressFormat(percentage) {
             return ""
@@ -637,8 +634,6 @@
             </li>
             <li class="nav-item "><a class="nav-link text-white" id="navbarDropdownLogin" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @click="goToLogin">登录</a>
             </li>
-            <li class="nav-item "><a class="nav-link text-white" id="navbarDropdownLogin" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @click="goToRegister">注册</a>
-            </li>
           </ul>
         </div>
       </div>
@@ -649,7 +644,7 @@
     <section class="py-0 overflow-hidden" id="banner" data-bs-theme="light">
       <div class="bg-holder" style="background-image:url(https://tse3.mm.bing.net/th/id/OIP.h6S5hYFb-2MBmFutKsHTkAHaEk?w=2160&h=1335&rs=1&pid=ImgDetMain&o=7&rm=3);background-position: center bottom;"></div><!--/.bg-holder-->
       <div class="container">
-        <div class="row flex-center pt-8 pt-lg-9 pb-lg-9 pb-xl-0">
+        <div class="row flex-center pt-8 pt-lg-6 pb-lg-9 pb-xl-0">
           <div class="col-lg-8  mt-4 mt-xl-0">
             <div class="chart-wrapper">
                 <div id="chinaMap" style="width: 100%;height: 80vh;"></div>

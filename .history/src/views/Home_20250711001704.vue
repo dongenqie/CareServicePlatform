@@ -50,10 +50,7 @@
     },
     methods: {
         goToLogin() {
-          this.$router.push({ name: 'Login' }) 
-        },
-        goToRegister() {
-          this.$router.push({ name: 'Register' })  
+          this.$router.push({ name: 'Login' })  // 跳转到 Login 页
         },
         progressFormat(percentage) {
             return ""
@@ -636,8 +633,6 @@
               </div>
             </li>
             <li class="nav-item "><a class="nav-link text-white" id="navbarDropdownLogin" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @click="goToLogin">登录</a>
-            </li>
-            <li class="nav-item "><a class="nav-link text-white" id="navbarDropdownLogin" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @click="goToRegister">注册</a>
             </li>
           </ul>
         </div>

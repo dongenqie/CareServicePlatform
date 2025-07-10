@@ -2,58 +2,6 @@
 import { onMounted, ref,computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineOptions } from 'vue'
-import { sendMessageToDeepSeek } from '@/api/deepseek'
-
-// —— AI 辅助相关状态
-const aiInput = ref('')
-const aiResponse = ref('')
-const isChatLoading = ref(false)
-// 保存整个对话历史
-const messages = ref([])
-
-// 辅助格式化时间
-function formatDate(date) {
-  const d = new Date(date)
-  return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`
-}
-function formatTime(date) {
-  const d = new Date(date)
-  const h = d.getHours().toString().padStart(2, '0')
-  const m = d.getMinutes().toString().padStart(2, '0')
-  return `${h}:${m}`
-}
-
-// 发送消息到 DeepSeek，并维护 messages
-async function sendMessage() {
-  const content = aiInput.value.trim()
-  if (!content) return
-  // 1) 推入用户消息
-  messages.value.push({
-    type: 'user',
-    text: content,
-    time: new Date()
-  })
-  aiInput.value = ''
-  isChatLoading.value = true
-  try {
-    // 2) 调用 API
-    const reply = await sendMessageToDeepSeek(content)
-    // 3) 推入 AI 回复
-    messages.value.push({
-      type: 'ai',
-      text: reply,
-      time: new Date()
-    })
-  } catch (e) {
-    messages.value.push({
-      type: 'ai',
-      text: `错误：${e.message}`,
-      time: new Date()
-    })
-  } finally {
-    isChatLoading.value = false
-  }
-}
 
 // 声明组件名
 defineOptions({ name: 'Dashboard' })

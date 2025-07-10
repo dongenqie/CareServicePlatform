@@ -55,10 +55,10 @@ const file = ref(null);
 
 // 新增操作所需的 reactive 变量
 const tableName            = ref('')
-const tableFormat          = ref('Excel')
+const tableFormat          = ref('csv')
 const tableFilename        = ref('')
 
-const cleanFormat          = ref('')
+const cleanFormat          = ref('csv')
 const targetColumn         = ref('')
 const dependentColumnsText = ref('')   // 用户输入逗号分隔
 const duplicatePKText      = ref('')   // 主键列逗号分隔
@@ -86,39 +86,6 @@ function goToPage(page) {
   if (page > totalPages.value) page = totalPages.value
   currentPage.value = page
 }
-
-// 新增：生成带省略号的页码列表
-const pageList = computed(() => {
-  const total = totalPages.value
-  const current = currentPage.value
-  const list = []
-
-  if (total <= 7) {
-    // 总页数不多，直接全部显示
-    for (let i = 1; i <= total; i++) list.push(i)
-  } else {
-    list.push(1) // 第一页
-
-    if (current > 4) {
-      list.push('…')
-    }
-
-    // 当前页左右各显示 1 页
-    const start = Math.max(2, current - 1)
-    const end = Math.min(total - 1, current + 1)
-    for (let i = start; i <= end; i++) {
-      list.push(i)
-    }
-
-    if (current < total - 3) {
-      list.push('…')
-    }
-
-    list.push(total) // 最后一页
-  }
-
-  return list
-})
 
 // 用来渲染表头
 const previewColumns = computed(() => {
@@ -154,27 +121,27 @@ async function handleCleanPreview() {
   }
 
   const fileObj = myDropzone.files[0];
-  // 只有在 user 输入了依赖列时才传递 dependentColumns，否则不传递
+  // 自动根据文件后缀决定格式
+  const ext = fileObj.name.split('.').pop().toLowerCase();
+  const fmt = ext === 'csv' ? 'csv' : 'excel';
+
+  // 只有在 user 输入了依赖列时才传递 dependentColumns，否则传空数组
   const deps = dependentColumnsText.value
     .split(',')
     .map(s => s.trim())
     .filter(Boolean);
-
-  const dependentColumns = deps.length ? deps : []; // 如果没有依赖列，传递空数组
-
-  // 如果没有依赖列，则不传递 dependentColumns 或传递空数组
-  const requestData = {
-    file: fileObj,
-    format: cleanFormat.value,
-    targetColumn: targetColumn.value,
-    dependentColumns: deps.length ? deps : undefined // 如果没有依赖列，不传递该字段
-  };
+  const dependentColumns = deps.length ? deps : [];
 
   try {
-    const response = await cleanData(requestData);
-
-    console.log('清洗预览数据：', response.data);
-    // 渲染返回的数据，假设 response.data 是清洗后的数据
+    const response = await cleanData({
+      file: fileObj,
+      format: fmt,                  // 用自动检测的格式
+      targetColumn: targetColumn.value,
+      dependentColumns
+    });
+    // 把 data 数组放到 previewData，然后弹出 Modal
+    previewData.value = response.data.data || [];
+    previewModal.show();
   } catch (err) {
     console.error(err);
     alert('清洗预览请求失败，请检查控制台');
@@ -714,7 +681,6 @@ onMounted(() => {
             <div class="modal-content border-0">
               <div class="modal-header px-5 position-relative modal-shape-header bg-shape">
                 <h4 class="mb-0 text-white" id="authentication-modal-label">数据预览</h4>
-                <div data-bs-theme="dark"><button class="btn-close position-absolute top-0 end-0 mt-2 me-2" data-bs-dismiss="modal" aria-label="Close"></button></div>
               </div>
               <div class="modal-body py-4 px-5">
                 <div v-if="previewData.length">
@@ -737,32 +703,18 @@ onMounted(() => {
                   <nav aria-label="预览分页" class="mt-3">
                     <ul class="pagination justify-content-center mb-0">
                       <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                        <a class="page-link" href="#" @click.prevent="goToPage(currentPage - 1)">
-                          上一页
-                        </a>
+                        <a class="page-link" href="#" @click.prevent="goToPage(currentPage - 1)">上一页</a>
                       </li>
-
                       <li
-                        v-for="item in pageList"
-                        :key="item + ''"
+                        v-for="page in totalPages"
+                        :key="page"
                         class="page-item"
-                        :class="{ active: item === currentPage, disabled: item === '…' }"
+                        :class="{ active: page === currentPage }"
                       >
-                        <a
-                          v-if="item !== '…'"
-                          class="page-link"
-                          href="#"
-                          @click.prevent="goToPage(item)"
-                        >
-                          {{ item }}
-                        </a>
-                        <span v-else class="page-link">…</span>
+                        <a class="page-link" href="#" @click.prevent="goToPage(page)">{{ page }}</a>
                       </li>
-
                       <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                        <a class="page-link" href="#" @click.prevent="goToPage(currentPage + 1)">
-                          下一页
-                        </a>
+                        <a class="page-link" href="#" @click.prevent="goToPage(currentPage + 1)">下一页</a>
                       </li>
                     </ul>
                   </nav>

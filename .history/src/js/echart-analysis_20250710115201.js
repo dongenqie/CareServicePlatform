@@ -427,7 +427,7 @@ export const comparativeChartInit = function comparativeChartInit(boxPlotVO1, bo
 
     chart.setOption(option);
   } else {
-    // console.error('找不到图表容器 .echart-analysis-comparative');
+    console.error('找不到图表容器 .echart-analysis-comparative');
   }
 };
 

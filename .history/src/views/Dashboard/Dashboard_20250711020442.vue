@@ -2,58 +2,6 @@
 import { onMounted, ref,computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineOptions } from 'vue'
-import { sendMessageToDeepSeek } from '@/api/deepseek'
-
-// —— AI 辅助相关状态
-const aiInput = ref('')
-const aiResponse = ref('')
-const isChatLoading = ref(false)
-// 保存整个对话历史
-const messages = ref([])
-
-// 辅助格式化时间
-function formatDate(date) {
-  const d = new Date(date)
-  return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`
-}
-function formatTime(date) {
-  const d = new Date(date)
-  const h = d.getHours().toString().padStart(2, '0')
-  const m = d.getMinutes().toString().padStart(2, '0')
-  return `${h}:${m}`
-}
-
-// 发送消息到 DeepSeek，并维护 messages
-async function sendMessage() {
-  const content = aiInput.value.trim()
-  if (!content) return
-  // 1) 推入用户消息
-  messages.value.push({
-    type: 'user',
-    text: content,
-    time: new Date()
-  })
-  aiInput.value = ''
-  isChatLoading.value = true
-  try {
-    // 2) 调用 API
-    const reply = await sendMessageToDeepSeek(content)
-    // 3) 推入 AI 回复
-    messages.value.push({
-      type: 'ai',
-      text: reply,
-      time: new Date()
-    })
-  } catch (e) {
-    messages.value.push({
-      type: 'ai',
-      text: `错误：${e.message}`,
-      time: new Date()
-    })
-  } finally {
-    isChatLoading.value = false
-  }
-}
 
 // 声明组件名
 defineOptions({ name: 'Dashboard' })
@@ -940,54 +888,5 @@ onMounted(() => {
     </a>
 </template>
 
-<style scoped>
-.settings-panel .offcanvas-body {
-  display: flex;
-  flex-direction: column;
-  padding: 0; /* 根据需要微调 */
-}
-
-/* 2. 让 .card-chat-content 撑满 offcanvas-body */
-.tab-content.card-chat-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-/* 3. 聊天历史区域占满剩余空间 */
-.card-chat-pane {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden; /* 去掉自身滚动条，交给内部 .chat-content-scroll-area */
-}
-
-/* 4. 聊天记录区独立滚动 */
-.chat-content-scroll-area {
-  flex: 1;
-  overflow-y: auto;
-  /* 如需内边距或滚动条样式可在这里加 */
-}
-
-/* 5. 发送区域永远固定在底部，不随滚动 */
-/* 保证发送框始终黏在底部 */
-.chat-editor-area {
-  position: sticky;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: #fff; /* 或者你侧边栏的背景色 */
-  padding: .75rem;
-  border-top: 1px solid #dee2e6;
-  z-index: 10; /* 确保覆盖在滚动内容之上 */
-}
-.chat-editor-area .btn {
-  align-self: flex-end;
-}
-
-/* 可选：让输入框和按钮更紧凑 */
-.chat-editor-area textarea {
-  margin-bottom: 0.5rem;
-}
-
+<style>
 </style>

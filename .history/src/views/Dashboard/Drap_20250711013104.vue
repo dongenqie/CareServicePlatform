@@ -836,7 +836,7 @@ onMounted(() => {
       <div class="offcanvas-body scrollbar-overlay px-x1 h-100" id="themeController">
         <div class="tab-content card-chat-content">
           <!--历史消息与回答区，历史消息在此显示，ai给出的新回答加载出来也在此显示-->
-          <div class="tab-pane card-chat-pane active" id="chat-0" role="tabpanel" aria-labelledby="chat-link-0" style="min-height: 580px;">
+          <div class="tab-pane card-chat-pane active" id="chat-0" role="tabpanel" aria-labelledby="chat-link-0">
             <div class="chat-content-body" style="display: inherit;">
               <div class="chat-content-scroll-area scrollbar">
                 <!-- 用 v-for 渲染所有消息 -->
@@ -888,21 +888,19 @@ onMounted(() => {
             </div>
           </div>
           <!--发送消息区域-->
-
           <form class="chat-editor-area" @submit.prevent="sendMessage">
             <textarea
               v-model="aiInput"
               class="form-control mb-2"
               rows="3"
               placeholder="在此输入你的问题…"
-              style="max-width: 260px;"
             ></textarea>
             <button
               class="btn btn-primary mb-2 btn-sm"
               type="submit"
               :disabled="isChatLoading"
             >
-              {{ isChatLoading ? '加载中' : '发送' }}
+              {{ isChatLoading ? '加载中…' : '发送' }}
             </button>
           </form>
         </div>
@@ -911,62 +909,50 @@ onMounted(() => {
 
     <a class="card setting-toggle" href="#settings-offcanvas" data-bs-toggle="offcanvas">
       <div class="card-body d-flex align-items-center py-md-2 px-2 py-1">
-        <div class="bg-primary-subtle position-relative rounded-start" style="height:36px;width:40px">
+        <div class="bg-primary-subtle position-relative rounded-start" style="height:34px;width:28px">
           <div class="settings-popover"><span class="ripple"><span class="fa-spin position-absolute all-0 d-flex flex-center"><span class="icon-spin position-absolute all-0 d-flex flex-center"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.7369 12.3941L19.1989 12.1065C18.4459 11.7041 18.0843 10.8487 18.0843 9.99495C18.0843 9.14118 18.4459 8.28582 19.1989 7.88336L19.7369 7.59581C19.9474 7.47484 20.0316 7.23291 19.9474 7.03131C19.4842 5.57973 18.6843 4.28943 17.6738 3.20075C17.5053 3.03946 17.2527 2.99914 17.0422 3.12011L16.393 3.46714C15.6883 3.84379 14.8377 3.74529 14.1476 3.3427C14.0988 3.31422 14.0496 3.28621 14.0002 3.25868C13.2568 2.84453 12.7055 2.10629 12.7055 1.25525V0.70081C12.7055 0.499202 12.5371 0.297594 12.2845 0.257272C10.7266 -0.105622 9.16879 -0.0653007 7.69516 0.257272C7.44254 0.297594 7.31623 0.499202 7.31623 0.70081V1.23474C7.31623 2.09575 6.74999 2.8362 5.99824 3.25599C5.95774 3.27861 5.91747 3.30159 5.87744 3.32493C5.15643 3.74527 4.26453 3.85902 3.53534 3.45302L2.93743 3.12011C2.72691 2.99914 2.47429 3.03946 2.30587 3.20075C1.29538 4.28943 0.495411 5.57973 0.0322686 7.03131C-0.051939 7.23291 0.0322686 7.47484 0.242788 7.59581L0.784376 7.8853C1.54166 8.29007 1.92694 9.13627 1.92694 9.99495C1.92694 10.8536 1.54166 11.6998 0.784375 12.1046L0.242788 12.3941C0.0322686 12.515 -0.051939 12.757 0.0322686 12.9586C0.495411 14.4102 1.29538 15.7005 2.30587 16.7891C2.47429 16.9504 2.72691 16.9907 2.93743 16.8698L3.58669 16.5227C4.29133 16.1461 5.14131 16.2457 5.8331 16.6455C5.88713 16.6767 5.94159 16.7074 5.99648 16.7375C6.75162 17.1511 7.31623 17.8941 7.31623 18.7552V19.2891C7.31623 19.4425 7.41373 19.5959 7.55309 19.696C7.64066 19.7589 7.74815 19.7843 7.85406 19.8046C9.35884 20.0925 10.8609 20.0456 12.2845 19.7729C12.5371 19.6923 12.7055 19.4907 12.7055 19.2891V18.7346C12.7055 17.8836 13.2568 17.1454 14.0002 16.7312C14.0496 16.7037 14.0988 16.6757 14.1476 16.6472C14.8377 16.2446 15.6883 16.1461 16.393 16.5227L17.0422 16.8698C17.2527 16.9907 17.5053 16.9504 17.6738 16.7891C18.7264 15.7005 19.4842 14.4102 19.9895 12.9586C20.0316 12.757 19.9474 12.515 19.7369 12.3941ZM10.0109 13.2005C8.1162 13.2005 6.64257 11.7893 6.64257 9.97478C6.64257 8.20063 8.1162 6.74905 10.0109 6.74905C11.8634 6.74905 13.3792 8.20063 13.3792 9.97478C13.3792 11.7893 11.8634 13.2005 10.0109 13.2005Z" fill="#2A7BE4"></path></svg></span></span></span></div>
-        </div>
-        <small class="text-uppercase text-primary fw-bold bg-primary-subtle py-2 pe-2 ps-1 rounded-end" style="height:36px;width:80px">AI辅助分析</small>
+        </div><small class="text-uppercase text-primary fw-bold bg-primary-subtle py-2 pe-2 ps-1 rounded-end">customize</small>
       </div>
     </a>
 </template>
 
 <style scoped>
-.settings-panel .offcanvas-body {
+/* 1. 把整个聊天区域做成垂直的 flex 布局，高度撑满 */
+.card-chat-content {
   display: flex;
   flex-direction: column;
-  padding: 0; /* 根据需要微调 */
+  height: 100%;
 }
 
-/* 2. 让 .card-chat-content 撑满 offcanvas-body */
-.tab-content.card-chat-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+/* 2. 消息显示区撑满剩余空间，内部滚动 */
+.chat-content-body {
+  flex: 1 1 auto;
+  overflow: hidden; /* 隐藏父层滚动，交给下面的 scroll-area */
 }
-
-/* 3. 聊天历史区域占满剩余空间 */
-.card-chat-pane {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden; /* 去掉自身滚动条，交给内部 .chat-content-scroll-area */
-}
-
-/* 4. 聊天记录区独立滚动 */
 .chat-content-scroll-area {
-  flex: 1;
+  flex: 1 1 auto;
   overflow-y: auto;
-  /* 如需内边距或滚动条样式可在这里加 */
+  padding-right: 0.5rem; /* 给滚动条一点呼吸空间，可选 */
 }
 
-/* 5. 发送区域永远固定在底部，不随滚动 */
-/* 保证发送框始终黏在底部 */
+/* 3. 发送区固定在底部 */
 .chat-editor-area {
+  flex: 0 0 auto; /* 不伸缩 */
+  background-color: #fff; /* 与侧边栏背景保持一致 */
+  border-top: 1px solid #dee2e6;
+  padding: 0.75rem;
+  /* 如果还要做黏性，可以保留：
   position: sticky;
   bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: #fff; /* 或者你侧边栏的背景色 */
-  padding: .75rem;
-  border-top: 1px solid #dee2e6;
-  z-index: 10; /* 确保覆盖在滚动内容之上 */
+  z-index: 10;
+  */
+}
+
+/* 小优化：让 textarea 和按钮水平对齐 */
+.chat-editor-area .form-control {
+  resize: none;
 }
 .chat-editor-area .btn {
-  align-self: flex-end;
+  margin-top: 0.5rem;
 }
-
-/* 可选：让输入框和按钮更紧凑 */
-.chat-editor-area textarea {
-  margin-bottom: 0.5rem;
-}
-
 </style>
